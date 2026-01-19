@@ -45,12 +45,12 @@ export type Alert = {
 };
 
 // Severe Weather Outlook Types
-export type SevereWeatherData = {
+export type SevereWeatherOutlook = {
   issuedDate: Date | null;
-  severeWeatherOutlooks: SevereWeatherOutlook[];
+  outlookItems: SevereWeatherOutlookItem[];
 };
 
-export type SevereWeatherOutlook = {
+export type SevereWeatherOutlookItem = {
   date: string;
   outlook: string;
 };
@@ -113,6 +113,6 @@ type VolcanicActivity = {
 export type VolcanicActivityData = VolcanicActivity[];
 
 // MongoDB Document Types
-export type SevereWeatherOutlookDocument = SevereWeatherData & {
+export type SevereWeatherOutlookDocument = SevereWeatherOutlook & {
   insertedAt: Date;
 };
