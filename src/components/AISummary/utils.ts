@@ -44,3 +44,25 @@ export const COLOR_CODE_MAP: { [key: string]: SevereThunderstormLevel } = {
 export function getColourCode(alert: Alert): string | undefined {
   return alert.info.parameter.find((p) => p.valueName === 'ColourCode')?.value;
 }
+
+const getProgressDesc = (openAICalls: number) => [
+  'Get reference data (1/2)...',
+  'Get reference data (2/2)...',
+  ...Array.from(
+    { length: openAICalls },
+    (_, i) => `Generating summary (${i + 1}/${openAICalls})...`,
+  ),
+];
+
+export function getProgressUpdater(openAICalls: number) {
+  let index = 0;
+  const descs = getProgressDesc(openAICalls);
+  return () => {
+    if (index < descs.length) {
+      return {
+        desc: descs[index++],
+        value: (index / descs.length) * 100,
+      };
+    }
+  };
+}

@@ -2,8 +2,9 @@ import { useAISummary, useAlerts, useSevereWeatherOutlook } from '@/queries';
 import type { Alert } from '@/types';
 import { formatAlertName, sortAlerts } from '@/utils';
 import { DateTime, Interval } from 'luxon';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { getChanceOfUpgrade } from '../IssuedWarningsAndWatches/utils';
+import { Progress } from '../ui/progress';
 import { AlertIndicator } from './AlertIndicator';
 import type { SevereWeatherAISummary } from './schema';
 import { formatAlertDuration, formatAreasList } from './utils';
@@ -23,11 +24,22 @@ export function AISummary() {
     severeWeatherOutlook?.outlookItems.map((item) => item.outlook),
   );
 
-  const allAiSummariesSuccess = aiSummaries.every((s) => s.isSuccess);
+  const openAICallCount =
+    aiSummaries.length || severeWeatherOutlook?.outlookItems.length || 0;
+  const { value: genProgress, desc: genDesc } = useProgressTracker({
+    openAICallCount,
+    isAlertsLoading,
+    isSevereWeatherLoading,
+    aiSummaries,
+  });
+
+  const allAiSummariesSuccess =
+    !isAlertsLoading &&
+    !isSevereWeatherLoading &&
+    aiSummaries.every((s) => s.isSuccess);
 
   const [summaries, setSummaries] = useState<Summary[]>([]);
 
-  // Handle severeWeatherOutlook changes separately
   useEffect(() => {
     if (alerts && severeWeatherOutlook && allAiSummariesSuccess) {
       console.log(severeWeatherOutlook.outlookItems.map((item) => item.date));
@@ -77,48 +89,57 @@ export function AISummary() {
   }, [alerts, severeWeatherOutlook, allAiSummariesSuccess]);
 
   // Log AI summaries when all are successful (using stable dependency)
-  useEffect(() => {
-    if (allAiSummariesSuccess) {
-      console.log(
-        'AI Summaries for Severe Weather Outlook:',
-        aiSummaries.map((s) => s.data),
-      );
-    }
-  }, [allAiSummariesSuccess, aiSummaries]);
+  // useEffect(() => {
+  //   if (allAiSummariesSuccess) {
+  //     console.log(
+  //       'AI Summaries for Severe Weather Outlook:',
+  //       aiSummaries.map((s) => s.data),
+  //     );
+  //   }
+  // }, [allAiSummariesSuccess, aiSummaries]);
 
   return (
     <div className="flex flex-col gap-4 p-4 h-full overflow-y-auto">
-      {summaries.map(({ date, issuedAlerts, outlooks }) => (
-        <div className="flex flex-col" key={date.toISODate()}>
-          <span className="font-semibold">{date.toFormat('cccc dd LLLL')}</span>
-          <div>
-            {issuedAlerts.length > 0 && (
-              <ul className="text-sm">
-                {sortAlerts(issuedAlerts)
-                  .filter(({ info }) =>
-                    DateTime.fromISO(info.onset).hasSame(date, 'day'),
-                  )
-                  .map((alert) => (
-                    <li className="py-2" key={alert.identifier}>
-                      <IssuedAlert alert={alert} />
+      {!allAiSummariesSuccess ? (
+        <div className="w-full h-full flex flex-col justify-center items-center gap-2">
+          <Progress value={genProgress} className="w-100" />
+          <span className="text-sm animate-pulse">{genDesc}</span>
+        </div>
+      ) : (
+        summaries.map(({ date, issuedAlerts, outlooks }) => (
+          <div className="flex flex-col" key={date.toISODate()}>
+            <span className="font-semibold">
+              {date.toFormat('cccc dd LLLL')}
+            </span>
+            <div>
+              {issuedAlerts.length > 0 && (
+                <ul className="text-sm">
+                  {sortAlerts(issuedAlerts)
+                    .filter(({ info }) =>
+                      DateTime.fromISO(info.onset).hasSame(date, 'day'),
+                    )
+                    .map((alert) => (
+                      <li className="py-2" key={alert.identifier}>
+                        <IssuedAlert alert={alert} />
+                      </li>
+                    ))}
+                </ul>
+              )}
+            </div>
+            <div>
+              {outlooks && outlooks.length > 0 && (
+                <ul className="text-sm">
+                  {outlooks.map((outlook, index) => (
+                    <li className="py-2" key={index}>
+                      <OutlookItem outlook={outlook} />
                     </li>
                   ))}
-              </ul>
-            )}
+                </ul>
+              )}
+            </div>
           </div>
-          <div>
-            {outlooks && outlooks.length > 0 && (
-              <ul className="text-sm">
-                {outlooks.map((outlook, index) => (
-                  <li className="py-2" key={index}>
-                    <OutlookItem outlook={outlook} />
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        </div>
-      ))}
+        ))
+      )}
     </div>
   );
 }
@@ -189,4 +210,48 @@ function OutlookItem({
       {areas && areas.length > 0 ? ` for ${areas}` : ''}.
     </span>
   );
+}
+
+function useProgressTracker({
+  openAICallCount,
+  isAlertsLoading,
+  isSevereWeatherLoading,
+  aiSummaries,
+}: {
+  openAICallCount: number;
+  isAlertsLoading: boolean;
+  isSevereWeatherLoading: boolean;
+  aiSummaries: ReturnType<typeof useAISummary>;
+}) {
+  const descs = useMemo(() => {
+    const count = Math.max(openAICallCount, 1);
+    return [
+      'Get reference data (1/2)...',
+      'Get reference data (2/2)...',
+      ...Array.from(
+        { length: count },
+        (_, i) => `Generating summary (${i + 1}/${count})...`,
+      ),
+    ];
+  }, [openAICallCount]);
+
+  const [value, setValue] = useState(0);
+  const [desc, setDesc] = useState(descs[0] ?? '');
+
+  useEffect(() => {
+    const referenceStepsCompleted =
+      (isAlertsLoading ? 0 : 1) + (isSevereWeatherLoading ? 0 : 1);
+    const aiSummaryStepsCompleted =
+      !isAlertsLoading && !isSevereWeatherLoading
+        ? aiSummaries.filter((s) => s.isSuccess).length
+        : 0;
+    const completedSteps = referenceStepsCompleted + aiSummaryStepsCompleted;
+
+    const clamped = Math.min(Math.max(completedSteps, 0), descs.length);
+    const descIndex = Math.min(clamped, descs.length - 1);
+    setValue((clamped / descs.length) * 100);
+    setDesc(descs[descIndex] ?? '');
+  }, [isAlertsLoading, isSevereWeatherLoading, aiSummaries, descs]);
+
+  return { value, desc };
 }
