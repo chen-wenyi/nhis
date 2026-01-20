@@ -7,7 +7,7 @@ import { getChanceOfUpgrade } from '../IssuedWarningsAndWatches/utils';
 import { Progress } from '../ui/progress';
 import { AlertIndicator } from './AlertIndicator';
 import type { SevereWeatherAISummary } from './schema';
-import { formatAlertDuration, formatAreasList } from './utils';
+import { formatAlertDuration, formatAreasList, groupAlerts } from './utils';
 
 type Summary = {
   date: DateTime;
@@ -114,21 +114,21 @@ export function AISummary() {
             <div>
               {issuedAlerts.length > 0 && (
                 <ul className="text-sm">
-                  {sortAlerts(issuedAlerts)
-                    .filter(({ info }) =>
+                  {groupAlerts(
+                    sortAlerts(issuedAlerts).filter(({ info }) =>
                       DateTime.fromISO(info.onset).hasSame(date, 'day'),
-                    )
-                    .map((alert) => (
-                      <li className="py-2" key={alert.identifier}>
-                        <IssuedAlert alert={alert} />
-                      </li>
-                    ))}
+                    ),
+                  ).map((alertGroup) => (
+                    <li className="py-2" key={alertGroup[0].identifier}>
+                      <IssuedAlerts alerts={alertGroup} />
+                    </li>
+                  ))}
                 </ul>
               )}
             </div>
             <div>
               {outlooks && outlooks.length > 0 && (
-                <ul className="text-sm">
+                <ul className="text-sm list-disc pl-6 space-y-1">
                   {outlooks.map((outlook, index) => (
                     <li className="py-2" key={index}>
                       <OutlookItem outlook={outlook} />
@@ -144,7 +144,8 @@ export function AISummary() {
   );
 }
 
-function IssuedAlert({ alert }: { alert: Alert }) {
+function IssuedAlerts({ alerts }: { alerts: Alert[] }) {
+  const alert = alerts[0];
   let upgradeTo = '';
   const name = alert.info.headline.toLowerCase();
   if (name.includes('watch')) {
@@ -156,26 +157,63 @@ function IssuedAlert({ alert }: { alert: Alert }) {
   }
 
   const chance = getChanceOfUpgrade(alert);
+  const isMultipleAreas = alerts.length > 1;
 
   return (
-    <div className="flex items-center gap-2">
-      <AlertIndicator alert={alert} />
+    <div className="flex items-stretch gap-2">
+      <div className="flex min-h-full">
+        <AlertIndicator alert={alert} />
+      </div>
       <span>
-        A {formatAlertName(alert.info.headline)} has been issued{' '}
-        {alert.info.area.areaDesc.length > 0 && (
-          <>for {alert.info.area.areaDesc}</>
+        {isMultipleAreas ? (
+          <div className="flex flex-col gap-1">
+            <div>
+              MetService have issued {formatAlertName(alert.info.headline)} for
+              the following areas:
+            </div>
+            <ul className="list-disc pl-6 space-y-1">
+              {alerts.map((a, idx) => (
+                <li key={idx}>
+                  {a.info.area.areaDesc.length > 0
+                    ? a.info.area.areaDesc
+                    : 'Multiple areas'}
+                  {formatAlertDuration(
+                    DateTime.fromISO(a.info.onset),
+                    DateTime.fromISO(a.info.expires),
+                  )}
+                  {getChanceOfUpgrade(a) && upgradeTo && (
+                    <span>
+                      . There is a{' '}
+                      <span className="underline lowercase">
+                        {getChanceOfUpgrade(a)}
+                      </span>{' '}
+                      confidence of upgrading to a {upgradeTo}
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : (
+          <>
+            A {formatAlertName(alert.info.headline)} has been issued{' '}
+            {alert.info.area.areaDesc.length > 0 && (
+              <>for {alert.info.area.areaDesc}</>
+            )}
+            {formatAlertDuration(
+              DateTime.fromISO(alert.info.onset),
+              DateTime.fromISO(alert.info.expires),
+            )}
+            {chance && upgradeTo && (
+              <span>
+                . There is a{' '}
+                <span className="underline lowercase">{chance}</span> confidence
+                of upgrading to a {upgradeTo}
+              </span>
+            )}
+            <span>.</span>
+          </>
         )}
-        {formatAlertDuration(
-          DateTime.fromISO(alert.info.onset),
-          DateTime.fromISO(alert.info.expires),
-        )}
-        {chance && upgradeTo && (
-          <span>
-            . There is a <span className="underline lowercase">{chance}</span>{' '}
-            confidence of upgrading to a {upgradeTo}
-          </span>
-        )}
-        <span>.</span>
       </span>
     </div>
   );
@@ -205,8 +243,8 @@ function OutlookItem({
       : '';
   return (
     <span>
-      - There is <span className="underline">{outlook.chance}</span> confidence
-      that {event} will reach {criteria} criteria
+      There is <span className="underline lowercase">{outlook.chance}</span>{' '}
+      confidence that {event} will reach {criteria} criteria
       {areas && areas.length > 0 ? ` for ${areas}` : ''}.
     </span>
   );

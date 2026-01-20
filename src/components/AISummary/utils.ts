@@ -12,6 +12,21 @@ export function formatAreasList(areas: string[]): string {
   return `${filtered.slice(0, -1).join(', ')} and ${last}`;
 }
 
+export function groupAlerts(alerts: Alert[]): Alert[][] {
+  const grouped: Alert[][] = [];
+
+  for (const alert of alerts) {
+    const lastGroup = grouped[grouped.length - 1];
+    if (lastGroup && lastGroup[0].info.headline === alert.info.headline) {
+      lastGroup.push(alert);
+    } else {
+      grouped.push([alert]);
+    }
+  }
+
+  return grouped;
+}
+
 export function formatAlertDuration(from?: DateTime, to?: DateTime): string {
   let duration = '';
   const isSameDay = from && to && to.hasSame(from, 'day');
