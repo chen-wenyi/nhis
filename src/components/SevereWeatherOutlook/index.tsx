@@ -6,9 +6,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { useQuery } from '@tanstack/react-query';
-import { Spinner } from '../ui/spinner';
-import { fetchSevereWeatherOutlook } from './api';
+import { useSevereWeatherOutlook } from '@/queries';
+import { Skeleton } from '../ui/skeleton';
 import { ReactMarkdownWithHighlight } from './ReactMarkdownWithHighlight';
 
 export default function SevereWeatherOutlook() {
@@ -16,14 +15,7 @@ export default function SevereWeatherOutlook() {
     data: severeWeatherOutlook,
     isLoading,
     error,
-  } = useQuery({
-    queryKey: ['severeWeatherOutlook'],
-    queryFn: async () => {
-      const data = await fetchSevereWeatherOutlook();
-      console.log('Severe Weather Outlook data:', data);
-      return data;
-    },
-  });
+  } = useSevereWeatherOutlook();
 
   return (
     <Card>
@@ -45,10 +37,7 @@ export default function SevereWeatherOutlook() {
       </CardHeader>
       <CardContent>
         {isLoading ? (
-          <div className="flex items-center gap-2">
-            <Spinner />
-            <span>Loading severe weather outlook...</span>
-          </div>
+          <LoadingSkeleton />
         ) : (
           <div className="flex flex-col gap-6">
             {severeWeatherOutlook?.outlookItems.map((item) => (
@@ -69,7 +58,7 @@ export default function SevereWeatherOutlook() {
             href="https://about.metservice.com/about-severe-weather-warnings"
             target="_blank"
             rel="noopener noreferrer"
-            className=" mx-2"
+            className="mx-2"
           >
             (
             <span className="underline">
@@ -91,13 +80,21 @@ function SevereWeatherOutlookItem({
   outlook: string;
 }) {
   return (
-    <>
-      <h3 className="text-xl font-semibold mb-2">{date}</h3>
+    <div>
+      <div className="text-lg font-semibold">{date}</div>
       <ReactMarkdownWithHighlight
         markdown={outlook}
         quotes={[]}
         keywords={[]}
       />
-    </>
+    </div>
+  );
+}
+
+function LoadingSkeleton() {
+  return (
+    <div className="flex flex-col gap-4 w-full">
+      <Skeleton className="h-full w-full" />
+    </div>
   );
 }

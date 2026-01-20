@@ -19,13 +19,14 @@
 
 .imageWrapper {
   z-index: 1;
+  position: relative;
 }
 
 .imageWrapperCircle {
   position: relative;
   width: 100%;
   height: 100%;
-  top: 3%;
+  top: 20%;
   left: 1%;
 }
 
@@ -33,14 +34,14 @@
   position: relative;
   width: 100%;
   height: 100%;
-  top: 4%;
+  top: 17%;
 }
 
 .imageWrapperTriangle {
   position: relative;
-  width: 80%;
-  height: 100%;
-  top: 15%;
+  width: 85%;
+  height: 85%;
+  top: 29%;
   left: 1%;
 }
 
