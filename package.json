@@ -32,6 +32,7 @@
     "lucide-react": "^0.561.0",
     "luxon": "^3.7.2",
     "nitro": "npm:nitro-nightly@latest",
+    "openai": "^6.16.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-markdown": "^10.1.0",
