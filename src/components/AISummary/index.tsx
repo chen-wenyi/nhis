@@ -15,12 +15,9 @@ type Summary = {
 };
 
 export function AISummary() {
-  const { data: alerts, error, isLoading: isAlertsLoading } = useAlerts();
-  const {
-    data: severeWeatherOutlook,
-    error: severeWeatherError,
-    isLoading: isSevereWeatherLoading,
-  } = useSevereWeatherOutlook();
+  const { data: alerts, isLoading: isAlertsLoading } = useAlerts();
+  const { data: severeWeatherOutlook, isLoading: isSevereWeatherLoading } =
+    useSevereWeatherOutlook();
 
   const aiSummaries = useAISummary(
     severeWeatherOutlook?.outlookItems.map((item) => item.outlook),
