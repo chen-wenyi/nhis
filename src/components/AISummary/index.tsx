@@ -190,6 +190,7 @@ function IssuedAlerts({ alerts }: { alerts: Alert[] }) {
                       confidence of upgrading to a {upgradeTo}
                     </span>
                   )}
+                  <span>.</span>
                 </li>
               ))}
             </ul>
