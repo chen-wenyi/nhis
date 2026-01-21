@@ -23,24 +23,24 @@
 
 .imageWrapperCircle {
   position: relative;
-  width: 45%;
-  height: 45%;
-  top: 3%;
-  left: 1%;
+  width: 40%;
+  height: 40%;
+  top: 2%;
+  left: 2%;
 }
 
 .imageWrapperHexagon {
   position: relative;
-  width: 45%;
-  height: 45%;
-  top: 4%;
-  left: 1%;
+  width: 40%;
+  height: 40%;
+  top: 2%;
+  left: 2%;
 }
 
 .imageWrapperTriangle {
   position: relative;
-  width: 40%;
-  height: 40%;
+  width: 35%;
+  height: 35%;
   top: 15%;
   left: 1%;
 }

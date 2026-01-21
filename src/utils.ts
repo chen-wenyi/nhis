@@ -1,7 +1,26 @@
 import type { Alert } from './types';
 
-export function formatAlertName(title: string): string {
-  return title.replace(' - Orange', '');
+export function formatAlertName(
+  title: string,
+  isPlural: boolean = false,
+): string {
+  let formatted: string;
+
+  if (title.includes(' - Red')) {
+    formatted = 'Red Heavy Rain Warning';
+  } else {
+    formatted = title.replace(' - Orange', '');
+  }
+
+  if (isPlural) {
+    if (formatted.includes('Watch')) {
+      formatted = formatted.replace('Watch', 'Watches');
+    } else if (formatted.includes('Warning')) {
+      formatted = formatted.replace('Warning', 'Warnings');
+    }
+  }
+
+  return formatted;
 }
 
 // Configurable alert sort order - adjust as needed

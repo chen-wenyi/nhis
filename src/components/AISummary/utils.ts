@@ -6,10 +6,17 @@ export function formatAreasList(areas: string[]): string {
   const filtered = areas.filter(Boolean);
   if (filtered.length === 0) return '';
   if (filtered.length === 1) return filtered[0];
-  if (filtered.length === 2) return `${filtered[0]} and ${filtered[1]}`;
 
   const last = filtered[filtered.length - 1];
-  return `${filtered.slice(0, -1).join(', ')} and ${last}`;
+  const beforeLast = filtered.slice(0, -1).join(', ');
+
+  // If the last area already contains 'and', just use comma
+  if (last.toLowerCase().includes('and')) {
+    return `${beforeLast}, ${last}`;
+  }
+
+  // Otherwise, add 'and' before the last area
+  return `${beforeLast} and ${last}`;
 }
 
 export function groupAlerts(alerts: Alert[]): Alert[][] {
@@ -17,7 +24,10 @@ export function groupAlerts(alerts: Alert[]): Alert[][] {
 
   for (const alert of alerts) {
     const lastGroup = grouped[grouped.length - 1];
-    if (lastGroup && lastGroup[0].info.headline === alert.info.headline) {
+    if (
+      grouped.length > 0 &&
+      lastGroup[0].info.headline === alert.info.headline
+    ) {
       lastGroup.push(alert);
     } else {
       grouped.push([alert]);
