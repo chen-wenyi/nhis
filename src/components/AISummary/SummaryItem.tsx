@@ -1,8 +1,10 @@
 import { useAISummary } from '@/queries';
+import { updateActiveIssuedAlertIds } from '@/store';
 import type { Alert, SevereWeatherOutlook } from '@/types';
 import { formatAlertName, sortAlerts } from '@/utils';
 import { DateTime } from 'luxon';
 import { useMemo } from 'react';
+import { LuFileSearch2 } from 'react-icons/lu';
 import { getChanceOfUpgrade } from '../IssuedWarningsAndWatches/utils';
 import { Skeleton } from '../ui/skeleton';
 import { AlertIndicator } from './AlertIndicator';
@@ -156,6 +158,11 @@ function IssuedAlerts({ alerts }: { alerts: Alert[] }) {
                     </span>
                   )}
                   <span>.</span>
+                  <LuFileSearch2
+                    className="inline align-text-bottom ml-2 text-gray-300 cursor-pointer hover:text-gray-700"
+                    size={16}
+                    onClick={() => updateActiveIssuedAlertIds([a.identifier])}
+                  />
                 </li>
               ))}
             </ul>
@@ -191,24 +198,43 @@ function IssuedAlertsRemaining({ alerts }: { alerts: Alert[] }) {
   const allAreas = alerts.flatMap((a) =>
     a.info.area.areaDesc.split(',').map((area) => area.trim()),
   );
-  const isMultipleAreas = allAreas.length > 1;
+  const isMultipleAreas = alerts.length > 1;
 
   return (
     <div className="flex items-stretch gap-2">
-      <div className="flex items-center justify-center min-h-full">
+      <div
+        className="flex items-center justify-center min-h-full"
+        onClick={() =>
+          updateActiveIssuedAlertIds(alerts.map((m) => m.identifier))
+        }
+      >
         <AlertIndicator alert={alert} />
       </div>
       <span>
-        <div className="flex flex-col gap-1">
+        <div className="flex gap-1">
           {isMultipleAreas ? (
             <div>
               The {formatAlertName(alert.info.headline, isMultipleAreas)} remain
               in place for {formatAreasList(allAreas)}.
+              <LuFileSearch2
+                className="inline align-text-bottom ml-2 text-gray-300 cursor-pointer hover:text-gray-700"
+                size={16}
+                onClick={() =>
+                  updateActiveIssuedAlertIds(alerts.map((m) => m.identifier))
+                }
+              />
             </div>
           ) : (
             <div>
               The {formatAlertName(alert.info.headline, isMultipleAreas)}{' '}
               remains in place for {formatAreasList(allAreas)}.
+              <LuFileSearch2
+                className="inline align-text-bottom ml-2 text-gray-300 cursor-pointer hover:text-gray-700"
+                size={16}
+                onClick={() =>
+                  updateActiveIssuedAlertIds(alerts.map((m) => m.identifier))
+                }
+              />
             </div>
           )}
         </div>
