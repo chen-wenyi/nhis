@@ -1,10 +1,4 @@
-import { ConvexHttpClient } from 'convex/browser';
-import { api } from './_convex/_generated/api';
-
-const CONVEX_URL = (import.meta as any).env.VITE_CONVEX_URL;
-
 export async function GET(request: Request) {
-  const client = new ConvexHttpClient(CONVEX_URL);
-  const todos = await client.query(api.todos.list);
+  const todos = await fetch('/api/todos').then((res) => res.json());
   return Response.json(todos);
 }
