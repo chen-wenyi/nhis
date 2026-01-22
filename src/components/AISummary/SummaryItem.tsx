@@ -1,7 +1,9 @@
+import { cn } from '@/lib/utils';
 import { useAISummary } from '@/queries';
-import { updateActiveIssuedAlertIds } from '@/store';
+import { removeActiveReference, setActiveReference, store } from '@/store';
 import type { Alert, SevereWeatherOutlook } from '@/types';
 import { formatAlertName, sortAlerts } from '@/utils';
+import { useStore } from '@tanstack/react-store';
 import { DateTime } from 'luxon';
 import { useMemo } from 'react';
 import { LuFileSearch2 } from 'react-icons/lu';
@@ -69,7 +71,7 @@ export function SummaryItem({
               <ul className="text-sm">
                 {groupedAlertsToday.map((alertGroup) => (
                   <li className="py-2" key={alertGroup[0].identifier}>
-                    <IssuedAlerts alerts={alertGroup} />
+                    <IssuedAlerts alerts={alertGroup} date={date} />
                   </li>
                 ))}
               </ul>
@@ -78,7 +80,7 @@ export function SummaryItem({
               <ul className="text-sm">
                 {groupedAlertsRemaining.map((alertGroup) => (
                   <li className="py-2" key={alertGroup[0].identifier}>
-                    <IssuedAlertsRemaining alerts={alertGroup} />
+                    <IssuedAlertsRemaining alerts={alertGroup} date={date} />
                   </li>
                 ))}
               </ul>
@@ -109,7 +111,7 @@ export function SummaryItem({
   );
 }
 
-function IssuedAlerts({ alerts }: { alerts: Alert[] }) {
+function IssuedAlerts({ alerts, date }: { alerts: Alert[]; date: DateTime }) {
   const alert = alerts[0];
   const isMultipleAreas = alerts.length > 1;
 
@@ -158,11 +160,7 @@ function IssuedAlerts({ alerts }: { alerts: Alert[] }) {
                     </span>
                   )}
                   <span>.</span>
-                  <LuFileSearch2
-                    className="inline align-text-bottom ml-2 text-gray-300 cursor-pointer hover:text-gray-700"
-                    size={16}
-                    onClick={() => updateActiveIssuedAlertIds([a.identifier])}
-                  />
+                  <Ref date={date} alertIds={[a.identifier]} />
                 </li>
               ))}
             </ul>
@@ -186,6 +184,7 @@ function IssuedAlerts({ alerts }: { alerts: Alert[] }) {
               </span>
             )}
             <span>.</span>
+            <Ref date={date} alertIds={[alert.identifier]} />
           </>
         )}
       </span>
@@ -193,7 +192,13 @@ function IssuedAlerts({ alerts }: { alerts: Alert[] }) {
   );
 }
 
-function IssuedAlertsRemaining({ alerts }: { alerts: Alert[] }) {
+function IssuedAlertsRemaining({
+  alerts,
+  date,
+}: {
+  alerts: Alert[];
+  date: DateTime;
+}) {
   const alert = alerts[0];
   const allAreas = alerts.flatMap((a) =>
     a.info.area.areaDesc.split(',').map((area) => area.trim()),
@@ -202,12 +207,7 @@ function IssuedAlertsRemaining({ alerts }: { alerts: Alert[] }) {
 
   return (
     <div className="flex items-stretch gap-2">
-      <div
-        className="flex items-center justify-center min-h-full"
-        onClick={() =>
-          updateActiveIssuedAlertIds(alerts.map((m) => m.identifier))
-        }
-      >
+      <div className="flex justify-center min-h-full">
         <AlertIndicator alert={alert} />
       </div>
       <span>
@@ -216,25 +216,13 @@ function IssuedAlertsRemaining({ alerts }: { alerts: Alert[] }) {
             <div>
               The {formatAlertName(alert.info.headline, isMultipleAreas)} remain
               in place for {formatAreasList(allAreas)}.
-              <LuFileSearch2
-                className="inline align-text-bottom ml-2 text-gray-300 cursor-pointer hover:text-gray-700"
-                size={16}
-                onClick={() =>
-                  updateActiveIssuedAlertIds(alerts.map((m) => m.identifier))
-                }
-              />
+              <Ref date={date} alertIds={alerts.map((m) => m.identifier)} />
             </div>
           ) : (
             <div>
               The {formatAlertName(alert.info.headline, isMultipleAreas)}{' '}
               remains in place for {formatAreasList(allAreas)}.
-              <LuFileSearch2
-                className="inline align-text-bottom ml-2 text-gray-300 cursor-pointer hover:text-gray-700"
-                size={16}
-                onClick={() =>
-                  updateActiveIssuedAlertIds(alerts.map((m) => m.identifier))
-                }
-              />
+              <Ref date={date} alertIds={alerts.map((m) => m.identifier)} />
             </div>
           )}
         </div>
@@ -271,5 +259,35 @@ function OutlookItem({
       confidence that {event} will reach {criteria} criteria
       {areas && areas.length > 0 ? ` for ${areas}` : ''}.
     </span>
+  );
+}
+
+function Ref({ date, alertIds }: { date: DateTime; alertIds: string[] }) {
+  const activeReference = useStore(store, (state) => state.activeReference);
+  const isActive =
+    activeReference &&
+    activeReference.outlookDate === date.toISODate() &&
+    activeReference.alertIds.toString() === alertIds.toString();
+
+  const onClick = () => {
+    if (!isActive) {
+      setActiveReference({
+        alertIds,
+        outlookDate: date.toISODate()!,
+      });
+    } else {
+      removeActiveReference();
+    }
+  };
+
+  return (
+    <LuFileSearch2
+      className={cn(
+        'inline align-text-bottom ml-2 text-gray-300 cursor-pointer hover:text-blue-500',
+        isActive && 'text-blue-500',
+      )}
+      size={16}
+      onClick={onClick}
+    />
   );
 }

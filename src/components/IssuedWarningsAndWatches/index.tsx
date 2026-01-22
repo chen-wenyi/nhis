@@ -25,22 +25,19 @@ import { getChanceOfUpgrade, getPeriodDescription } from './utils';
 export default function IssuedWarningsAndWatches() {
   const { data: alerts, error, isLoading } = useAlerts();
 
-  const activeIssuedAlertIds = useStore(
-    store,
-    (state) => state.activeIssuedAlertIds,
-  );
+  const activeReference = useStore(store, (state) => state.activeReference);
 
   const scrollIntoViewRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (activeIssuedAlertIds.length === 0) return;
+    if (activeReference?.alertIds.length === 0) return;
     if (scrollIntoViewRef.current) {
       scrollIntoViewRef.current.scrollIntoView({
         behavior: 'smooth',
         block: 'start',
       });
     }
-  }, [activeIssuedAlertIds]);
+  }, [activeReference]);
 
   return (
     <Card>
@@ -72,8 +69,9 @@ export default function IssuedWarningsAndWatches() {
                     <HoverCardTrigger asChild>
                       <div
                         ref={
-                          activeIssuedAlertIds.length > 0 &&
-                          activeIssuedAlertIds[0] === alert.identifier
+                          activeReference &&
+                          activeReference.alertIds.length > 0 &&
+                          activeReference.alertIds[0] === alert.identifier
                             ? scrollIntoViewRef
                             : null
                         }
@@ -81,8 +79,9 @@ export default function IssuedWarningsAndWatches() {
                           'mb-4 w-full border p-4 rounded-md shadow',
                           alert._history.length > 0 &&
                             'hover:bg-gray-50 transition-all',
-                          activeIssuedAlertIds.includes(alert.identifier) &&
-                            'border-blue-500 bg-blue-50',
+                          activeReference?.alertIds.includes(
+                            alert.identifier,
+                          ) && 'border-blue-500 bg-blue-50',
                         )}
                       >
                         <div className="text-xs text-gray-500 mb-1 relative flex items-center">
