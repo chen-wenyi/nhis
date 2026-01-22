@@ -5,7 +5,7 @@ import axios from 'axios';
 export const fetchSevereWeatherOutlook = createServerFn().handler(
   async (): Promise<SevereWeatherOutlook | undefined> => {
     const url =
-      'https://nhis-services-production.up.railway.app/metservice-warnings';
+      'https://nhis-services-production.up.railway.app/severe-weather-outlook';
     try {
       const response = await axios.get<SevereWeatherOutlook>(url);
       return response.data;

@@ -1,4 +1,8 @@
-import { useAlerts, useSevereWeatherOutlook } from '@/queries';
+import {
+  useAlerts,
+  useSevereWeatherOutlook,
+  useThunderstormOutlook,
+} from '@/queries';
 import type { Alert, SevereWeatherOutlook } from '@/types';
 import { DateTime, Interval } from 'luxon';
 import { useEffect, useState } from 'react';
@@ -15,6 +19,9 @@ export function AISummary() {
   const { data: alerts, isLoading: isAlertsLoading } = useAlerts();
   const { data: severeWeatherOutlook, isLoading: isSevereWeatherLoading } =
     useSevereWeatherOutlook();
+
+  const { data: thunderstormOutlook, isLoading: isThunderstormLoading } =
+    useThunderstormOutlook();
 
   const [summaries, setSummaries] = useState<Summary[]>([]);
   const [loadingProgress, setLoadingProgress] = useState(0);
@@ -53,12 +60,17 @@ export function AISummary() {
   }, [alerts, severeWeatherOutlook]);
 
   useEffect(() => {
-    const steps = [isAlertsLoading, isSevereWeatherLoading];
+    const steps = [
+      isAlertsLoading,
+      isSevereWeatherLoading,
+      isThunderstormLoading,
+    ];
     const completedSteps = steps.filter((step) => !step).length;
     setLoadingProgress((completedSteps / steps.length) * 100);
-  }, [isAlertsLoading, isSevereWeatherLoading]);
+  }, [isAlertsLoading, isSevereWeatherLoading, isThunderstormLoading]);
 
-  const isDataLoading = isAlertsLoading || isSevereWeatherLoading;
+  const isDataLoading =
+    isAlertsLoading || isSevereWeatherLoading || isThunderstormLoading;
 
   return (
     <div className="flex flex-col gap-4 p-4 h-full overflow-y-auto">

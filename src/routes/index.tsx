@@ -4,10 +4,14 @@ import { AISummary } from '@/components/AISummary';
 import Header from '@/components/Header';
 import IssuedWarningsAndWatches from '@/components/IssuedWarningsAndWatches';
 import SevereWeatherOutlook from '@/components/SevereWeatherOutlook';
+import ThunderstormOutlook from '@/components/ThunderstormOutlook';
+import { store } from '@/store';
+import { useStore } from '@tanstack/react-store';
 
 export const Route = createFileRoute('/')({ component: App });
 
 function App() {
+  const activeOutlookTab = useStore(store, (state) => state.activeOutlookTab);
   return (
     <div className="flex flex-col h-screen w-full">
       <Header />
@@ -19,7 +23,11 @@ function App() {
           <IssuedWarningsAndWatches />
         </div>
         <div className="w-120">
-          <SevereWeatherOutlook />
+          {activeOutlookTab === 'severeWeatherOutlook' ? (
+            <SevereWeatherOutlook />
+          ) : (
+            <ThunderstormOutlook />
+          )}
         </div>
       </main>
     </div>

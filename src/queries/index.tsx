@@ -1,6 +1,7 @@
 import { generateAISummary } from '@/components/AISummary/api';
 import { fetchActiveAlerts } from '@/components/IssuedWarningsAndWatches/api';
 import { fetchSevereWeatherOutlook } from '@/components/SevereWeatherOutlook/api';
+import { fetchThunderstormOutlook } from '@/components/ThunderstormOutlook/api';
 import { useQueries, useQuery } from '@tanstack/react-query';
 
 export const useAlerts = () =>
@@ -14,6 +15,13 @@ export const useSevereWeatherOutlook = () =>
   useQuery({
     queryKey: ['severeWeatherOutlook'],
     queryFn: async () => fetchSevereWeatherOutlook(),
+    refetchOnWindowFocus: false,
+  });
+
+export const useThunderstormOutlook = () =>
+  useQuery({
+    queryKey: ['thunderstormOutlook'],
+    queryFn: async () => fetchThunderstormOutlook(),
     refetchOnWindowFocus: false,
   });
 

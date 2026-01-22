@@ -2,9 +2,9 @@ import { cn } from '@/lib/utils';
 import { useAISummary } from '@/queries';
 import {
   removeActiveAlertReference,
-  removeActiveOutlookReference,
+  removeactiveSevereWeatherOutlookReference,
   setActiveAlertReference,
-  setActiveOutlookReference,
+  setActiveSevereWeatherOutlookReference,
   store,
 } from '@/store';
 import type { Alert, SevereWeatherOutlook } from '@/types';
@@ -391,25 +391,27 @@ function OutlookRef({
   quotes: string[];
   keywords: string[];
 }) {
-  const activeOutlookReference = useStore(
+  const activeSevereWeatherOutlookReference = useStore(
     store,
-    (state) => state.activeOutlookReference,
+    (state) => state.activeSevereWeatherOutlookReference,
   );
   const isActive =
-    activeOutlookReference &&
-    activeOutlookReference.date === date.toISODate() &&
-    activeOutlookReference.quotes.toString() === quotes.toString() &&
-    activeOutlookReference.keywords.toString() === keywords.toString();
+    activeSevereWeatherOutlookReference &&
+    activeSevereWeatherOutlookReference.date === date.toISODate() &&
+    activeSevereWeatherOutlookReference.quotes.toString() ===
+      quotes.toString() &&
+    activeSevereWeatherOutlookReference.keywords.toString() ===
+      keywords.toString();
 
   const onClick = () => {
     if (!isActive) {
-      setActiveOutlookReference({
+      setActiveSevereWeatherOutlookReference({
         quotes,
         keywords,
         date: date.toISODate()!,
       });
     } else {
-      removeActiveOutlookReference();
+      removeactiveSevereWeatherOutlookReference();
     }
   };
 

@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { useSevereWeatherOutlook } from '@/queries';
+import { useThunderstormOutlook } from '@/queries';
 import { setActiveOutlookTab, store } from '@/store';
 import { useStore } from '@tanstack/react-store';
 import { DateTime } from 'luxon';
@@ -14,30 +14,30 @@ import { useEffect, useRef } from 'react';
 import { Skeleton } from '../ui/skeleton';
 import { ReactMarkdownWithHighlight } from './ReactMarkdownWithHighlight';
 
-export default function SevereWeatherOutlook() {
+export default function ThunderstormOutlook() {
   const {
-    data: severeWeatherOutlook,
+    data: thunderstormOutlook,
     isLoading,
     error,
-  } = useSevereWeatherOutlook();
+  } = useThunderstormOutlook();
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>
-          Severe Weather Outlook /{' '}
           <span
             className="text-gray-400 cursor-pointer"
-            onClick={() => setActiveOutlookTab('thunderstormOutlook')}
+            onClick={() => setActiveOutlookTab('severeWeatherOutlook')}
           >
-            Thunderstorm Outlook
+            Severe Weather Outlook /{' '}
           </span>
+          Thunderstorm Outlook
         </CardTitle>
         <CardDescription>
           <span>
             Source:{' '}
             <a
-              href="https://www.metservice.com/warnings/severe-weather-outlook"
+              href="https://www.metservice.com/warnings/thunderstorm-outlook"
               target="_blank"
               rel="noopener noreferrer"
               className="underline"
@@ -52,10 +52,10 @@ export default function SevereWeatherOutlook() {
           <LoadingSkeleton />
         ) : (
           <div className="flex flex-col gap-6">
-            {severeWeatherOutlook?.outlookItems.map((item) => (
-              <SevereWeatherOutlookItem
-                key={item.date}
-                date={item.date}
+            {thunderstormOutlook?.map((item) => (
+              <ThunderstormOutlookItem
+                key={item.header}
+                date={item.header}
                 outlook={item.outlook}
               />
             ))}
@@ -84,7 +84,7 @@ export default function SevereWeatherOutlook() {
   );
 }
 
-function SevereWeatherOutlookItem({
+function ThunderstormOutlookItem({
   date,
   outlook,
 }: {

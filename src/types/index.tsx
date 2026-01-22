@@ -55,6 +55,14 @@ export type SevereWeatherOutlookItem = {
   outlook: string;
 };
 
+export type ThunderstormOutlook = ThunderstormOutlookItem[];
+
+export type ThunderstormOutlookItem = {
+  header: string;
+  outlook: string;
+  issuedDate: string;
+};
+
 // NOAA Geomagnetic Forecast Types
 export type GeomagneticForecastData = {
   issuedDate: string;
