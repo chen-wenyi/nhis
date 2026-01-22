@@ -1,47 +1,47 @@
-import { useCallback, useState } from 'react'
-import { createFileRoute } from '@tanstack/react-router'
-import { useQuery, useMutation } from 'convex/react'
-import { Trash2, Plus, Check, Circle } from 'lucide-react'
+import { createFileRoute } from '@tanstack/react-router';
+import { useMutation, useQuery } from 'convex/react';
+import { Check, Circle, Plus, Trash2 } from 'lucide-react';
+import { useCallback, useState } from 'react';
 
-import { api } from '../../../convex/_generated/api'
-import { Id } from '../../../convex/_generated/dataModel'
+import { api } from '../../../convex/_generated/api';
+import type { Id } from '../../../convex/_generated/dataModel';
 
 export const Route = createFileRoute('/demo/convex')({
   ssr: false,
   component: ConvexTodos,
-})
+});
 
 function ConvexTodos() {
-  const todos = useQuery(api.todos.list)
-  const addTodo = useMutation(api.todos.add)
-  const toggleTodo = useMutation(api.todos.toggle)
-  const removeTodo = useMutation(api.todos.remove)
+  const todos = useQuery(api.todos.list);
+  const addTodo = useMutation(api.todos.add);
+  const toggleTodo = useMutation(api.todos.toggle);
+  const removeTodo = useMutation(api.todos.remove);
 
-  const [newTodo, setNewTodo] = useState('')
+  const [newTodo, setNewTodo] = useState('');
 
   const handleAddTodo = useCallback(async () => {
     if (newTodo.trim()) {
-      await addTodo({ text: newTodo.trim() })
-      setNewTodo('')
+      await addTodo({ text: newTodo.trim() });
+      setNewTodo('');
     }
-  }, [addTodo, newTodo])
+  }, [addTodo, newTodo]);
 
   const handleToggleTodo = useCallback(
     async (id: Id<'todos'>) => {
-      await toggleTodo({ id })
+      await toggleTodo({ id });
     },
     [toggleTodo],
-  )
+  );
 
   const handleRemoveTodo = useCallback(
     async (id: Id<'todos'>) => {
-      await removeTodo({ id })
+      await removeTodo({ id });
     },
     [removeTodo],
-  )
+  );
 
-  const completedCount = todos?.filter((todo) => todo.completed).length || 0
-  const totalCount = todos?.length || 0
+  const completedCount = todos?.filter((todo) => todo.completed).length || 0;
+  const totalCount = todos?.length || 0;
 
   return (
     <div
@@ -81,7 +81,7 @@ function ConvexTodos() {
               onChange={(e) => setNewTodo(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
-                  handleAddTodo()
+                  handleAddTodo();
                 }
               }}
               placeholder="What needs to be done?"
@@ -168,5 +168,5 @@ function ConvexTodos() {
         </div>
       </div>
     </div>
-  )
+  );
 }
