@@ -1,11 +1,18 @@
 import { cn } from '@/lib/utils';
 import { useAISummary } from '@/queries';
-import { removeActiveReference, setActiveReference, store } from '@/store';
+import {
+  removeActiveAlertReference,
+  removeActiveOutlookReference,
+  setActiveAlertReference,
+  setActiveOutlookReference,
+  store,
+} from '@/store';
 import type { Alert, SevereWeatherOutlook } from '@/types';
 import { formatAlertName, sortAlerts } from '@/utils';
 import { useStore } from '@tanstack/react-store';
 import { DateTime } from 'luxon';
 import { useMemo } from 'react';
+import { AiOutlineFileSearch } from 'react-icons/ai';
 import { LuFileSearch2 } from 'react-icons/lu';
 import { getChanceOfUpgrade } from '../IssuedWarningsAndWatches/utils';
 import { Skeleton } from '../ui/skeleton';
@@ -91,7 +98,7 @@ export function SummaryItem({
               <ul className="text-sm list-disc pl-6 space-y-1">
                 {outlooks.map((outlook, index) => (
                   <li className="py-2" key={index}>
-                    <OutlookItem outlook={outlook} />
+                    <OutlookItem date={date} outlook={outlook} />
                   </li>
                 ))}
               </ul>
@@ -160,7 +167,7 @@ function IssuedAlerts({ alerts, date }: { alerts: Alert[]; date: DateTime }) {
                     </span>
                   )}
                   <span>.</span>
-                  <Ref date={date} alertIds={[a.identifier]} />
+                  <AlertRef date={date} alertIds={[a.identifier]} />
                 </li>
               ))}
             </ul>
@@ -184,7 +191,7 @@ function IssuedAlerts({ alerts, date }: { alerts: Alert[]; date: DateTime }) {
               </span>
             )}
             <span>.</span>
-            <Ref date={date} alertIds={[alert.identifier]} />
+            <AlertRef date={date} alertIds={[alert.identifier]} />
           </>
         )}
       </span>
@@ -216,13 +223,19 @@ function IssuedAlertsRemaining({
             <div>
               The {formatAlertName(alert.info.headline, isMultipleAreas)} remain
               in place for {formatAreasList(allAreas)}.
-              <Ref date={date} alertIds={alerts.map((m) => m.identifier)} />
+              <AlertRef
+                date={date}
+                alertIds={alerts.map((m) => m.identifier)}
+              />
             </div>
           ) : (
             <div>
               The {formatAlertName(alert.info.headline, isMultipleAreas)}{' '}
               remains in place for {formatAreasList(allAreas)}.
-              <Ref date={date} alertIds={alerts.map((m) => m.identifier)} />
+              <AlertRef
+                date={date}
+                alertIds={alerts.map((m) => m.identifier)}
+              />
             </div>
           )}
         </div>
@@ -232,8 +245,10 @@ function IssuedAlertsRemaining({
 }
 
 function OutlookItem({
+  date,
   outlook,
 }: {
+  date: DateTime;
   outlook: NonNullable<SevereWeatherAISummary['chanceOfUpgrade']>[number];
 }) {
   const name = outlook.upgradeTo.toLowerCase();
@@ -258,25 +273,33 @@ function OutlookItem({
       There is <span className="underline lowercase">{outlook.chance}</span>{' '}
       confidence that {event} will reach {criteria} criteria
       {areas && areas.length > 0 ? ` for ${areas}` : ''}.
+      <OutlookRef
+        date={date}
+        quotes={outlook.quotes}
+        keywords={outlook.keywords}
+      />
     </span>
   );
 }
 
-function Ref({ date, alertIds }: { date: DateTime; alertIds: string[] }) {
-  const activeReference = useStore(store, (state) => state.activeReference);
+function AlertRef({ date, alertIds }: { date: DateTime; alertIds: string[] }) {
+  const activeAlertReference = useStore(
+    store,
+    (state) => state.activeAlertReference,
+  );
   const isActive =
-    activeReference &&
-    activeReference.outlookDate === date.toISODate() &&
-    activeReference.alertIds.toString() === alertIds.toString();
+    activeAlertReference &&
+    activeAlertReference.date === date.toISODate() &&
+    activeAlertReference.alertIds.toString() === alertIds.toString();
 
   const onClick = () => {
     if (!isActive) {
-      setActiveReference({
+      setActiveAlertReference({
         alertIds,
-        outlookDate: date.toISODate()!,
+        date: date.toISODate()!,
       });
     } else {
-      removeActiveReference();
+      removeActiveAlertReference();
     }
   };
 
@@ -285,6 +308,49 @@ function Ref({ date, alertIds }: { date: DateTime; alertIds: string[] }) {
       className={cn(
         'inline align-text-bottom ml-2 text-gray-300 cursor-pointer hover:text-blue-500',
         isActive && 'text-blue-500',
+      )}
+      size={16}
+      onClick={onClick}
+    />
+  );
+}
+
+function OutlookRef({
+  date,
+  quotes,
+  keywords,
+}: {
+  date: DateTime;
+  quotes: string[];
+  keywords: string[];
+}) {
+  const activeOutlookReference = useStore(
+    store,
+    (state) => state.activeOutlookReference,
+  );
+  const isActive =
+    activeOutlookReference &&
+    activeOutlookReference.date === date.toISODate() &&
+    activeOutlookReference.quotes.toString() === quotes.toString() &&
+    activeOutlookReference.keywords.toString() === keywords.toString();
+
+  const onClick = () => {
+    if (!isActive) {
+      setActiveOutlookReference({
+        quotes,
+        keywords,
+        date: date.toISODate()!,
+      });
+    } else {
+      removeActiveOutlookReference();
+    }
+  };
+
+  return (
+    <AiOutlineFileSearch
+      className={cn(
+        'inline align-text-bottom ml-2 text-gray-300 cursor-pointer hover:text-yellow-500',
+        isActive && 'text-yellow-500',
       )}
       size={16}
       onClick={onClick}

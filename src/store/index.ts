@@ -1,30 +1,55 @@
 import { Store } from '@tanstack/react-store';
 
 type StoreState = {
-  activeReference?: {
+  activeAlertReference?: {
     alertIds: string[];
-    outlookDate: string;
+    date: string;
+  };
+  activeOutlookReference?: {
+    date: string;
+    quotes: string[];
+    keywords: string[];
   };
 };
 
 export const store = new Store<StoreState>({});
 
-export const setActiveReference = (
-  activeReference: StoreState['activeReference'],
+export const setActiveAlertReference = (
+  activeAlertReference: StoreState['activeAlertReference'],
 ) => {
   store.setState((state) => {
     return {
       ...state,
-      activeReference,
+      activeAlertReference,
     };
   });
 };
 
-export const removeActiveReference = () => {
+export const setActiveOutlookReference = (
+  activeOutlookReference: StoreState['activeOutlookReference'],
+) => {
   store.setState((state) => {
     return {
       ...state,
-      activeReference: undefined,
+      activeOutlookReference,
+    };
+  });
+};
+
+export const removeActiveAlertReference = () => {
+  store.setState((state) => {
+    return {
+      ...state,
+      activeAlertReference: undefined,
+    };
+  });
+};
+
+export const removeActiveOutlookReference = () => {
+  store.setState((state) => {
+    return {
+      ...state,
+      activeOutlookReference: undefined,
     };
   });
 };

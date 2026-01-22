@@ -25,19 +25,22 @@ import { getChanceOfUpgrade, getPeriodDescription } from './utils';
 export default function IssuedWarningsAndWatches() {
   const { data: alerts, error, isLoading } = useAlerts();
 
-  const activeReference = useStore(store, (state) => state.activeReference);
+  const activeAlertReference = useStore(
+    store,
+    (state) => state.activeAlertReference,
+  );
 
   const scrollIntoViewRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (activeReference?.alertIds.length === 0) return;
+    if (activeAlertReference?.alertIds.length === 0) return;
     if (scrollIntoViewRef.current) {
       scrollIntoViewRef.current.scrollIntoView({
         behavior: 'smooth',
         block: 'start',
       });
     }
-  }, [activeReference]);
+  }, [activeAlertReference]);
 
   return (
     <Card>
@@ -69,9 +72,9 @@ export default function IssuedWarningsAndWatches() {
                     <HoverCardTrigger asChild>
                       <div
                         ref={
-                          activeReference &&
-                          activeReference.alertIds.length > 0 &&
-                          activeReference.alertIds[0] === alert.identifier
+                          activeAlertReference &&
+                          activeAlertReference.alertIds.length > 0 &&
+                          activeAlertReference.alertIds[0] === alert.identifier
                             ? scrollIntoViewRef
                             : null
                         }
@@ -79,7 +82,7 @@ export default function IssuedWarningsAndWatches() {
                           'mb-4 w-full border p-4 rounded-md shadow',
                           alert._history.length > 0 &&
                             'hover:bg-gray-50 transition-all',
-                          activeReference?.alertIds.includes(
+                          activeAlertReference?.alertIds.includes(
                             alert.identifier,
                           ) && 'border-blue-500 bg-blue-50',
                         )}

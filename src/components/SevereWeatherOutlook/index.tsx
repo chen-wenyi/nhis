@@ -7,6 +7,10 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { useSevereWeatherOutlook } from '@/queries';
+import { store } from '@/store';
+import { useStore } from '@tanstack/react-store';
+import { DateTime } from 'luxon';
+import { useEffect, useRef } from 'react';
 import { Skeleton } from '../ui/skeleton';
 import { ReactMarkdownWithHighlight } from './ReactMarkdownWithHighlight';
 
@@ -79,13 +83,31 @@ function SevereWeatherOutlookItem({
   date: string;
   outlook: string;
 }) {
+  const activeOutlookReference = useStore(
+    store,
+    (state) => state.activeOutlookReference,
+  );
+
+  const isActive =
+    activeOutlookReference &&
+    activeOutlookReference.date ===
+      DateTime.fromFormat(date, 'cccc dd MMM').toISODate();
+
+  const ref = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (isActive && ref.current) {
+      ref.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [isActive]);
+
   return (
-    <div>
+    <div ref={isActive ? ref : null}>
       <div className="text-lg font-semibold">{date}</div>
       <ReactMarkdownWithHighlight
         markdown={outlook}
-        quotes={[]}
-        keywords={[]}
+        quotes={activeOutlookReference?.quotes || []}
+        keywords={activeOutlookReference?.keywords || []}
       />
     </div>
   );
