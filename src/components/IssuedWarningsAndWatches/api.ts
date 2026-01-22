@@ -15,7 +15,7 @@ export const fetchActiveAlerts = createServerFn().handler(
       if (!feed.entry) {
         return [];
       }
-      const promiseFeed = Promise.all(
+      const alerts = await Promise.all(
         feed.entry.map(async (entry) => {
           const alertResponse = await fetch(entry.link.href);
           const alertData = await alertResponse.text();
@@ -29,7 +29,8 @@ export const fetchActiveAlerts = createServerFn().handler(
           return alert;
         }),
       );
-      return promiseFeed;
+
+      return alerts;
     } catch (error) {
       console.error('Error fetching Warnings and Watches:', error);
       return [];

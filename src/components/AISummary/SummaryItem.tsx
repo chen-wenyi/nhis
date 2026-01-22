@@ -118,7 +118,7 @@ export function SummaryItem({
               <ul className="text-sm list-disc pl-6 space-y-1">
                 {outlooks.map((outlook, index) => (
                   <li className="py-2" key={index}>
-                    <OutlookItem date={date} outlook={outlook} />
+                    <SevereWeatherOutlookItem date={date} outlook={outlook} />
                   </li>
                 ))}
               </ul>
@@ -311,7 +311,7 @@ function IssuedAlertsEnd({
   );
 }
 
-function OutlookItem({
+function SevereWeatherOutlookItem({
   date,
   outlook,
 }: {
@@ -340,7 +340,7 @@ function OutlookItem({
       There is <span className="underline lowercase">{outlook.chance}</span>{' '}
       confidence that {event} will reach {criteria} criteria
       {areas && areas.length > 0 ? ` for ${areas}` : ''}.
-      <OutlookRef
+      <OutlookRefIcon
         date={date}
         quotes={outlook.quotes}
         keywords={outlook.keywords}
@@ -382,7 +382,7 @@ function AlertRef({ date, alertIds }: { date: DateTime; alertIds: string[] }) {
   );
 }
 
-function OutlookRef({
+function OutlookRefIcon({
   date,
   quotes,
   keywords,

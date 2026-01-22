@@ -45,6 +45,7 @@ export const setActiveSevereWeatherOutlookReference = (
   store.setState((state) => {
     return {
       ...state,
+      activeOutlookTab: 'severeWeatherOutlook',
       activeSevereWeatherOutlookReference,
     };
   });

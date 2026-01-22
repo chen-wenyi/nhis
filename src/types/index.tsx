@@ -21,7 +21,7 @@ export type Alert = {
     // 'category', 'event', 'responseType', 'urgency', 'severity', 'certainty', 'onset', 'expires', 'senderName', 'headline', 'description', 'instruction', 'web', 'parameter', 'area'
     area: {
       areaDesc: string;
-      polygon: string;
+      polygon: string[];
     };
     category: string;
     event: string;

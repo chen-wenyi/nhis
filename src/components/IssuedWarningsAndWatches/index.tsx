@@ -90,8 +90,11 @@ export default function IssuedWarningsAndWatches() {
                         <div className="text-xs text-gray-500 mb-1 relative flex items-center">
                           <span>{alert.sent}</span>
                           {alert._history.length > 0 && (
-                            <Badge className="text-xs absolute right-0">
-                              History
+                            <Badge
+                              variant={'outline'}
+                              className="text-xs absolute right-0 border-blue-500 text-blue-500 font-semibold"
+                            >
+                              Updated
                             </Badge>
                           )}
                         </div>
