@@ -57,7 +57,18 @@ export function SummaryItem({
   const groupedAlertsRemaining = useMemo(() => {
     return groupAlerts(
       sortAlerts(issuedAlerts).filter(({ info }) => {
-        return !DateTime.fromISO(info.onset).hasSame(date, 'day');
+        return (
+          !DateTime.fromISO(info.onset).hasSame(date, 'day') &&
+          !DateTime.fromISO(info.expires).hasSame(date, 'day')
+        );
+      }),
+    );
+  }, [issuedAlerts, date]);
+
+  const groupedAlertsEnd = useMemo(() => {
+    return groupAlerts(
+      sortAlerts(issuedAlerts).filter(({ info }) => {
+        return DateTime.fromISO(info.expires).hasSame(date, 'day');
       }),
     );
   }, [issuedAlerts, date]);
@@ -88,6 +99,15 @@ export function SummaryItem({
                 {groupedAlertsRemaining.map((alertGroup) => (
                   <li className="py-2" key={alertGroup[0].identifier}>
                     <IssuedAlertsRemaining alerts={alertGroup} date={date} />
+                  </li>
+                ))}
+              </ul>
+            )}
+            {groupedAlertsEnd.length > 0 && (
+              <ul className="text-sm">
+                {groupedAlertsEnd.map((alertGroup) => (
+                  <li className="py-2" key={alertGroup[0].identifier}>
+                    <IssuedAlertsEnd alerts={alertGroup} date={date} />
                   </li>
                 ))}
               </ul>
@@ -232,6 +252,53 @@ function IssuedAlertsRemaining({
             <div>
               The {formatAlertName(alert.info.headline, isMultipleAreas)}{' '}
               remains in place for {formatAreasList(allAreas)}.
+              <AlertRef
+                date={date}
+                alertIds={alerts.map((m) => m.identifier)}
+              />
+            </div>
+          )}
+        </div>
+      </span>
+    </div>
+  );
+}
+
+function IssuedAlertsEnd({
+  alerts,
+  date,
+}: {
+  alerts: Alert[];
+  date: DateTime;
+}) {
+  const alert = alerts[0];
+  const allAreas = alerts.flatMap((a) =>
+    a.info.area.areaDesc.split(',').map((area) => area.trim()),
+  );
+  const isMultipleAreas = alerts.length > 1;
+
+  return (
+    <div className="flex items-stretch gap-2">
+      <div className="flex justify-center min-h-full">
+        <AlertIndicator alert={alert} />
+      </div>
+      <span>
+        <div className="flex gap-1">
+          {isMultipleAreas ? (
+            <div>
+              The {formatAlertName(alert.info.headline, isMultipleAreas)} remain
+              in place for {formatAreasList(allAreas)}.
+              <AlertRef
+                date={date}
+                alertIds={alerts.map((m) => m.identifier)}
+              />
+            </div>
+          ) : (
+            <div>
+              The {formatAlertName(alert.info.headline, isMultipleAreas)}{' '}
+              remains in place for {formatAreasList(allAreas)} until{' '}
+              {`${DateTime.fromISO(alert.info.expires).toFormat('HHmm')}hrs`}{' '}
+              today.
               <AlertRef
                 date={date}
                 alertIds={alerts.map((m) => m.identifier)}
