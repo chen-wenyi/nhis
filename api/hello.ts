@@ -1,5 +1,5 @@
-import { api } from 'convex/_generated/api';
 import { ConvexHttpClient } from 'convex/browser';
+import { api } from '../convex/_generated/api';
 
 const CONVEX_URL = (import.meta as any).env.VITE_CONVEX_URL;
 
