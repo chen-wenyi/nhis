@@ -64,7 +64,7 @@ export default function IssuedWarningsAndWatches() {
         {isLoading ? (
           <LoadingSkeleton />
         ) : (
-          <div className="flex flex-col gap-2 w-70">
+          <div className="flex flex-col gap-2 w-70 text-[0.9rem]">
             {alerts ? (
               sortAlerts(alerts).map((alert) => {
                 return (
@@ -122,7 +122,7 @@ export default function IssuedWarningsAndWatches() {
                     </HoverCardTrigger>
                     {alert._history.length > 0 && (
                       <HoverCardContent
-                        className="w-96 bg-gray-50"
+                        className="w-85 bg-gray-50"
                         side="right"
                       >
                         <AlertHistory history={alert._history} />

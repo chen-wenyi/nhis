@@ -1,3 +1,4 @@
+import type { SevereWeatherOutlookDocument } from '@/types';
 import { attachDatabasePool } from '@vercel/functions';
 import type { Document } from 'mongodb';
 import { MongoClient } from 'mongodb';
@@ -20,4 +21,8 @@ export async function getCollection<T extends Document>(
 ) {
   const db = await getDatabase();
   return db.collection<T>(collectionName);
+}
+
+export async function getSevereWeatherOutlookCollection() {
+  return getCollection<SevereWeatherOutlookDocument>('severe_weather_outlook');
 }

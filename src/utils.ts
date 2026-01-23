@@ -25,8 +25,10 @@ export function formatAlertName(
 
 // Configurable alert sort order - adjust as needed
 const ALERT_SORT_ORDER = [
+  'Severe Thunderstorm Warning',
   'Heavy Rain Warning - Red',
   'Heavy Rain Warning - Orange',
+  'Severe Thunderstorm Watch',
   'Strong Wind Warning',
   'Heavy Rain Watch',
   'Strong Wind Watch',

@@ -16,7 +16,7 @@ export function AlertIndicator({ alert }: { alert: Alert }) {
 
   if (event === 'thunderstorm') {
     return (
-      <h3 className="flex items-center gap-2 font-semibold">
+      <h3 className="flex items-center gap-2 font-semibold text-sm">
         <div className="w-8 h-8 ">
           {level && <SevereThunderstorm level={level} />}
         </div>
@@ -25,14 +25,14 @@ export function AlertIndicator({ alert }: { alert: Alert }) {
     );
   } else if (event === 'rain') {
     return (
-      <div className="flex items-center gap-2 font-semibold">
+      <div className="flex items-center gap-2 font-semibold text-sm">
         <div className="w-8 h-8">{level && <HeavyRain level={level} />}</div>
         {formattedName}
       </div>
     );
   } else if (event === 'wind') {
     return (
-      <div className="flex items-center gap-2 font-semibold">
+      <div className="flex items-center gap-2 font-semibold text-sm">
         <div className="w-8 h-8">{level && <StrongWind level={level} />}</div>
         {formattedName}
       </div>

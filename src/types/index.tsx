@@ -50,6 +50,11 @@ export type SevereWeatherOutlook = {
   outlookItems: SevereWeatherOutlookItem[];
 };
 
+export type SevereWeatherOutlookResp = {
+  issuedDate: string;
+  outlookItems: SevereWeatherOutlookItem[];
+};
+
 export type SevereWeatherOutlookItem = {
   date: string;
   outlook: string;

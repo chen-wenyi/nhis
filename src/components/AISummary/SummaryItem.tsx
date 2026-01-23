@@ -68,7 +68,10 @@ export function SummaryItem({
   const groupedAlertsEnd = useMemo(() => {
     return groupAlerts(
       sortAlerts(issuedAlerts).filter(({ info }) => {
-        return DateTime.fromISO(info.expires).hasSame(date, 'day');
+        return (
+          DateTime.fromISO(info.expires).hasSame(date, 'day') &&
+          !DateTime.fromISO(info.onset).hasSame(date, 'day')
+        );
       }),
     );
   }, [issuedAlerts, date]);

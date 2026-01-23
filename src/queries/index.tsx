@@ -1,7 +1,7 @@
 import { generateAISummary } from '@/components/AISummary/api';
 import { fetchActiveAlerts } from '@/components/IssuedWarningsAndWatches/api';
-import { fetchSevereWeatherOutlook } from '@/components/SevereWeatherOutlook/api';
 import { fetchThunderstormOutlook } from '@/components/ThunderstormOutlook/api';
+import { fetchSevereWeatherOutlook } from '@/serverFuncs/severeWeatherOutlook';
 import { useQueries, useQuery } from '@tanstack/react-query';
 
 export const useAlerts = () =>

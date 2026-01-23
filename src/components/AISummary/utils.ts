@@ -51,7 +51,7 @@ export function formatAlertDuration(from?: DateTime, to?: DateTime): string {
 
   if (to) {
     if (isSameDay) {
-      duration += ` until ${to.toFormat('HHmm')}hrs`;
+      duration += ` until ${to.toFormat('HHmm')}hrs today`;
     } else {
       duration += ` until ${to.toFormat('HHmm')}hrs on ${to.toFormat('cccc')}`;
     }
