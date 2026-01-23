@@ -1,9 +1,9 @@
 import {
-  useAlerts,
+  useIssuedWarningsAndWatches,
   useSevereWeatherOutlook,
   useThunderstormOutlook,
 } from '@/queries';
-import type { Alert, SevereWeatherOutlook } from '@/types';
+import type { IssuedWarningOrWatche, SevereWeatherOutlook } from '@/types';
 import { DateTime, Interval } from 'luxon';
 import { useEffect, useState } from 'react';
 import { Progress } from '../ui/progress';
@@ -11,12 +11,16 @@ import { SummaryItem } from './SummaryItem';
 
 type Summary = {
   date: DateTime;
-  issuedAlerts: Alert[];
+  issuedWarningsAndWatches: IssuedWarningOrWatche[];
   severeWeatherOutlook?: SevereWeatherOutlook;
 };
 
 export function AISummary() {
-  const { data: alerts, isLoading: isAlertsLoading } = useAlerts();
+  const {
+    data: issuedWarningsAndWatches,
+    isLoading: isIssuedWarningsAndWatchesLoading,
+    isFetched: isIssuedWarningsAndWatchesFetched,
+  } = useIssuedWarningsAndWatches();
   const { data: severeWeatherOutlook, isLoading: isSevereWeatherLoading } =
     useSevereWeatherOutlook();
 
@@ -27,7 +31,7 @@ export function AISummary() {
   const [loadingProgress, setLoadingProgress] = useState(0);
 
   useEffect(() => {
-    if (alerts && severeWeatherOutlook) {
+    if (isIssuedWarningsAndWatchesFetched && severeWeatherOutlook) {
       const start = DateTime.now().startOf('day');
       const end = DateTime.fromFormat(
         severeWeatherOutlook.outlookItems[
@@ -40,37 +44,47 @@ export function AISummary() {
 
       const _summaries: Summary[] = dates
         .filter((d): d is DateTime => d !== null)
-        .map((date) => ({ date, issuedAlerts: [], severeWeatherOutlook }));
+        .map((date) => ({
+          date,
+          issuedWarningsAndWatches: [],
+          severeWeatherOutlook,
+        }));
 
-      alerts.forEach((alert) => {
-        const alertOnset = DateTime.fromISO(alert.info.onset);
-        const alertExpires = DateTime.fromISO(alert.info.expires);
+      issuedWarningsAndWatches?.entries.forEach((i) => {
+        const onset = DateTime.fromISO(i.onset);
+        const expires = DateTime.fromISO(i.expires);
         _summaries.forEach((daySummary) => {
           if (
-            daySummary.date >= alertOnset.startOf('day') &&
-            daySummary.date <= alertExpires.endOf('day')
+            daySummary.date >= onset.startOf('day') &&
+            daySummary.date <= expires.endOf('day')
           ) {
-            daySummary.issuedAlerts.push(alert);
+            daySummary.issuedWarningsAndWatches.push(i);
           }
         });
       });
 
       setSummaries(_summaries);
     }
-  }, [alerts, severeWeatherOutlook]);
+  }, [issuedWarningsAndWatches, severeWeatherOutlook]);
 
   useEffect(() => {
     const steps = [
-      isAlertsLoading,
+      isIssuedWarningsAndWatchesLoading,
       isSevereWeatherLoading,
       isThunderstormLoading,
     ];
     const completedSteps = steps.filter((step) => !step).length;
     setLoadingProgress((completedSteps / steps.length) * 100);
-  }, [isAlertsLoading, isSevereWeatherLoading, isThunderstormLoading]);
+  }, [
+    isIssuedWarningsAndWatchesLoading,
+    isSevereWeatherLoading,
+    isThunderstormLoading,
+  ]);
 
   const isDataLoading =
-    isAlertsLoading || isSevereWeatherLoading || isThunderstormLoading;
+    isIssuedWarningsAndWatchesLoading ||
+    isSevereWeatherLoading ||
+    isThunderstormLoading;
 
   return (
     <div className="flex flex-col gap-4 p-4 h-full overflow-y-auto">

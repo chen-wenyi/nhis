@@ -1,14 +1,14 @@
 import { generateAISummary } from '@/components/AISummary/api';
-import { fetchActiveAlerts } from '@/components/IssuedWarningsAndWatches/api';
 import { fetchThunderstormOutlook } from '@/components/ThunderstormOutlook/api';
+import { fetchIssuedWarningsAndWatches } from '@/serverFuncs/issuedWarningsAndWatches';
 import { fetchSevereWeatherOutlook } from '@/serverFuncs/severeWeatherOutlook';
 import { useQueries, useQuery } from '@tanstack/react-query';
 
-export const useAlerts = () =>
+export const useIssuedWarningsAndWatches = () =>
   useQuery({
-    queryKey: ['alerts'],
-    queryFn: async () => fetchActiveAlerts(),
-    refetchInterval: 1000 * 60 * 5,
+    queryKey: ['issuedWarningsAndWatches'],
+    queryFn: async () => fetchIssuedWarningsAndWatches(),
+    refetchInterval: 1000 * 60 * 1,
   });
 
 export const useSevereWeatherOutlook = () =>

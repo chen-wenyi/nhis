@@ -47,7 +47,7 @@ export type Alert = {
 type DateString = string;
 
 // Issued Warnings and Watches
-export type IssuedWarningsAndWatches = {
+export type IssuedWarningOrWatche = {
   id: string;
   sent: DateString;
   event: string;
@@ -62,9 +62,17 @@ export type IssuedWarningsAndWatches = {
   instruction: string;
   areaDesc: string;
   _status: 'removed' | 'updated' | 'new' | '';
-  _history: IssuedWarningsAndWatches[];
+  _history: IssuedWarningOrWatche[];
   ColourCode?: string;
   ChanceOfUpgrade?: string;
+};
+
+export type IssuedWarningsAndWatches = {
+  id: string;
+  updatedAt: Date;
+  updatedAtISO: DateString;
+  entries: IssuedWarningOrWatche[];
+  insertedAt: Date;
 };
 
 // Severe Weather Outlook Types
@@ -154,9 +162,7 @@ export type SevereWeatherOutlookDocument = Omit<SevereWeatherOutlook, 'id'> & {
   insertedAt: Date;
 };
 
-export type IssuedWarningsAndWatchesDocument = {
-  updatedAt: Date;
-  updatedAtISO: DateString;
-  entries: IssuedWarningsAndWatches[];
-  insertedAt: Date;
-};
+export type IssuedWarningsAndWatchesDocument = Omit<
+  IssuedWarningsAndWatches,
+  'id'
+>;

@@ -1,4 +1,3 @@
-import type { Alert } from '@/types';
 import { DateTime } from 'luxon';
 import type { SevereThunderstormLevel } from '../warnings-and-watches-indicators/severe-thunderstorm';
 
@@ -22,13 +21,4 @@ export function getPeriodDescription(onset: string, expires: string) {
   const expiresStr = expiresDate.toFormat("HHmm'hrs' ccc");
 
   return `${onsetStr} - ${expiresStr}`;
-}
-
-export function getColourCode(alert: Alert): string | undefined {
-  return alert.info.parameter.find((p) => p.valueName === 'ColourCode')?.value;
-}
-
-export function getChanceOfUpgrade(alert: Alert): string | undefined {
-  return alert.info.parameter.find((p) => p.valueName === 'ChanceOfUpgrade')
-    ?.value;
 }

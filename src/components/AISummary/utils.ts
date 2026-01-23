@@ -1,4 +1,4 @@
-import type { Alert } from '@/types';
+import type { Alert, IssuedWarningOrWatche } from '@/types';
 import type { DateTime } from 'luxon';
 import type { SevereThunderstormLevel } from '../warnings-and-watches-indicators/severe-thunderstorm';
 
@@ -19,15 +19,14 @@ export function formatAreasList(areas: string[]): string {
   return `${beforeLast} and ${last}`;
 }
 
-export function groupAlerts(alerts: Alert[]): Alert[][] {
-  const grouped: Alert[][] = [];
+export function groupAlerts(
+  alerts: IssuedWarningOrWatche[],
+): IssuedWarningOrWatche[][] {
+  const grouped: IssuedWarningOrWatche[][] = [];
 
   for (const alert of alerts) {
     const lastGroup = grouped[grouped.length - 1];
-    if (
-      grouped.length > 0 &&
-      lastGroup[0].info.headline === alert.info.headline
-    ) {
+    if (grouped.length > 0 && lastGroup[0].headline === alert.headline) {
       lastGroup.push(alert);
     } else {
       grouped.push([alert]);

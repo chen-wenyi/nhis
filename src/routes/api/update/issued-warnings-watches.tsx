@@ -1,5 +1,5 @@
 import { getIssuedWarningsAndWatchesCollection } from '@/lib/mongodb';
-import type { Alert, CAP, IssuedWarningsAndWatches } from '@/types';
+import type { Alert, CAP, IssuedWarningOrWatche } from '@/types';
 import { createFileRoute } from '@tanstack/react-router';
 import { XMLParser } from 'fast-xml-parser';
 import lodash from 'lodash';
@@ -36,8 +36,9 @@ export const Route = createFileRoute('/api/update/issued-warnings-watches')({
             }),
           );
 
-          const issuedWarningsAndWatches: IssuedWarningsAndWatches[] =
-            alerts.map((alert) => convertAlertToIssuedWarningAndWatches(alert));
+          const issuedWarningsAndWatches: IssuedWarningOrWatche[] = alerts.map(
+            (alert) => convertAlertToIssuedWarningAndWatches(alert),
+          );
 
           const collection = await getIssuedWarningsAndWatchesCollection();
 
@@ -159,7 +160,7 @@ async function fetchAlertHistory(id: string): Promise<Alert[]> {
 
 function convertAlertToIssuedWarningAndWatches(
   alert: Alert,
-): IssuedWarningsAndWatches {
+): IssuedWarningOrWatche {
   const _history =
     alert._history?.map((histAlert) => {
       return convertAlertToIssuedWarningAndWatches(histAlert);
@@ -195,13 +196,13 @@ function getChanceOfUpgrade(alert: Alert): string | undefined {
 }
 
 function updateStatus(
-  newEntries: IssuedWarningsAndWatches[],
-  oldEntries: IssuedWarningsAndWatches[],
-): IssuedWarningsAndWatches[] {
+  newEntries: IssuedWarningOrWatche[],
+  oldEntries: IssuedWarningOrWatche[],
+): IssuedWarningOrWatche[] {
   const newIds = newEntries.map((e) => e.id);
   const oldIds = oldEntries.map((e) => e.id);
 
-  const updatedEntries: IssuedWarningsAndWatches[] = newEntries.map((entry) => {
+  const updatedEntries: IssuedWarningOrWatche[] = newEntries.map((entry) => {
     if (!oldIds.includes(entry.id)) {
       if (
         lodash.intersection(

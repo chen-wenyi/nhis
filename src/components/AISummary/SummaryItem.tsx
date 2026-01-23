@@ -7,14 +7,13 @@ import {
   setActiveSevereWeatherOutlookReference,
   store,
 } from '@/store';
-import type { Alert, SevereWeatherOutlook } from '@/types';
+import type { IssuedWarningOrWatche, SevereWeatherOutlook } from '@/types';
 import { formatAlertName, sortAlerts } from '@/utils';
 import { useStore } from '@tanstack/react-store';
 import { DateTime } from 'luxon';
 import { useMemo } from 'react';
 import { AiOutlineFileSearch } from 'react-icons/ai';
 import { LuFileSearch2 } from 'react-icons/lu';
-import { getChanceOfUpgrade } from '../IssuedWarningsAndWatches/utils';
 import { Skeleton } from '../ui/skeleton';
 import { AlertIndicator } from './AlertIndicator';
 import type { SevereWeatherAISummary } from './schema';
@@ -22,13 +21,13 @@ import { formatAlertDuration, formatAreasList, groupAlerts } from './utils';
 
 type Summary = {
   date: DateTime;
-  issuedAlerts: Alert[];
+  issuedWarningsAndWatches: IssuedWarningOrWatche[];
   severeWeatherOutlook?: SevereWeatherOutlook;
 };
 
 export function SummaryItem({
   date,
-  issuedAlerts,
+  issuedWarningsAndWatches,
   severeWeatherOutlook,
 }: Summary) {
   const correspondingOutlook = useMemo(() => {
@@ -46,35 +45,35 @@ export function SummaryItem({
   const isLoading = aiSummary[0]?.isLoading ?? false;
   const outlooks = aiSummary[0]?.data?.chanceOfUpgrade || [];
 
-  const groupedAlertsToday = useMemo(() => {
+  const groupedIssuedWarningsAndWatchesToday = useMemo(() => {
     return groupAlerts(
-      sortAlerts(issuedAlerts).filter(({ info }) =>
-        DateTime.fromISO(info.onset).hasSame(date, 'day'),
+      sortAlerts(issuedWarningsAndWatches).filter(({ onset }) =>
+        DateTime.fromISO(onset).hasSame(date, 'day'),
       ),
     );
-  }, [issuedAlerts, date]);
+  }, [issuedWarningsAndWatches, date]);
 
-  const groupedAlertsRemaining = useMemo(() => {
+  const groupedIssuedWarningsAndWatchesRemaining = useMemo(() => {
     return groupAlerts(
-      sortAlerts(issuedAlerts).filter(({ info }) => {
+      sortAlerts(issuedWarningsAndWatches).filter(({ onset, expires }) => {
         return (
-          !DateTime.fromISO(info.onset).hasSame(date, 'day') &&
-          !DateTime.fromISO(info.expires).hasSame(date, 'day')
+          !DateTime.fromISO(onset).hasSame(date, 'day') &&
+          !DateTime.fromISO(expires).hasSame(date, 'day')
         );
       }),
     );
-  }, [issuedAlerts, date]);
+  }, [issuedWarningsAndWatches, date]);
 
-  const groupedAlertsEnd = useMemo(() => {
+  const groupedIssuedWarningsAndWatchesEnd = useMemo(() => {
     return groupAlerts(
-      sortAlerts(issuedAlerts).filter(({ info }) => {
+      sortAlerts(issuedWarningsAndWatches).filter(({ onset, expires }) => {
         return (
-          DateTime.fromISO(info.expires).hasSame(date, 'day') &&
-          !DateTime.fromISO(info.onset).hasSame(date, 'day')
+          DateTime.fromISO(expires).hasSame(date, 'day') &&
+          !DateTime.fromISO(onset).hasSame(date, 'day')
         );
       }),
     );
-  }, [issuedAlerts, date]);
+  }, [issuedWarningsAndWatches, date]);
 
   return (
     <div className="flex flex-col" key={date.toISODate()}>
@@ -88,29 +87,39 @@ export function SummaryItem({
       ) : (
         <>
           <div>
-            {issuedAlerts.length > 0 && groupedAlertsToday.length > 0 && (
+            {issuedWarningsAndWatches.length > 0 &&
+              groupedIssuedWarningsAndWatchesToday.length > 0 && (
+                <ul className="text-sm">
+                  {groupedIssuedWarningsAndWatchesToday.map((group) => (
+                    <li className="py-2" key={group[0].id}>
+                      <IssuedAlerts
+                        issuedWarningsAndWatches={group}
+                        date={date}
+                      />
+                    </li>
+                  ))}
+                </ul>
+              )}
+            {groupedIssuedWarningsAndWatchesRemaining.length > 0 && (
               <ul className="text-sm">
-                {groupedAlertsToday.map((alertGroup) => (
-                  <li className="py-2" key={alertGroup[0].identifier}>
-                    <IssuedAlerts alerts={alertGroup} date={date} />
+                {groupedIssuedWarningsAndWatchesRemaining.map((group) => (
+                  <li className="py-2" key={group[0].id}>
+                    <IssuedAlertsRemaining
+                      issuedWarningsAndWatches={group}
+                      date={date}
+                    />
                   </li>
                 ))}
               </ul>
             )}
-            {groupedAlertsRemaining.length > 0 && (
+            {groupedIssuedWarningsAndWatchesEnd.length > 0 && (
               <ul className="text-sm">
-                {groupedAlertsRemaining.map((alertGroup) => (
-                  <li className="py-2" key={alertGroup[0].identifier}>
-                    <IssuedAlertsRemaining alerts={alertGroup} date={date} />
-                  </li>
-                ))}
-              </ul>
-            )}
-            {groupedAlertsEnd.length > 0 && (
-              <ul className="text-sm">
-                {groupedAlertsEnd.map((alertGroup) => (
-                  <li className="py-2" key={alertGroup[0].identifier}>
-                    <IssuedAlertsEnd alerts={alertGroup} date={date} />
+                {groupedIssuedWarningsAndWatchesEnd.map((group) => (
+                  <li className="py-2" key={group[0].id}>
+                    <IssuedAlertsEnd
+                      issuedWarningsAndWatches={group}
+                      date={date}
+                    />
                   </li>
                 ))}
               </ul>
@@ -128,7 +137,7 @@ export function SummaryItem({
             )}
           </div>
           <div>
-            {issuedAlerts.length === 0 && outlooks.length === 0 && (
+            {issuedWarningsAndWatches.length === 0 && outlooks.length === 0 && (
               <div className="text-sm py-2">
                 There is <span className="underline">minimal</span> risk of
                 severe weather.
@@ -141,12 +150,18 @@ export function SummaryItem({
   );
 }
 
-function IssuedAlerts({ alerts, date }: { alerts: Alert[]; date: DateTime }) {
-  const alert = alerts[0];
-  const isMultipleAreas = alerts.length > 1;
+function IssuedAlerts({
+  issuedWarningsAndWatches,
+  date,
+}: {
+  issuedWarningsAndWatches: IssuedWarningOrWatche[];
+  date: DateTime;
+}) {
+  const issuedWarningOrAlert = issuedWarningsAndWatches[0];
+  const isMultipleAreas = issuedWarningsAndWatches.length > 1;
 
   let upgradeTo = '';
-  const name = alert.info.headline.toLowerCase();
+  const name = issuedWarningOrAlert.headline.toLowerCase();
   if (name.includes('watch')) {
     upgradeTo = 'warning';
   } else if (name.includes('warning - orange')) {
@@ -155,56 +170,54 @@ function IssuedAlerts({ alerts, date }: { alerts: Alert[]; date: DateTime }) {
     upgradeTo = 'red warning';
   }
 
-  const chance = getChanceOfUpgrade(alert);
+  const chance = issuedWarningOrAlert.ChanceOfUpgrade;
 
   return (
     <div className="flex items-stretch gap-2">
       <div className="flex min-h-full">
-        <AlertIndicator alert={alert} />
+        <AlertIndicator data={issuedWarningOrAlert} />
       </div>
       <span>
         {isMultipleAreas ? (
           <div className="flex flex-col gap-1">
             <div>
               MetService has issued{' '}
-              {formatAlertName(alert.info.headline, isMultipleAreas)} for the
-              following areas:
+              {formatAlertName(issuedWarningOrAlert.headline, isMultipleAreas)}{' '}
+              for the following areas:
             </div>
             <ul className="list-disc pl-6 space-y-1">
-              {alerts.map((a, idx) => (
+              {issuedWarningsAndWatches.map((i, idx) => (
                 <li key={idx}>
-                  {a.info.area.areaDesc.length > 0
-                    ? a.info.area.areaDesc
-                    : 'Multiple areas'}
+                  {i.areaDesc.length > 0 ? i.areaDesc : 'Multiple areas'}
                   {formatAlertDuration(
-                    DateTime.fromISO(a.info.onset),
-                    DateTime.fromISO(a.info.expires),
+                    DateTime.fromISO(i.onset),
+                    DateTime.fromISO(i.expires),
                   )}
-                  {getChanceOfUpgrade(a) && upgradeTo && (
+                  {i.ChanceOfUpgrade && upgradeTo && (
                     <span>
                       . There is a{' '}
                       <span className="underline lowercase">
-                        {getChanceOfUpgrade(a)}
+                        {i.ChanceOfUpgrade}
                       </span>{' '}
                       confidence of upgrading to a {upgradeTo}
                     </span>
                   )}
                   <span>.</span>
-                  <AlertRef date={date} alertIds={[a.identifier]} />
+                  <AlertRef date={date} alertIds={[i.id]} />
                 </li>
               ))}
             </ul>
           </div>
         ) : (
           <>
-            A {formatAlertName(alert.info.headline, isMultipleAreas)} has been
-            issued{' '}
-            {alert.info.area.areaDesc.length > 0 && (
-              <>for {alert.info.area.areaDesc}</>
+            A {formatAlertName(issuedWarningOrAlert.headline, isMultipleAreas)}{' '}
+            has been issued{' '}
+            {issuedWarningOrAlert.areaDesc.length > 0 && (
+              <>for {issuedWarningOrAlert.areaDesc}</>
             )}
             {formatAlertDuration(
-              DateTime.fromISO(alert.info.onset),
-              DateTime.fromISO(alert.info.expires),
+              DateTime.fromISO(issuedWarningOrAlert.onset),
+              DateTime.fromISO(issuedWarningOrAlert.expires),
             )}
             {chance && upgradeTo && (
               <span>
@@ -214,7 +227,7 @@ function IssuedAlerts({ alerts, date }: { alerts: Alert[]; date: DateTime }) {
               </span>
             )}
             <span>.</span>
-            <AlertRef date={date} alertIds={[alert.identifier]} />
+            <AlertRef date={date} alertIds={[issuedWarningOrAlert.id]} />
           </>
         )}
       </span>
@@ -223,41 +236,42 @@ function IssuedAlerts({ alerts, date }: { alerts: Alert[]; date: DateTime }) {
 }
 
 function IssuedAlertsRemaining({
-  alerts,
+  issuedWarningsAndWatches,
   date,
 }: {
-  alerts: Alert[];
+  issuedWarningsAndWatches: IssuedWarningOrWatche[];
   date: DateTime;
 }) {
-  const alert = alerts[0];
-  const allAreas = alerts.flatMap((a) =>
-    a.info.area.areaDesc.split(',').map((area) => area.trim()),
+  const issuedWarningOrAlert = issuedWarningsAndWatches[0];
+  const allAreas = issuedWarningsAndWatches.flatMap((a) =>
+    a.areaDesc.split(',').map((area) => area.trim()),
   );
-  const isMultipleAreas = alerts.length > 1;
-
+  const isMultipleAreas = issuedWarningsAndWatches.length > 1;
   return (
     <div className="flex items-stretch gap-2">
       <div className="flex justify-center min-h-full">
-        <AlertIndicator alert={alert} />
+        <AlertIndicator data={issuedWarningOrAlert} />
       </div>
       <span>
         <div className="flex gap-1">
           {isMultipleAreas ? (
             <div>
-              The {formatAlertName(alert.info.headline, isMultipleAreas)} remain
-              in place for {formatAreasList(allAreas)}.
+              The{' '}
+              {formatAlertName(issuedWarningOrAlert.headline, isMultipleAreas)}{' '}
+              remain in place for {formatAreasList(allAreas)}.
               <AlertRef
                 date={date}
-                alertIds={alerts.map((m) => m.identifier)}
+                alertIds={issuedWarningsAndWatches.map((m) => m.id)}
               />
             </div>
           ) : (
             <div>
-              The {formatAlertName(alert.info.headline, isMultipleAreas)}{' '}
+              The{' '}
+              {formatAlertName(issuedWarningOrAlert.headline, isMultipleAreas)}{' '}
               remains in place for {formatAreasList(allAreas)}.
               <AlertRef
                 date={date}
-                alertIds={alerts.map((m) => m.identifier)}
+                alertIds={issuedWarningsAndWatches.map((m) => m.id)}
               />
             </div>
           )}
@@ -268,43 +282,45 @@ function IssuedAlertsRemaining({
 }
 
 function IssuedAlertsEnd({
-  alerts,
+  issuedWarningsAndWatches,
   date,
 }: {
-  alerts: Alert[];
+  issuedWarningsAndWatches: IssuedWarningOrWatche[];
   date: DateTime;
 }) {
-  const alert = alerts[0];
-  const allAreas = alerts.flatMap((a) =>
-    a.info.area.areaDesc.split(',').map((area) => area.trim()),
+  const issuedWarningOrAlert = issuedWarningsAndWatches[0];
+  const allAreas = issuedWarningsAndWatches.flatMap((a) =>
+    a.areaDesc.split(',').map((area) => area.trim()),
   );
-  const isMultipleAreas = alerts.length > 1;
+  const isMultipleAreas = issuedWarningsAndWatches.length > 1;
 
   return (
     <div className="flex items-stretch gap-2">
       <div className="flex justify-center min-h-full">
-        <AlertIndicator alert={alert} />
+        <AlertIndicator data={issuedWarningOrAlert} />
       </div>
       <span>
         <div className="flex gap-1">
           {isMultipleAreas ? (
             <div>
-              The {formatAlertName(alert.info.headline, isMultipleAreas)} remain
-              in place for {formatAreasList(allAreas)}.
+              The{' '}
+              {formatAlertName(issuedWarningOrAlert.headline, isMultipleAreas)}{' '}
+              remain in place for {formatAreasList(allAreas)}.
               <AlertRef
                 date={date}
-                alertIds={alerts.map((m) => m.identifier)}
+                alertIds={issuedWarningsAndWatches.map((m) => m.id)}
               />
             </div>
           ) : (
             <div>
-              The {formatAlertName(alert.info.headline, isMultipleAreas)}{' '}
+              The{' '}
+              {formatAlertName(issuedWarningOrAlert.headline, isMultipleAreas)}{' '}
               remains in place for {formatAreasList(allAreas)} until{' '}
-              {`${DateTime.fromISO(alert.info.expires).toFormat('HHmm')}hrs`}{' '}
+              {`${DateTime.fromISO(issuedWarningOrAlert.expires).toFormat('HHmm')}hrs`}{' '}
               today.
               <AlertRef
                 date={date}
-                alertIds={alerts.map((m) => m.identifier)}
+                alertIds={issuedWarningsAndWatches.map((m) => m.id)}
               />
             </div>
           )}
