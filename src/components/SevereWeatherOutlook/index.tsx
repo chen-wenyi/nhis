@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { formatUTCToNZDate } from '@/lib/utils';
 import { useSevereWeatherOutlook } from '@/queries';
 import { setActiveOutlookTab, store } from '@/store';
 import { useStore } from '@tanstack/react-store';
@@ -34,17 +35,25 @@ export default function SevereWeatherOutlook() {
           </span>
         </CardTitle>
         <CardDescription>
-          <span>
-            Source:{' '}
-            <a
-              href="https://www.metservice.com/warnings/severe-weather-outlook"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline"
-            >
-              MetService
-            </a>
-          </span>
+          <div className="flex gap-6">
+            <span>
+              Source:{' '}
+              <a
+                href="https://www.metservice.com/warnings/severe-weather-outlook"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline"
+              >
+                MetService
+              </a>
+            </span>
+            <span>
+              Issued:{' '}
+              {severeWeatherOutlook?.issuedDate
+                ? formatUTCToNZDate(severeWeatherOutlook.issuedDate)
+                : ''}
+            </span>
+          </div>
         </CardDescription>
       </CardHeader>
       <CardContent>

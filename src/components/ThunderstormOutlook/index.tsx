@@ -55,7 +55,8 @@ export default function ThunderstormOutlook() {
             {thunderstormOutlook?.map((item) => (
               <ThunderstormOutlookItem
                 key={item.header}
-                date={item.header}
+                header={item.header}
+                issuedDate={item.issuedDate}
                 outlook={item.outlook}
               />
             ))}
@@ -85,10 +86,12 @@ export default function ThunderstormOutlook() {
 }
 
 function ThunderstormOutlookItem({
-  date,
+  header,
+  issuedDate,
   outlook,
 }: {
-  date: string;
+  header: string;
+  issuedDate: string;
   outlook: string;
 }) {
   const activeSevereWeatherOutlookReference = useStore(
@@ -99,7 +102,7 @@ function ThunderstormOutlookItem({
   const isActive =
     activeSevereWeatherOutlookReference &&
     activeSevereWeatherOutlookReference.date ===
-      DateTime.fromFormat(date, 'cccc dd MMM').toISODate();
+      DateTime.fromFormat(header, 'cccc dd MMM').toISODate();
 
   const ref = useRef<HTMLDivElement | null>(null);
 
@@ -111,7 +114,10 @@ function ThunderstormOutlookItem({
 
   return (
     <div ref={isActive ? ref : null}>
-      <div className="text-lg font-semibold">{date}</div>
+      <div className="flex flex-col ">
+        <div className="text-lg font-semibold">{header}</div>
+        <div className="text-sm text-gray-400 py-2">Issued: {issuedDate}</div>
+      </div>
       <ReactMarkdownWithHighlight
         markdown={outlook}
         quotes={activeSevereWeatherOutlookReference?.quotes || []}
