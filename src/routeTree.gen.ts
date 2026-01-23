@@ -17,6 +17,7 @@ import { Route as DemoStartApiRequestRouteImport } from './routes/demo/start.api
 import { Route as DemoApiTqTodosRouteImport } from './routes/demo/api.tq-todos'
 import { Route as DemoApiNamesRouteImport } from './routes/demo/api.names'
 import { Route as ApiUpdateSevereWeatherRouteImport } from './routes/api/update/severe-weather'
+import { Route as ApiUpdateIssuedWarningsWatchesRouteImport } from './routes/api/update/issued-warnings-watches'
 import { Route as DemoStartSsrIndexRouteImport } from './routes/demo/start.ssr.index'
 import { Route as DemoStartSsrSpaModeRouteImport } from './routes/demo/start.ssr.spa-mode'
 import { Route as DemoStartSsrFullSsrRouteImport } from './routes/demo/start.ssr.full-ssr'
@@ -62,6 +63,12 @@ const ApiUpdateSevereWeatherRoute = ApiUpdateSevereWeatherRouteImport.update({
   path: '/api/update/severe-weather',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiUpdateIssuedWarningsWatchesRoute =
+  ApiUpdateIssuedWarningsWatchesRouteImport.update({
+    id: '/api/update/issued-warnings-watches',
+    path: '/api/update/issued-warnings-watches',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const DemoStartSsrIndexRoute = DemoStartSsrIndexRouteImport.update({
   id: '/demo/start/ssr/',
   path: '/demo/start/ssr/',
@@ -87,6 +94,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/demo/convex': typeof DemoConvexRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
+  '/api/update/issued-warnings-watches': typeof ApiUpdateIssuedWarningsWatchesRoute
   '/api/update/severe-weather': typeof ApiUpdateSevereWeatherRoute
   '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/api/tq-todos': typeof DemoApiTqTodosRoute
@@ -101,6 +109,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/demo/convex': typeof DemoConvexRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
+  '/api/update/issued-warnings-watches': typeof ApiUpdateIssuedWarningsWatchesRoute
   '/api/update/severe-weather': typeof ApiUpdateSevereWeatherRoute
   '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/api/tq-todos': typeof DemoApiTqTodosRoute
@@ -116,6 +125,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/demo/convex': typeof DemoConvexRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
+  '/api/update/issued-warnings-watches': typeof ApiUpdateIssuedWarningsWatchesRoute
   '/api/update/severe-weather': typeof ApiUpdateSevereWeatherRoute
   '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/api/tq-todos': typeof DemoApiTqTodosRoute
@@ -132,6 +142,7 @@ export interface FileRouteTypes {
     | '/'
     | '/demo/convex'
     | '/demo/tanstack-query'
+    | '/api/update/issued-warnings-watches'
     | '/api/update/severe-weather'
     | '/demo/api/names'
     | '/demo/api/tq-todos'
@@ -146,6 +157,7 @@ export interface FileRouteTypes {
     | '/'
     | '/demo/convex'
     | '/demo/tanstack-query'
+    | '/api/update/issued-warnings-watches'
     | '/api/update/severe-weather'
     | '/demo/api/names'
     | '/demo/api/tq-todos'
@@ -160,6 +172,7 @@ export interface FileRouteTypes {
     | '/'
     | '/demo/convex'
     | '/demo/tanstack-query'
+    | '/api/update/issued-warnings-watches'
     | '/api/update/severe-weather'
     | '/demo/api/names'
     | '/demo/api/tq-todos'
@@ -175,6 +188,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DemoConvexRoute: typeof DemoConvexRoute
   DemoTanstackQueryRoute: typeof DemoTanstackQueryRoute
+  ApiUpdateIssuedWarningsWatchesRoute: typeof ApiUpdateIssuedWarningsWatchesRoute
   ApiUpdateSevereWeatherRoute: typeof ApiUpdateSevereWeatherRoute
   DemoApiNamesRoute: typeof DemoApiNamesRoute
   DemoApiTqTodosRoute: typeof DemoApiTqTodosRoute
@@ -244,6 +258,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiUpdateSevereWeatherRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/update/issued-warnings-watches': {
+      id: '/api/update/issued-warnings-watches'
+      path: '/api/update/issued-warnings-watches'
+      fullPath: '/api/update/issued-warnings-watches'
+      preLoaderRoute: typeof ApiUpdateIssuedWarningsWatchesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/demo/start/ssr/': {
       id: '/demo/start/ssr/'
       path: '/demo/start/ssr'
@@ -279,6 +300,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DemoConvexRoute: DemoConvexRoute,
   DemoTanstackQueryRoute: DemoTanstackQueryRoute,
+  ApiUpdateIssuedWarningsWatchesRoute: ApiUpdateIssuedWarningsWatchesRoute,
   ApiUpdateSevereWeatherRoute: ApiUpdateSevereWeatherRoute,
   DemoApiNamesRoute: DemoApiNamesRoute,
   DemoApiTqTodosRoute: DemoApiTqTodosRoute,

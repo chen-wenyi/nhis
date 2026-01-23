@@ -9,8 +9,8 @@ export type CAP = {
       title: string;
       summary: string;
     }>;
+    updated: string;
   };
-  updated: string;
 };
 
 export type Alert = {
@@ -41,11 +41,35 @@ export type Alert = {
       value: string;
     }>;
   };
-  _history: Alert[];
+  _history?: Alert[];
+};
+
+type DateString = string;
+
+// Issued Warnings and Watches
+export type IssuedWarningsAndWatches = {
+  id: string;
+  sent: DateString;
+  event: string;
+  responseType: string;
+  urgency: string;
+  severity: string;
+  certainty: string;
+  onset: DateString;
+  expires: DateString;
+  headline: string;
+  description: string;
+  instruction: string;
+  areaDesc: string;
+  _status: 'removed' | 'updated' | 'new' | '';
+  _history: IssuedWarningsAndWatches[];
+  ColourCode?: string;
+  ChanceOfUpgrade?: string;
 };
 
 // Severe Weather Outlook Types
 export type SevereWeatherOutlook = {
+  id: string;
   issuedDate: Date | null;
   outlookItems: SevereWeatherOutlookItem[];
 };
@@ -126,6 +150,13 @@ type VolcanicActivity = {
 export type VolcanicActivityData = VolcanicActivity[];
 
 // MongoDB Document Types
-export type SevereWeatherOutlookDocument = SevereWeatherOutlook & {
+export type SevereWeatherOutlookDocument = Omit<SevereWeatherOutlook, 'id'> & {
+  insertedAt: Date;
+};
+
+export type IssuedWarningsAndWatchesDocument = {
+  updatedAt: Date;
+  updatedAtISO: DateString;
+  entries: IssuedWarningsAndWatches[];
   insertedAt: Date;
 };

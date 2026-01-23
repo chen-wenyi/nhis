@@ -1,4 +1,7 @@
-import type { SevereWeatherOutlookDocument } from '@/types';
+import type {
+  IssuedWarningsAndWatchesDocument,
+  SevereWeatherOutlookDocument,
+} from '@/types';
 import { attachDatabasePool } from '@vercel/functions';
 import type { Document } from 'mongodb';
 import { MongoClient } from 'mongodb';
@@ -25,4 +28,10 @@ export async function getCollection<T extends Document>(
 
 export async function getSevereWeatherOutlookCollection() {
   return getCollection<SevereWeatherOutlookDocument>('severe_weather_outlook');
+}
+
+export async function getIssuedWarningsAndWatchesCollection() {
+  return getCollection<IssuedWarningsAndWatchesDocument>(
+    'issued_warnings_and_watches',
+  );
 }

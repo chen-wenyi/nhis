@@ -13,7 +13,9 @@ export const fetchSevereWeatherOutlook = createServerFn().handler(
       console.warn('No Severe Weather Outlook data found in the database.');
       return null;
     }
+
     return {
+      id: outlook._id.toString(),
       issuedDate: outlook.issuedDate,
       outlookItems: outlook.outlookItems,
     };
