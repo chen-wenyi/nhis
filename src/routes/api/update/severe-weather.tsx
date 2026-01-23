@@ -48,6 +48,7 @@ export const Route = createFileRoute('/api/update/severe-weather')({
               issuedDate: responseIssuedDate,
               insertedAt: new Date(),
             });
+            console.log('Insertion complete.');
           }
           return Response.json({
             ok: true,
