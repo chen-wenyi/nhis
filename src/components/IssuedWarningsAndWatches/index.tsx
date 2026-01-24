@@ -68,7 +68,7 @@ export default function IssuedWarningsAndWatches() {
         {isLoading ? (
           <LoadingSkeleton />
         ) : (
-          <div className="flex flex-col gap-2 w-70 text-[0.9rem]">
+          <div className="flex flex-col gap-2 w-75 text-[0.9rem]">
             {issuedWarningsAndWatches ? (
               sortAlerts(issuedWarningsAndWatches.entries).map((i) => {
                 return (
@@ -84,13 +84,14 @@ export default function IssuedWarningsAndWatches() {
                         }
                         className={cn(
                           'mb-4 w-full border p-4 rounded-md shadow',
-                          i._history.length > 0 &&
-                            'hover:bg-gray-50 transition-all',
                           activeAlertReference?.alertIds.includes(i.id) &&
                             'border-blue-500 bg-blue-50',
+                          i._status === 'removed'
+                            ? 'opacity-50 bg-gray-100'
+                            : 'hover:border-blue-500 transition-all',
                         )}
                       >
-                        <div className="text-xs text-gray-500 mb-1 relative flex items-center justify-between gap-1">
+                        <div className="text-xs text-gray-500 mb-1 relative flex items-center justify-between">
                           <span>{formatUTCToNZDate(new Date(i.sent))}</span>
                           <div className="flex gap-1 justify-center items-center">
                             {i._status && (

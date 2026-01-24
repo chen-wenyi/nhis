@@ -37,7 +37,7 @@ const ALERT_SORT_ORDER = [
 export function sortAlerts(
   issuedWarningsAndWatches: IssuedWarningOrWatche[],
 ): IssuedWarningOrWatche[] {
-  return [...issuedWarningsAndWatches].sort((a, b) => {
+  const sorted = [...issuedWarningsAndWatches].sort((a, b) => {
     const aHeadline = a.headline;
     const bHeadline = b.headline;
 
@@ -62,4 +62,10 @@ export function sortAlerts(
     // Otherwise maintain original order
     return 0;
   });
+
+  // move removed alerts to the end
+  const removeds = sorted.filter((alert) => alert._status === 'removed');
+  const notRemoveds = sorted.filter((alert) => alert._status !== 'removed');
+
+  return [...notRemoveds, ...removeds];
 }

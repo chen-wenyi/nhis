@@ -47,31 +47,38 @@ export function SummaryItem({
 
   const groupedIssuedWarningsAndWatchesToday = useMemo(() => {
     return groupAlerts(
-      sortAlerts(issuedWarningsAndWatches).filter(({ onset }) =>
-        DateTime.fromISO(onset).hasSame(date, 'day'),
+      sortAlerts(issuedWarningsAndWatches).filter(
+        ({ onset, _status }) =>
+          DateTime.fromISO(onset).hasSame(date, 'day') && _status !== 'removed',
       ),
     );
   }, [issuedWarningsAndWatches, date]);
 
   const groupedIssuedWarningsAndWatchesRemaining = useMemo(() => {
     return groupAlerts(
-      sortAlerts(issuedWarningsAndWatches).filter(({ onset, expires }) => {
-        return (
-          !DateTime.fromISO(onset).hasSame(date, 'day') &&
-          !DateTime.fromISO(expires).hasSame(date, 'day')
-        );
-      }),
+      sortAlerts(issuedWarningsAndWatches).filter(
+        ({ onset, expires, _status }) => {
+          return (
+            !DateTime.fromISO(onset).hasSame(date, 'day') &&
+            !DateTime.fromISO(expires).hasSame(date, 'day') &&
+            _status !== 'removed'
+          );
+        },
+      ),
     );
   }, [issuedWarningsAndWatches, date]);
 
   const groupedIssuedWarningsAndWatchesEnd = useMemo(() => {
     return groupAlerts(
-      sortAlerts(issuedWarningsAndWatches).filter(({ onset, expires }) => {
-        return (
-          DateTime.fromISO(expires).hasSame(date, 'day') &&
-          !DateTime.fromISO(onset).hasSame(date, 'day')
-        );
-      }),
+      sortAlerts(issuedWarningsAndWatches).filter(
+        ({ onset, expires, _status }) => {
+          return (
+            DateTime.fromISO(expires).hasSame(date, 'day') &&
+            !DateTime.fromISO(onset).hasSame(date, 'day') &&
+            _status !== 'removed'
+          );
+        },
+      ),
     );
   }, [issuedWarningsAndWatches, date]);
 

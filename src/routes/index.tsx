@@ -19,7 +19,7 @@ function App() {
         <div className="flex-1">
           <AISummary />
         </div>
-        <div className="w-85">
+        <div className="w-90">
           <IssuedWarningsAndWatches />
         </div>
         <div className="w-120">
