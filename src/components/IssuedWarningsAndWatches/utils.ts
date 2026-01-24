@@ -22,3 +22,22 @@ export function getPeriodDescription(onset: string, expires: string) {
 
   return `${onsetStr} - ${expiresStr}`;
 }
+
+export function analyseDescription(description: string): {
+  forecast: string;
+  changes: string;
+  impact: string;
+} {
+  const chunks1 = description.split('Changes:');
+  const changes = chunks1.length > 1 ? chunks1[1].trim() : '';
+  const chunks2 = chunks1[0].trim().split(/Chance of upgrading to a \w+:/);
+  const chunks3 = chunks2[0].trim().split('Impact:');
+  const impact = chunks3.length > 1 ? chunks3[1].trim() : '';
+  const forecast = chunks3[0].trim();
+
+  return {
+    forecast,
+    changes,
+    impact,
+  };
+}
