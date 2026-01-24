@@ -13,7 +13,7 @@ export const Route = createFileRoute('/')({ component: App });
 function App() {
   const activeOutlookTab = useStore(store, (state) => state.activeOutlookTab);
   return (
-    <div className="flex flex-col h-screen w-full">
+    <div className="flex flex-col h-dvh w-full">
       <Header />
       <main className="flex flex-1 m-2 gap-3 min-h-0">
         <div className="flex-1">
@@ -22,7 +22,7 @@ function App() {
         <div className="w-90">
           <IssuedWarningsAndWatches />
         </div>
-        <div className="w-120">
+        <div className="w-[30%]">
           {activeOutlookTab === 'severeWeatherOutlook' ? (
             <SevereWeatherOutlook />
           ) : (
