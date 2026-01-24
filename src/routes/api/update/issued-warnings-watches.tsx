@@ -21,6 +21,10 @@ export const Route = createFileRoute('/api/update/issued-warnings-watches')({
             return Response.json(null);
           }
 
+          // if entry is single object, convert to array
+          if (!Array.isArray(feed.entry)) {
+            feed.entry = [feed.entry];
+          }
           const alerts = await Promise.all(
             feed.entry.map(async (entry) => {
               const alertResponse = await fetch(entry.link.href);

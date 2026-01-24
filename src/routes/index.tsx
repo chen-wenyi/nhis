@@ -13,7 +13,7 @@ export const Route = createFileRoute('/')({ component: App });
 function App() {
   const activeOutlookTab = useStore(store, (state) => state.activeOutlookTab);
   return (
-    <div className="flex flex-col h-dvh w-full">
+    <div className="flex flex-col h-dvh w-full overscroll-none">
       <Header />
       <main className="flex flex-1 m-2 gap-3 min-h-0">
         <div className="flex-1">
