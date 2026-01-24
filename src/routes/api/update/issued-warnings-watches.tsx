@@ -73,11 +73,35 @@ export const Route = createFileRoute('/api/update/issued-warnings-watches')({
               latestRecord.updatedAtISO,
             );
 
+            const newFeedUpdatedAtFormatted =
+              newFeedUpdatedAt.toFormat('yyyyLLdd');
+            const previousFeedUpdatedAtFormatted =
+              previousFeedUpdatedAt.toFormat('yyyyLLdd');
+
+            console.log(
+              'checking newFeedUpdatedAt timezone:',
+              newFeedUpdatedAt.zoneName,
+            );
+            console.log(
+              'checking previousFeedUpdatedAt timezone:',
+              previousFeedUpdatedAt.zoneName,
+            );
+
+            console.log(
+              'Comparing new feed update dates:',
+              newFeedUpdatedAtFormatted,
+              'and previous feed update dates:',
+              previousFeedUpdatedAtFormatted,
+            );
+
             if (
               // same day month and year
-              newFeedUpdatedAt.toFormat('yyyyLLdd') ===
-              previousFeedUpdatedAt.toFormat('yyyyLLdd')
+              newFeedUpdatedAtFormatted === previousFeedUpdatedAtFormatted
             ) {
+              console.log(
+                'Same day update for Issued Warnings and Watches. Updating entries and insert.',
+              );
+
               await collection.insertOne({
                 updatedAt: new Date(feed.updated),
                 updatedAtISO: feed.updated,
@@ -91,6 +115,9 @@ export const Route = createFileRoute('/api/update/issued-warnings-watches')({
               // indicate it's an update
               return new Response('Update complete.');
             } else {
+              console.log(
+                'New day update for Issued Warnings and Watches. Inserting new entries.',
+              );
               // new day
               await collection.insertOne({
                 updatedAt: new Date(feed.updated),

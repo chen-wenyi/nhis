@@ -4,15 +4,10 @@ import { createServerFn } from '@tanstack/react-start';
 
 export const fetchIssuedWarningsAndWatches = createServerFn().handler(
   async (): Promise<IssuedWarningsAndWatches | null> => {
-    const collecton = await getIssuedWarningsAndWatchesCollection();
-    const issuedWarningsAndWatches = await collecton.findOne(
+    const collection = await getIssuedWarningsAndWatchesCollection();
+    const issuedWarningsAndWatches = await collection.findOne(
       {},
       { sort: { updatedAt: -1 } },
-    );
-
-    console.log(
-      'Fetched issued warnings and watches:',
-      issuedWarningsAndWatches,
     );
 
     if (issuedWarningsAndWatches) {
