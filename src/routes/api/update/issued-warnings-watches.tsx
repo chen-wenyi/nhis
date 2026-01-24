@@ -68,9 +68,12 @@ export const Route = createFileRoute('/api/update/issued-warnings-watches')({
             );
           } else if (latestRecord) {
             // different updatedAt, need to check if same day
-            const newFeedUpdatedAt = DateTime.fromISO(feed.updated);
+            const newFeedUpdatedAt = DateTime.fromISO(feed.updated, {
+              setZone: true,
+            });
             const previousFeedUpdatedAt = DateTime.fromISO(
               latestRecord.updatedAtISO,
+              { setZone: true },
             );
 
             const newFeedUpdatedAtFormatted =
