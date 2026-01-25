@@ -7,7 +7,7 @@ export const fetchIssuedWarningsAndWatches = createServerFn().handler(
     const collection = await getIssuedWarningsAndWatchesCollection();
     const issuedWarningsAndWatches = await collection.findOne(
       {},
-      { sort: { updatedAt: -1 } },
+      { sort: { insertedAt: -1 } },
     );
 
     if (issuedWarningsAndWatches) {

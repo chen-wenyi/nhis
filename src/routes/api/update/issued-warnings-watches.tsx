@@ -50,7 +50,7 @@ export const Route = createFileRoute('/api/update/issued-warnings-watches')({
           const latestRecord = await collection.findOne(
             {},
             {
-              sort: { updatedAt: -1 },
+              sort: { insertedAt: -1 },
             },
           );
 
@@ -236,6 +236,9 @@ function updateStatus(
 ): IssuedWarningOrWatche[] {
   const newIds = newEntries.map((e) => e.id);
   const oldIds = oldEntries.map((e) => e.id);
+
+  console.log('New IDs:', newIds);
+  console.log('Old IDs:', oldIds);
 
   const updatedEntries: IssuedWarningOrWatche[] = newEntries.map((entry) => {
     if (!oldIds.includes(entry.id)) {
