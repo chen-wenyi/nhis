@@ -4,7 +4,7 @@ export const ChanceLevelEnum = z.enum(['Minimal', 'Low', 'Moderate', 'High']);
 
 const OutlookSchema = z.object({
   risk: ChanceLevelEnum,
-  areas: z.array(z.string()).nullable(),
+  areas: z.array(z.string()),
   when: z.array(z.string()),
   quotes: z.array(z.string()).min(1),
   keywords: z.array(z.string()),

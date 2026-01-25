@@ -27,7 +27,7 @@ GENERAL RULES
 - Use only information explicitly stated in the text.
 - Do NOT infer or generalise.
 - Each list item MUST include at least one exact quotation as evidence.
-- If no items exist for a list, return null for that list.
+- If no items exist for a list, return an empty array [] for that list.
 - Output MUST conform exactly to the provided JSON schema.
 
 - IMPORTANT: If the outlook text explicitly states there are no thunderstorms,
@@ -35,6 +35,12 @@ GENERAL RULES
   example: "No thunderstorms or severe convection expected over the remainder
   of New Zealand."), do NOT create an item. In that case the assistant MUST
   return an empty array (i.e. no items).
+
+--------------------------------------------------
+JSON / FORMATTING RULES
+--------------------------------------------------
+- Never output the literal string "null" inside an array or object (e.g. do NOT output ["null"]).
+- If a list field has no entries, return an empty array [] (not ["null"]).
 
 --------------------------------------------------
 QUOTING RULES (strict)

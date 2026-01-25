@@ -110,3 +110,12 @@ export function getThunderstormOutlookDate(
     return '';
   }
 }
+
+// add and to last item in when array
+export function formatDuration(when: string[]): string {
+  if (when.length === 0) return '';
+  if (when.length === 1) return when[0];
+  const last = when[when.length - 1];
+  const beforeLast = when.slice(0, -1).join(', ');
+  return `${beforeLast} and ${last}`;
+}

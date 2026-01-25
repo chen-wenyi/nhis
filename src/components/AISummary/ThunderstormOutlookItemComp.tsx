@@ -8,7 +8,7 @@ import {
 import { useStore } from '@tanstack/react-store';
 import type { DateTime } from 'luxon';
 import { AiOutlineFileSearch } from 'react-icons/ai';
-import { formatAreasList } from './utils';
+import { formatAreasList, formatDuration } from './utils';
 
 export function ThunderstormOutlookItemComp({
   date,
@@ -17,14 +17,15 @@ export function ThunderstormOutlookItemComp({
   date: DateTime;
   outlook: NonNullable<ThunderstormAISummary['outlooks']>[number];
 }) {
+  const formattedDuration = formatDuration(outlook.when);
   return (
     <span>
-      During {outlook.when.join(' and ')}, there is{' '}
+      {formattedDuration
+        ? `During ${formattedDuration}, there is `
+        : 'There is '}
       <span className="underline lowercase">{outlook.risk}</span> risk of
       thunderstorms
-      {outlook.areas && outlook.areas.length > 0
-        ? ` for ${formatAreasList(outlook.areas)}`
-        : ''}
+      {outlook.areas.length > 0 ? ` for ${formatAreasList(outlook.areas)}` : ''}
       .
       <OutlookRefIcon
         date={date}
