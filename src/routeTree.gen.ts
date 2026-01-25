@@ -16,6 +16,7 @@ import { Route as DemoStartServerFuncsRouteImport } from './routes/demo/start.se
 import { Route as DemoStartApiRequestRouteImport } from './routes/demo/start.api-request'
 import { Route as DemoApiTqTodosRouteImport } from './routes/demo/api.tq-todos'
 import { Route as DemoApiNamesRouteImport } from './routes/demo/api.names'
+import { Route as ApiUpdateThunderstormRouteImport } from './routes/api/update/thunderstorm'
 import { Route as ApiUpdateSevereWeatherRouteImport } from './routes/api/update/severe-weather'
 import { Route as ApiUpdateIssuedWarningsWatchesRouteImport } from './routes/api/update/issued-warnings-watches'
 import { Route as DemoStartSsrIndexRouteImport } from './routes/demo/start.ssr.index'
@@ -58,6 +59,11 @@ const DemoApiNamesRoute = DemoApiNamesRouteImport.update({
   path: '/demo/api/names',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiUpdateThunderstormRoute = ApiUpdateThunderstormRouteImport.update({
+  id: '/api/update/thunderstorm',
+  path: '/api/update/thunderstorm',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiUpdateSevereWeatherRoute = ApiUpdateSevereWeatherRouteImport.update({
   id: '/api/update/severe-weather',
   path: '/api/update/severe-weather',
@@ -96,6 +102,7 @@ export interface FileRoutesByFullPath {
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/api/update/issued-warnings-watches': typeof ApiUpdateIssuedWarningsWatchesRoute
   '/api/update/severe-weather': typeof ApiUpdateSevereWeatherRoute
+  '/api/update/thunderstorm': typeof ApiUpdateThunderstormRoute
   '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/api/tq-todos': typeof DemoApiTqTodosRoute
   '/demo/start/api-request': typeof DemoStartApiRequestRoute
@@ -111,6 +118,7 @@ export interface FileRoutesByTo {
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/api/update/issued-warnings-watches': typeof ApiUpdateIssuedWarningsWatchesRoute
   '/api/update/severe-weather': typeof ApiUpdateSevereWeatherRoute
+  '/api/update/thunderstorm': typeof ApiUpdateThunderstormRoute
   '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/api/tq-todos': typeof DemoApiTqTodosRoute
   '/demo/start/api-request': typeof DemoStartApiRequestRoute
@@ -127,6 +135,7 @@ export interface FileRoutesById {
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/api/update/issued-warnings-watches': typeof ApiUpdateIssuedWarningsWatchesRoute
   '/api/update/severe-weather': typeof ApiUpdateSevereWeatherRoute
+  '/api/update/thunderstorm': typeof ApiUpdateThunderstormRoute
   '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/api/tq-todos': typeof DemoApiTqTodosRoute
   '/demo/start/api-request': typeof DemoStartApiRequestRoute
@@ -144,6 +153,7 @@ export interface FileRouteTypes {
     | '/demo/tanstack-query'
     | '/api/update/issued-warnings-watches'
     | '/api/update/severe-weather'
+    | '/api/update/thunderstorm'
     | '/demo/api/names'
     | '/demo/api/tq-todos'
     | '/demo/start/api-request'
@@ -159,6 +169,7 @@ export interface FileRouteTypes {
     | '/demo/tanstack-query'
     | '/api/update/issued-warnings-watches'
     | '/api/update/severe-weather'
+    | '/api/update/thunderstorm'
     | '/demo/api/names'
     | '/demo/api/tq-todos'
     | '/demo/start/api-request'
@@ -174,6 +185,7 @@ export interface FileRouteTypes {
     | '/demo/tanstack-query'
     | '/api/update/issued-warnings-watches'
     | '/api/update/severe-weather'
+    | '/api/update/thunderstorm'
     | '/demo/api/names'
     | '/demo/api/tq-todos'
     | '/demo/start/api-request'
@@ -190,6 +202,7 @@ export interface RootRouteChildren {
   DemoTanstackQueryRoute: typeof DemoTanstackQueryRoute
   ApiUpdateIssuedWarningsWatchesRoute: typeof ApiUpdateIssuedWarningsWatchesRoute
   ApiUpdateSevereWeatherRoute: typeof ApiUpdateSevereWeatherRoute
+  ApiUpdateThunderstormRoute: typeof ApiUpdateThunderstormRoute
   DemoApiNamesRoute: typeof DemoApiNamesRoute
   DemoApiTqTodosRoute: typeof DemoApiTqTodosRoute
   DemoStartApiRequestRoute: typeof DemoStartApiRequestRoute
@@ -251,6 +264,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DemoApiNamesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/update/thunderstorm': {
+      id: '/api/update/thunderstorm'
+      path: '/api/update/thunderstorm'
+      fullPath: '/api/update/thunderstorm'
+      preLoaderRoute: typeof ApiUpdateThunderstormRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/update/severe-weather': {
       id: '/api/update/severe-weather'
       path: '/api/update/severe-weather'
@@ -302,6 +322,7 @@ const rootRouteChildren: RootRouteChildren = {
   DemoTanstackQueryRoute: DemoTanstackQueryRoute,
   ApiUpdateIssuedWarningsWatchesRoute: ApiUpdateIssuedWarningsWatchesRoute,
   ApiUpdateSevereWeatherRoute: ApiUpdateSevereWeatherRoute,
+  ApiUpdateThunderstormRoute: ApiUpdateThunderstormRoute,
   DemoApiNamesRoute: DemoApiNamesRoute,
   DemoApiTqTodosRoute: DemoApiTqTodosRoute,
   DemoStartApiRequestRoute: DemoStartApiRequestRoute,

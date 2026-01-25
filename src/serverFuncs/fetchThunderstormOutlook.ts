@@ -1,17 +1,20 @@
+import { getThunderstormOutlookCollection } from '@/lib/mongodb';
 import type { ThunderstormOutlook } from '@/types';
 import { createServerFn } from '@tanstack/react-start';
-import axios from 'axios';
 
 export const fetchThunderstormOutlook = createServerFn().handler(
   async (): Promise<ThunderstormOutlook | undefined> => {
-    const url =
-      'https://nhis-services-production.up.railway.app/thunderstorm-outlook';
-    try {
-      const response = await axios.get<ThunderstormOutlook>(url);
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching Thunderstorm Outlook:', error);
+    const collection = await getThunderstormOutlookCollection();
+    const outlook = await collection.findOne({}, { sort: { updatedAt: -1 } });
+    if (!outlook) {
+      console.warn('No Severe Weather Outlook data found in the database.');
       return undefined;
     }
+
+    return {
+      id: outlook._id.toString(),
+      items: outlook.items,
+      refIssuedDates: outlook.refIssuedDates,
+    };
   },
 );

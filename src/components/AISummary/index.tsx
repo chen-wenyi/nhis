@@ -63,7 +63,7 @@ export function AISummary() {
               return date.hasSame(outlookDate, 'day');
             },
           ),
-          thunderstormOutlookItems: thunderstormOutlook.filter((o) => {
+          thunderstormOutlookItems: thunderstormOutlook.items.filter((o) => {
             const dateStr = getThunderstormOutlookDate(o);
             if (!dateStr) return false;
             const outlookDate = DateTime.fromFormat(dateStr, 'dd LLL');

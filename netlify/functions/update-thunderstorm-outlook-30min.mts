@@ -1,0 +1,15 @@
+// YOUR_BASE_DIRECTORY/netlify/functions/test-scheduled-function.mts
+
+import type { Config } from '@netlify/functions';
+
+const url = process.env.URL!;
+
+export default async (req: Request) => {
+  const { next_run } = await req.json();
+  console.log('Next invocation at:', next_run);
+  await fetch(url + '/api/update/thunderstorm');
+};
+
+export const config: Config = {
+  schedule: '*/30 * * * *', // Runs every 30 minutes
+};

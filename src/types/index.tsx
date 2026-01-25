@@ -92,7 +92,13 @@ export type SevereWeatherOutlookItem = {
   outlook: string;
 };
 
-export type ThunderstormOutlook = ThunderstormOutlookItem[];
+export type ThunderstormOutlookResp = ThunderstormOutlookItem[];
+
+export type ThunderstormOutlook = {
+  id: string;
+  items: ThunderstormOutlookItem[];
+  refIssuedDates: string[];
+};
 
 export type ThunderstormOutlookItem = {
   header: string;
@@ -159,6 +165,10 @@ export type VolcanicActivityData = VolcanicActivity[];
 
 // MongoDB Document Types
 export type SevereWeatherOutlookDocument = Omit<SevereWeatherOutlook, 'id'> & {
+  insertedAt: Date;
+};
+
+export type ThunderstormOutlookDocument = Omit<ThunderstormOutlook, 'id'> & {
   insertedAt: Date;
 };
 

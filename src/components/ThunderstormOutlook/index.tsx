@@ -52,7 +52,7 @@ export default function ThunderstormOutlook() {
           <LoadingSkeleton />
         ) : (
           <div className="flex flex-col gap-6">
-            {thunderstormOutlook?.map((item) => (
+            {thunderstormOutlook?.items.map((item) => (
               <ThunderstormOutlookItem
                 key={item.header}
                 header={item.header}
