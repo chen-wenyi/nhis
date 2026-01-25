@@ -11,6 +11,11 @@ type StoreState = {
     quotes: string[];
     keywords: string[];
   };
+  activeThunderstormOutlookReference?: {
+    date: string;
+    quotes: string[];
+    keywords: string[];
+  };
 };
 
 export const store = new Store<StoreState>({
@@ -46,7 +51,21 @@ export const setActiveSevereWeatherOutlookReference = (
     return {
       ...state,
       activeOutlookTab: 'severeWeatherOutlook',
+      activeThunderstormOutlookReference: undefined,
       activeSevereWeatherOutlookReference,
+    };
+  });
+};
+
+export const setActiveThunderstormOutlookReference = (
+  activeThunderstormOutlookReference: StoreState['activeThunderstormOutlookReference'],
+) => {
+  store.setState((state) => {
+    return {
+      ...state,
+      activeOutlookTab: 'thunderstormOutlook',
+      activeSevereWeatherOutlookReference: undefined,
+      activeThunderstormOutlookReference,
     };
   });
 };
@@ -65,6 +84,15 @@ export const removeactiveSevereWeatherOutlookReference = () => {
     return {
       ...state,
       activeSevereWeatherOutlookReference: undefined,
+    };
+  });
+};
+
+export const removeactiveThunderstormOutlookReference = () => {
+  store.setState((state) => {
+    return {
+      ...state,
+      activeThunderstormOutlookReference: undefined,
     };
   });
 };

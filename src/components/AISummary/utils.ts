@@ -1,4 +1,8 @@
-import type { Alert, IssuedWarningOrWatche } from '@/types';
+import type {
+  Alert,
+  IssuedWarningOrWatche,
+  ThunderstormOutlookItem,
+} from '@/types';
 import type { DateTime } from 'luxon';
 import type { SevereThunderstormLevel } from '../warnings-and-watches-indicators/severe-thunderstorm';
 
@@ -89,4 +93,20 @@ export function getProgressUpdater(openAICalls: number) {
       };
     }
   };
+}
+
+export function getThunderstormOutlookDate(
+  thunderstormOutlookItem: ThunderstormOutlookItem,
+): string {
+  // => e.g. 26 Jan 2026
+  const header = thunderstormOutlookItem.header; // e.g., "Valid from midnight Sun, 25 Jan to noon Mon, 26 Jan"
+  const dateRegex =
+    /\b\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\b/gi;
+  const matches = header.match(dateRegex);
+  if (matches && matches.length > 0) {
+    return matches[matches.length - 1]; // Return the last matched date
+  } else {
+    console.error('No date found in thunderstorm outlook header:', header);
+    return '';
+  }
 }

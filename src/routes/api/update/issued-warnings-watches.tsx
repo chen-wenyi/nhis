@@ -18,7 +18,8 @@ export const Route = createFileRoute('/api/update/issued-warnings-watches')({
           });
           const { feed } = parser.parse(data) as CAP;
           if (!feed.entry) {
-            return Response.json(null);
+            feed.entry = [];
+            console.log('There is no issued warnings and watches entries.');
           }
 
           // if entry is single object, convert to array

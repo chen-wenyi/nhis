@@ -3,16 +3,22 @@ import {
   useSevereWeatherOutlook,
   useThunderstormOutlook,
 } from '@/queries';
-import type { IssuedWarningOrWatche, SevereWeatherOutlook } from '@/types';
+import type {
+  IssuedWarningOrWatche,
+  SevereWeatherOutlookItem,
+  ThunderstormOutlookItem,
+} from '@/types';
 import { DateTime, Interval } from 'luxon';
 import { useEffect, useState } from 'react';
 import { Progress } from '../ui/progress';
 import { SummaryItem } from './SummaryItem';
+import { getThunderstormOutlookDate } from './utils';
 
 type Summary = {
   date: DateTime;
   issuedWarningsAndWatches: IssuedWarningOrWatche[];
-  severeWeatherOutlook?: SevereWeatherOutlook;
+  severeWeatherOutlook?: SevereWeatherOutlookItem;
+  thunderstormOutlookItems: ThunderstormOutlookItem[];
 };
 
 export function AISummary() {
@@ -31,7 +37,11 @@ export function AISummary() {
   const [loadingProgress, setLoadingProgress] = useState(0);
 
   useEffect(() => {
-    if (isIssuedWarningsAndWatchesFetched && severeWeatherOutlook) {
+    if (
+      isIssuedWarningsAndWatchesFetched &&
+      severeWeatherOutlook &&
+      thunderstormOutlook
+    ) {
       const start = DateTime.now().startOf('day');
       const end = DateTime.fromFormat(
         severeWeatherOutlook.outlookItems[
@@ -47,7 +57,18 @@ export function AISummary() {
         .map((date) => ({
           date,
           issuedWarningsAndWatches: [],
-          severeWeatherOutlook,
+          severeWeatherOutlook: severeWeatherOutlook.outlookItems.find(
+            (item) => {
+              const outlookDate = DateTime.fromFormat(item.date, 'cccc dd LLL');
+              return date.hasSame(outlookDate, 'day');
+            },
+          ),
+          thunderstormOutlookItems: thunderstormOutlook.filter((o) => {
+            const dateStr = getThunderstormOutlookDate(o);
+            if (!dateStr) return false;
+            const outlookDate = DateTime.fromFormat(dateStr, 'dd LLL');
+            return date.hasSame(outlookDate, 'day');
+          }),
         }));
 
       issuedWarningsAndWatches?.entries.forEach((i) => {
@@ -63,9 +84,10 @@ export function AISummary() {
         });
       });
 
+      console.log('Generated AI summaries:', _summaries);
       setSummaries(_summaries);
     }
-  }, [issuedWarningsAndWatches, severeWeatherOutlook]);
+  }, [issuedWarningsAndWatches, severeWeatherOutlook, thunderstormOutlook]);
 
   useEffect(() => {
     const steps = [

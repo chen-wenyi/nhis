@@ -94,14 +94,14 @@ function ThunderstormOutlookItem({
   issuedDate: string;
   outlook: string;
 }) {
-  const activeSevereWeatherOutlookReference = useStore(
+  const activeThunderstormOutlookReference = useStore(
     store,
-    (state) => state.activeSevereWeatherOutlookReference,
+    (state) => state.activeThunderstormOutlookReference,
   );
 
   const isActive =
-    activeSevereWeatherOutlookReference &&
-    activeSevereWeatherOutlookReference.date ===
+    activeThunderstormOutlookReference &&
+    activeThunderstormOutlookReference.date ===
       DateTime.fromFormat(header, 'cccc dd MMM').toISODate();
 
   const ref = useRef<HTMLDivElement | null>(null);
@@ -120,8 +120,8 @@ function ThunderstormOutlookItem({
       </div>
       <ReactMarkdownWithHighlight
         markdown={outlook}
-        quotes={activeSevereWeatherOutlookReference?.quotes || []}
-        keywords={activeSevereWeatherOutlookReference?.keywords || []}
+        quotes={activeThunderstormOutlookReference?.quotes || []}
+        keywords={activeThunderstormOutlookReference?.keywords || []}
       />
     </div>
   );

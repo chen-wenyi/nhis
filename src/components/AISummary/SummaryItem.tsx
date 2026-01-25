@@ -1,49 +1,75 @@
 import { cn } from '@/lib/utils';
-import { useAISummary } from '@/queries';
+import {
+  useSevereWeatherOutlookAISummary,
+  useThunderstormOutlookAISummary,
+} from '@/queries';
 import {
   removeActiveAlertReference,
-  removeactiveSevereWeatherOutlookReference,
   setActiveAlertReference,
-  setActiveSevereWeatherOutlookReference,
   store,
 } from '@/store';
-import type { IssuedWarningOrWatche, SevereWeatherOutlook } from '@/types';
+import type {
+  IssuedWarningOrWatche,
+  SevereWeatherOutlookItem,
+  ThunderstormOutlookItem,
+} from '@/types';
 import { formatAlertName, sortAlerts } from '@/utils';
 import { useStore } from '@tanstack/react-store';
 import { DateTime } from 'luxon';
-import { useMemo } from 'react';
-import { AiOutlineFileSearch } from 'react-icons/ai';
+import { useEffect, useMemo } from 'react';
 import { LuFileSearch2 } from 'react-icons/lu';
 import { Skeleton } from '../ui/skeleton';
 import { AlertIndicator } from './AlertIndicator';
-import type { SevereWeatherAISummary } from './schema';
+import { SevereWeatherOutlookItemComp } from './SevereWeatherOutlookItemComp';
+import { ThunderstormOutlookItemComp } from './ThunderstormOutlookItemComp';
 import { formatAlertDuration, formatAreasList, groupAlerts } from './utils';
 
 type Summary = {
   date: DateTime;
   issuedWarningsAndWatches: IssuedWarningOrWatche[];
-  severeWeatherOutlook?: SevereWeatherOutlook;
+  severeWeatherOutlook?: SevereWeatherOutlookItem;
+  thunderstormOutlookItems?: ThunderstormOutlookItem[];
 };
 
 export function SummaryItem({
   date,
   issuedWarningsAndWatches,
   severeWeatherOutlook,
+  thunderstormOutlookItems,
 }: Summary) {
-  const correspondingOutlook = useMemo(() => {
-    if (!severeWeatherOutlook) return undefined;
-    return severeWeatherOutlook.outlookItems.find((item) => {
-      const outlookDate = DateTime.fromFormat(item.date, 'cccc dd LLL');
-      return date.hasSame(outlookDate, 'day');
-    });
-  }, [severeWeatherOutlook, date]);
-
-  const aiSummary = useAISummary(
-    correspondingOutlook ? [correspondingOutlook.outlook] : undefined,
+  const severeWeatherOutlookAISummary = useSevereWeatherOutlookAISummary(
+    severeWeatherOutlook ? [severeWeatherOutlook.outlook] : undefined,
   );
 
-  const isLoading = aiSummary[0]?.isLoading ?? false;
-  const outlooks = aiSummary[0]?.data?.chanceOfUpgrade || [];
+  const thunderstormOutlookAISummary = useThunderstormOutlookAISummary(
+    thunderstormOutlookItems
+      ? thunderstormOutlookItems.map((o) => o.outlook)
+      : undefined,
+  );
+
+  const isSevereWeatherOutlookLoading =
+    severeWeatherOutlookAISummary[0]?.isLoading ?? false;
+  const severeWeatherOutlookAISummaryContent =
+    severeWeatherOutlookAISummary[0]?.data?.chanceOfUpgrade || [];
+
+  const isThunderstormOutlookLoading =
+    thunderstormOutlookAISummary.some((query) => query.isLoading) || false;
+
+  const thunderstormOutlookAISummaryContent = thunderstormOutlookAISummary
+    .flatMap((o) => o.data)
+    .filter((d) => d !== undefined);
+
+  useEffect(() => {
+    if (
+      isThunderstormOutlookLoading ||
+      thunderstormOutlookAISummaryContent.length === 0
+    )
+      return;
+    console.log(
+      'thunderstormOutlookAISummary',
+      thunderstormOutlookAISummaryContent,
+    );
+  }, [isThunderstormOutlookLoading, thunderstormOutlookAISummaryContent]);
 
   const groupedIssuedWarningsAndWatchesToday = useMemo(() => {
     return groupAlerts(
@@ -85,7 +111,7 @@ export function SummaryItem({
   return (
     <div className="flex flex-col" key={date.toISODate()}>
       <span className="font-semibold">{date.toFormat('cccc dd LLLL')}</span>
-      {isLoading ? (
+      {isSevereWeatherOutlookLoading ? (
         <div className="flex flex-col gap-2 py-4">
           <Skeleton className="h-6 w-full" />
           <Skeleton className="h-6 w-full" />
@@ -133,23 +159,42 @@ export function SummaryItem({
             )}
           </div>
           <div>
-            {outlooks.length > 0 && (
+            {severeWeatherOutlookAISummaryContent.length > 0 && (
               <ul className="text-sm list-disc pl-6 space-y-1">
-                {outlooks.map((outlook, index) => (
+                {severeWeatherOutlookAISummaryContent.map((outlook, index) => (
                   <li className="py-2" key={index}>
-                    <SevereWeatherOutlookItem date={date} outlook={outlook} />
+                    <SevereWeatherOutlookItemComp
+                      date={date}
+                      outlook={outlook}
+                    />
                   </li>
                 ))}
               </ul>
             )}
           </div>
           <div>
-            {issuedWarningsAndWatches.length === 0 && outlooks.length === 0 && (
-              <div className="text-sm py-2">
-                There is <span className="underline">minimal</span> risk of
-                severe weather.
-              </div>
+            {thunderstormOutlookAISummaryContent.length > 0 && (
+              <ul className="text-sm list-disc pl-6 space-y-1">
+                {thunderstormOutlookAISummaryContent.map((outlook, index) => (
+                  <li className="py-2" key={index}>
+                    <ThunderstormOutlookItemComp
+                      date={date}
+                      outlook={outlook}
+                    />
+                  </li>
+                ))}
+              </ul>
             )}
+          </div>
+          <div>
+            {issuedWarningsAndWatches.length === 0 &&
+              severeWeatherOutlookAISummaryContent.length === 0 &&
+              thunderstormOutlookAISummaryContent.length === 0 && (
+                <div className="text-sm py-2">
+                  There is <span className="underline">minimal</span> risk of
+                  severe weather.
+                </div>
+              )}
           </div>
         </>
       )}
@@ -337,44 +382,6 @@ function IssuedAlertsEnd({
   );
 }
 
-function SevereWeatherOutlookItem({
-  date,
-  outlook,
-}: {
-  date: DateTime;
-  outlook: NonNullable<SevereWeatherAISummary['chanceOfUpgrade']>[number];
-}) {
-  const name = outlook.upgradeTo.toLowerCase();
-  const event = name.includes('rain')
-    ? 'rainfall'
-    : name.includes('wind')
-      ? 'strong gales'
-      : name.includes('thunderstorm')
-        ? 'thunderstorms'
-        : name;
-  const criteria = name.includes('warning')
-    ? 'warning'
-    : name.includes('watch')
-      ? 'watch'
-      : name;
-  const areas =
-    outlook.areas && outlook.areas.length > 0
-      ? formatAreasList(outlook.areas)
-      : '';
-  return (
-    <span>
-      There is <span className="underline lowercase">{outlook.chance}</span>{' '}
-      confidence that {event} will reach {criteria} criteria
-      {areas && areas.length > 0 ? ` for ${areas}` : ''}.
-      <OutlookRefIcon
-        date={date}
-        quotes={outlook.quotes}
-        keywords={outlook.keywords}
-      />
-    </span>
-  );
-}
-
 function AlertRef({ date, alertIds }: { date: DateTime; alertIds: string[] }) {
   const activeAlertReference = useStore(
     store,
@@ -401,51 +408,6 @@ function AlertRef({ date, alertIds }: { date: DateTime; alertIds: string[] }) {
       className={cn(
         'inline align-text-bottom ml-2 text-gray-300 cursor-pointer hover:text-blue-500',
         isActive && 'text-blue-500',
-      )}
-      size={16}
-      onClick={onClick}
-    />
-  );
-}
-
-function OutlookRefIcon({
-  date,
-  quotes,
-  keywords,
-}: {
-  date: DateTime;
-  quotes: string[];
-  keywords: string[];
-}) {
-  const activeSevereWeatherOutlookReference = useStore(
-    store,
-    (state) => state.activeSevereWeatherOutlookReference,
-  );
-  const isActive =
-    activeSevereWeatherOutlookReference &&
-    activeSevereWeatherOutlookReference.date === date.toISODate() &&
-    activeSevereWeatherOutlookReference.quotes.toString() ===
-      quotes.toString() &&
-    activeSevereWeatherOutlookReference.keywords.toString() ===
-      keywords.toString();
-
-  const onClick = () => {
-    if (!isActive) {
-      setActiveSevereWeatherOutlookReference({
-        quotes,
-        keywords,
-        date: date.toISODate()!,
-      });
-    } else {
-      removeactiveSevereWeatherOutlookReference();
-    }
-  };
-
-  return (
-    <AiOutlineFileSearch
-      className={cn(
-        'inline align-text-bottom ml-2 text-gray-300 cursor-pointer hover:text-yellow-500',
-        isActive && 'text-yellow-500',
       )}
       size={16}
       onClick={onClick}
