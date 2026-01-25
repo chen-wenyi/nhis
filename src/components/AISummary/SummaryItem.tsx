@@ -111,7 +111,7 @@ export function SummaryItem({
   return (
     <div className="flex flex-col" key={date.toISODate()}>
       <span className="font-semibold">{date.toFormat('cccc dd LLLL')}</span>
-      {isSevereWeatherOutlookLoading ? (
+      {isSevereWeatherOutlookLoading || isThunderstormOutlookLoading ? (
         <div className="flex flex-col gap-2 py-4">
           <Skeleton className="h-6 w-full" />
           <Skeleton className="h-6 w-full" />
