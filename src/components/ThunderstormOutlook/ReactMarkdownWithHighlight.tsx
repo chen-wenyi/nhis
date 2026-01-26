@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 
@@ -23,7 +23,7 @@ function highlightKeywords(text: string, keywords: string[]): string {
     const pattern = new RegExp(`(${escapeRegex(keyword)})`, 'gi');
     return acc.replace(
       pattern,
-      '<mark class="bg-yellow-200 rounded-sm">$1</mark>'
+      '<mark class="bg-yellow-200 rounded-sm">$1</mark>',
     );
   }, text);
 }
@@ -31,7 +31,7 @@ function highlightKeywords(text: string, keywords: string[]): string {
 function applyHighlights(
   markdown: string,
   quotes: string[],
-  keywords: string[]
+  keywords: string[],
 ): string {
   // If no quotes, just highlight keywords across the text
   if (!quotes.length) {
@@ -44,7 +44,7 @@ function applyHighlights(
     if (!quote) return;
     const highlightedQuote = `<span class="text-black">${highlightKeywords(
       quote,
-      keywords
+      keywords,
     )}</span>`;
     const pattern = new RegExp(escapeRegex(quote), 'i');
     result = result.replace(pattern, highlightedQuote);
@@ -60,15 +60,38 @@ export function ReactMarkdownWithHighlight({
 }: Props) {
   const content = useMemo(
     () => applyHighlights(markdown, quotes, keywords),
-    [markdown, quotes, keywords]
+    [markdown, quotes, keywords],
   );
 
   const containerClass = [quotes.length ? 'text-gray-400' : '']
     .filter(Boolean)
     .join(' ');
 
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (containerRef.current && quotes.length > 0) {
+        const mark = containerRef.current.querySelector('mark');
+        if (mark) {
+          mark.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+            inline: 'nearest',
+          });
+        }
+      }
+    }, 500);
+
+    return () => clearTimeout(timeout);
+  }, [content, quotes]);
+
   return (
-    <div className={containerClass} style={{ whiteSpace: 'pre-line' }}>
+    <div
+      ref={containerRef}
+      className={containerClass}
+      style={{ whiteSpace: 'pre-line' }}
+    >
       <ReactMarkdown rehypePlugins={[rehypeRaw]}>{content}</ReactMarkdown>
     </div>
   );
