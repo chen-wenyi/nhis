@@ -131,9 +131,8 @@ export function AISummary() {
     isThunderstormLoading;
 
   const regenerate = async () => {
-    const sum = summaries;
     const id = _AISummaryId;
-    setSummaries([]);
+    // setSummaries([]);
     setAISummaryId(undefined);
 
     if (id) {
@@ -147,16 +146,19 @@ export function AISummary() {
         queryKey: ['aiSummaryGeneratedAt'],
         exact: false,
       });
-      queryClient.removeQueries({
-        queryKey: ['aiSevereWeatherOutlookSummary'],
-        exact: false,
-      });
-      queryClient.removeQueries({
-        queryKey: ['aiThunderstormOutlookSummary'],
-        exact: false,
-      });
 
-      setSummaries(sum);
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ['aiSevereWeatherOutlookSummary'],
+          exact: false,
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ['aiThunderstormOutlookSummary'],
+          exact: false,
+        }),
+      ]);
+
+      // setSummaries(sum);
       setAISummaryId(id);
     }
   };
