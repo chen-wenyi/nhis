@@ -3,7 +3,7 @@ import type { AISummaryId, DateString } from '@/types';
 import { createServerFn } from '@tanstack/react-start';
 import OpenAI from 'openai';
 import { zodResponseFormat } from 'openai/helpers/zod';
-import { updateAISummaryGeneratedAt } from '../updateAISummaryGenAt';
+import { updateAISummaryGeneratedAt } from '../AISummaryGenAt';
 import { createUserPrompt, systemPrompt } from './prompt';
 import type { SevereWeatherAISummary } from './schema';
 import { SevereWeatherAISummarySchema } from './schema';
@@ -79,5 +79,27 @@ export const generateSevereWeatherOutlookAISummary = createServerFn()
     } catch (error) {
       console.error('Error generating severe weather AI summary:', error);
       throw new Error(`Failed to generate AI summary: ${error}`);
+    }
+  });
+
+export const removeSevereWeatherOutlookAISummary = createServerFn()
+  .inputValidator((data: { id: AISummaryId }) => data)
+  .handler(async ({ data }) => {
+    console.log('Removing severe weather outlook AI summary...');
+
+    const { id } = data;
+
+    const collection = await getSevereWeatherAISummaryCollection();
+
+    const deleteResult = await collection.deleteMany({
+      'identifier.severeWeatherOutlookId': id.severeWeatherOutlook,
+    });
+
+    if (deleteResult.deletedCount && deleteResult.deletedCount > 0) {
+      console.log(
+        `Successfully removed ${deleteResult.deletedCount} severe weather AI summary(ies) from database`,
+      );
+    } else {
+      console.log('No severe weather AI summary found to remove');
     }
   });

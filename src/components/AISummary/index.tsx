@@ -5,9 +5,15 @@ import {
   useSevereWeatherOutlook,
   useThunderstormOutlook,
 } from '@/queries';
+import { removeAISummaryGeneratedAt } from '@/serverFuncs/AISummaryGenAt';
+import { removeSevereWeatherOutlookAISummary } from '@/serverFuncs/generateSevereWeatherOutlookAISummary';
+import { removeThunderstormOutlookAISummary } from '@/serverFuncs/generateThunderstormOutlookAISummary';
 import type { AISummaryId } from '@/types';
+import { useQueryClient } from '@tanstack/react-query';
 import { DateTime, Interval } from 'luxon';
 import { useEffect, useState } from 'react';
+import { TbRefresh } from 'react-icons/tb';
+import { Button } from '../ui/button';
 import { Progress } from '../ui/progress';
 import { Skeleton } from '../ui/skeleton';
 import type { Summary } from './SummaryItem';
@@ -15,6 +21,8 @@ import { SummaryItem } from './SummaryItem';
 import { getThunderstormOutlookDate } from './utils';
 
 export function AISummary() {
+  const queryClient = useQueryClient();
+
   const {
     data: issuedWarningsAndWatches,
     isLoading: isIssuedWarningsAndWatchesLoading,
@@ -117,6 +125,37 @@ export function AISummary() {
     isSevereWeatherLoading ||
     isThunderstormLoading;
 
+  const regenerate = async () => {
+    const sum = summaries;
+    const id = _AISummaryId;
+    setSummaries([]);
+    setAISummaryId(undefined);
+
+    if (id) {
+      await Promise.all([
+        removeAISummaryGeneratedAt({ data: { id } }),
+        removeSevereWeatherOutlookAISummary({ data: { id } }),
+        removeThunderstormOutlookAISummary({ data: { id } }),
+      ]);
+
+      queryClient.removeQueries({
+        queryKey: ['aiSummaryGeneratedAt'],
+        exact: false,
+      });
+      queryClient.removeQueries({
+        queryKey: ['aiSevereWeatherOutlookSummary'],
+        exact: false,
+      });
+      queryClient.removeQueries({
+        queryKey: ['aiThunderstormOutlookSummary'],
+        exact: false,
+      });
+
+      setSummaries(sum);
+      setAISummaryId(id);
+    }
+  };
+
   return (
     <div className="flex flex-col gap-4 p-4 h-full overflow-y-auto">
       {isDataLoading ? (
@@ -128,15 +167,23 @@ export function AISummary() {
         </div>
       ) : (
         <>
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
             <span className="font-semibold">AI Generated At: </span>
-            {genAt.data ? (
+            {genAt.isFetching || !genAt.data ? (
+              <Skeleton className="w-36 h-6" />
+            ) : (
               DateTime.fromJSDate(genAt.data).toLocaleString(
                 DateTime.DATETIME_MED,
               )
-            ) : (
-              <Skeleton className="w-36 h-6" />
             )}
+            <Button
+              className="cursor-pointer ml-4"
+              variant="outline"
+              onClick={regenerate}
+            >
+              Regenerate
+              <TbRefresh />
+            </Button>
           </div>
           {summaries.map((summary) => (
             <SummaryItem key={summary.date.toISODate()} {...summary} />

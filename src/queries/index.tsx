@@ -1,11 +1,13 @@
-import { checkAISummaryGeneratedAt } from '@/serverFuncs/checkAISummaryGenAt';
+import {
+  checkAISummaryGeneratedAt,
+  updateAISummaryGeneratedAt,
+} from '@/serverFuncs/AISummaryGenAt';
 import { fetchAISummaryGeneratedAt } from '@/serverFuncs/fetchAISummaryGenAt';
 import { fetchSevereWeatherOutlook } from '@/serverFuncs/fetchSevereWeatherOutlook';
 import { fetchThunderstormOutlook } from '@/serverFuncs/fetchThunderstormOutlook';
 import { generateSevereWeatherOutlookAISummary } from '@/serverFuncs/generateSevereWeatherOutlookAISummary';
 import { generateThunderstormOutlookAISummary } from '@/serverFuncs/generateThunderstormOutlookAISummary';
 import { fetchIssuedWarningsAndWatches } from '@/serverFuncs/issuedWarningsAndWatches';
-import { updateAISummaryGeneratedAt } from '@/serverFuncs/updateAISummaryGenAt';
 import type { AISummaryId, DateString } from '@/types';
 import { useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';

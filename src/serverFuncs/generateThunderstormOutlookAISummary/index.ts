@@ -3,7 +3,7 @@ import type { AISummaryId, DateString } from '@/types';
 import { createServerFn } from '@tanstack/react-start';
 import OpenAI from 'openai';
 import { zodResponseFormat } from 'openai/helpers/zod';
-import { updateAISummaryGeneratedAt } from '../updateAISummaryGenAt';
+import { updateAISummaryGeneratedAt } from '../AISummaryGenAt';
 import { createUserPrompt, systemPrompt } from './prompt';
 import { ThunderstormAISummarySchema } from './schema';
 
@@ -79,4 +79,24 @@ export const generateThunderstormOutlookAISummary = createServerFn()
     }
   });
 
-// Failed to generate AI summary: Error: Root schema must have type: 'object' but got type: 'array'"
+export const removeThunderstormOutlookAISummary = createServerFn()
+  .inputValidator((data: { id: AISummaryId }) => data)
+  .handler(async ({ data }) => {
+    console.log('Removing thunderstorm outlook AI summary...');
+
+    const { id } = data;
+
+    const collection = await getThunderstormAISummaryCollection();
+
+    const deleteResult = await collection.deleteMany({
+      'identifier.thunderstormOutlookId': id.thunderstormOutlook,
+    });
+
+    if (deleteResult.deletedCount && deleteResult.deletedCount > 0) {
+      console.log(
+        `Successfully removed ${deleteResult.deletedCount} thunderstorm AI summary(ies) from database`,
+      );
+    } else {
+      console.log('No thunderstorm AI summary found to remove');
+    }
+  });

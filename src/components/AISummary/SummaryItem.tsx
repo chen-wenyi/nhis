@@ -53,12 +53,12 @@ export function SummaryItem({
   );
 
   const isSevereWeatherOutlookLoading =
-    severeWeatherOutlookAISummary[0]?.isLoading ?? false;
+    severeWeatherOutlookAISummary.some((query) => query.isFetching) || false;
   const severeWeatherOutlookAISummaryContent =
     severeWeatherOutlookAISummary[0]?.data || [];
 
   const isThunderstormOutlookLoading =
-    thunderstormOutlookAISummary.some((query) => query.isLoading) || false;
+    thunderstormOutlookAISummary.some((query) => query.isFetching) || false;
 
   const thunderstormOutlookAISummaryContent = thunderstormOutlookAISummary
     .flatMap((o) => o.data)
