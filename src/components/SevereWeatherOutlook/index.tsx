@@ -12,6 +12,8 @@ import { setActiveOutlookTab, store } from '@/store';
 import { useStore } from '@tanstack/react-store';
 import { DateTime } from 'luxon';
 import { useEffect, useRef } from 'react';
+import { Button } from '../ui/button';
+import { ButtonGroup } from '../ui/button-group';
 import { Skeleton } from '../ui/skeleton';
 import { ReactMarkdownWithHighlight } from './ReactMarkdownWithHighlight';
 
@@ -26,15 +28,23 @@ export default function SevereWeatherOutlook() {
     <Card>
       <CardHeader>
         <CardTitle>
-          Severe Weather Outlook /{' '}
-          <span
-            className="text-gray-400 cursor-pointer"
-            onClick={() => setActiveOutlookTab('thunderstormOutlook')}
-          >
-            Thunderstorm Outlook
-          </span>
+          <ButtonGroup className="w-full flex">
+            <Button
+              className="flex-1 h-12"
+              onClick={() => setActiveOutlookTab('severeWeatherOutlook')}
+            >
+              Severe Weather Outlook
+            </Button>
+            <Button
+              variant={'outline'}
+              className="flex-1 text-black/65 h-12"
+              onClick={() => setActiveOutlookTab('thunderstormOutlook')}
+            >
+              Thunderstorm Outlook
+            </Button>
+          </ButtonGroup>
         </CardTitle>
-        <CardDescription>
+        <CardDescription className="mt-2 ml-1">
           <div className="flex gap-6">
             <span>
               Source:{' '}
