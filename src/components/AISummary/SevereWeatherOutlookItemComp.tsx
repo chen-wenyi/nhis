@@ -30,10 +30,7 @@ export function SevereWeatherOutlookItemComp({
     : name.includes('watch')
       ? 'watch'
       : name;
-  const areas =
-    outlook.areas && outlook.areas.length > 0
-      ? formatAreasList(outlook.areas)
-      : '';
+  const areas = outlook.areas.length > 0 ? formatAreasList(outlook.areas) : '';
   return (
     <span>
       There is <span className="underline lowercase">{outlook.chance}</span>{' '}
