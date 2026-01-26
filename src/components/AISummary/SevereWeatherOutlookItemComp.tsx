@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import type { SevereWeatherAISummary } from '@/serverFuncs/generateSevereWeatherOutlookAISummary/schema';
+import type { SevereWeatherOutlookAISummary } from '@/serverFuncs/generateSevereWeatherOutlookAISummary/schema';
 import {
   removeactiveSevereWeatherOutlookReference,
   setActiveSevereWeatherOutlookReference,
@@ -15,7 +15,7 @@ export function SevereWeatherOutlookItemComp({
   outlook,
 }: {
   date: DateTime;
-  outlook: NonNullable<SevereWeatherAISummary['chanceOfUpgrade']>[number];
+  outlook: SevereWeatherOutlookAISummary[number];
 }) {
   const name = outlook.upgradeTo.toLowerCase();
   const event = name.includes('rain')

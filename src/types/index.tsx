@@ -1,3 +1,8 @@
+import type { SevereWeatherOutlookAISummary } from '@/serverFuncs/generateSevereWeatherOutlookAISummary/schema';
+import type { ThunderstormOutlookAISummary } from '@/serverFuncs/generateThunderstormOutlookAISummary/schema';
+
+export type DateString = string; // in ISO format
+
 // issued warnings and watches Types
 export type CAP = {
   feed: {
@@ -43,8 +48,6 @@ export type Alert = {
   };
   _history?: Alert[];
 };
-
-type DateString = string;
 
 // Issued Warnings and Watches
 export type IssuedWarningOrWatche = {
@@ -176,3 +179,23 @@ export type IssuedWarningsAndWatchesDocument = Omit<
   IssuedWarningsAndWatches,
   'id'
 >;
+
+export type SevereWeatherAISummaryDocument = {
+  summary: SevereWeatherOutlookAISummary;
+  identifier: {
+    severeWeatherOutlookId: string;
+    date: DateString;
+    outlook: string;
+  };
+  insertedAt: Date;
+};
+
+export type ThunderstormAISummaryDocument = {
+  summary: ThunderstormOutlookAISummary[];
+  identifier: {
+    thunderstormOutlookId: string;
+    date: DateString;
+    outlook: string;
+  };
+  insertedAt: Date;
+};

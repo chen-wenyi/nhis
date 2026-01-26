@@ -3,6 +3,7 @@ import { fetchThunderstormOutlook } from '@/serverFuncs/fetchThunderstormOutlook
 import { generateSevereWeatherOutlookAISummary } from '@/serverFuncs/generateSevereWeatherOutlookAISummary';
 import { generateThunderstormOutlookAISummary } from '@/serverFuncs/generateThunderstormOutlookAISummary';
 import { fetchIssuedWarningsAndWatches } from '@/serverFuncs/issuedWarningsAndWatches';
+import type { DateString } from '@/types';
 import { useQueries, useQuery } from '@tanstack/react-query';
 
 export const useIssuedWarningsAndWatches = () =>
@@ -27,27 +28,29 @@ export const useThunderstormOutlook = () =>
   });
 
 export const useSevereWeatherOutlookAISummary = (
-  outlooks: string[] | undefined,
+  id: string,
+  date: DateString,
+  outlooks: string[],
 ) =>
   useQueries({
-    queries:
-      outlooks?.map((outlook) => ({
-        queryKey: ['aiSevereWeatherOutlookSummary', outlook],
-        queryFn: () =>
-          generateSevereWeatherOutlookAISummary({ data: { outlook } }),
-        refetchOnWindowFocus: false,
-      })) || [],
+    queries: outlooks.map((outlook) => ({
+      queryKey: ['aiSevereWeatherOutlookSummary', id, date, outlook],
+      queryFn: () =>
+        generateSevereWeatherOutlookAISummary({ data: { outlook, id, date } }),
+      refetchOnWindowFocus: false,
+    })),
   });
 
 export const useThunderstormOutlookAISummary = (
-  outlooks: string[] | undefined,
+  id: string,
+  date: DateString,
+  outlooks: string[],
 ) =>
   useQueries({
-    queries:
-      outlooks?.map((outlook) => ({
-        queryKey: ['aiThunderstormOutlookSummary', outlook],
-        queryFn: () =>
-          generateThunderstormOutlookAISummary({ data: { outlook } }),
-        refetchOnWindowFocus: false,
-      })) || [],
+    queries: outlooks.map((outlook) => ({
+      queryKey: ['aiThunderstormOutlookSummary', id, date, outlook],
+      queryFn: () =>
+        generateThunderstormOutlookAISummary({ data: { outlook, id, date } }),
+      refetchOnWindowFocus: false,
+    })),
   });

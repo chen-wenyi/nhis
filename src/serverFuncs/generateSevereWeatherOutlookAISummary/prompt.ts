@@ -71,7 +71,7 @@ GENERAL RULES
 - Use only information explicitly stated in the text.
 - Do NOT infer or generalise.
 - Each list item MUST include at least one exact quotation as evidence.
-- If no items exist for a list, return null for that list.
+- If no items exist for a list, return empty list.
 - Output MUST conform exactly to the provided JSON schema.
 
 --------------------------------------------------

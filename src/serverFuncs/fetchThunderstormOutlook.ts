@@ -5,7 +5,7 @@ import { createServerFn } from '@tanstack/react-start';
 export const fetchThunderstormOutlook = createServerFn().handler(
   async (): Promise<ThunderstormOutlook | undefined> => {
     const collection = await getThunderstormOutlookCollection();
-    const outlook = await collection.findOne({}, { sort: { updatedAt: -1 } });
+    const outlook = await collection.findOne({}, { sort: { insertedAt: -1 } });
     if (!outlook) {
       console.warn('No Severe Weather Outlook data found in the database.');
       return undefined;

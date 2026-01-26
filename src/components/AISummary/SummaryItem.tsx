@@ -24,11 +24,15 @@ import { SevereWeatherOutlookItemComp } from './SevereWeatherOutlookItemComp';
 import { ThunderstormOutlookItemComp } from './ThunderstormOutlookItemComp';
 import { formatAlertDuration, formatAreasList, groupAlerts } from './utils';
 
-type Summary = {
-  date: DateTime;
+export type Summary = {
+  date: DateTime<true>;
   issuedWarningsAndWatches: IssuedWarningOrWatche[];
   severeWeatherOutlook?: SevereWeatherOutlookItem;
-  thunderstormOutlookItems?: ThunderstormOutlookItem[];
+  thunderstormOutlookItems: ThunderstormOutlookItem[];
+  id: {
+    thunderstormOutlook: string;
+    severeWeatherOutlook: string;
+  };
 };
 
 export function SummaryItem({
@@ -36,21 +40,24 @@ export function SummaryItem({
   issuedWarningsAndWatches,
   severeWeatherOutlook,
   thunderstormOutlookItems,
+  id,
 }: Summary) {
   const severeWeatherOutlookAISummary = useSevereWeatherOutlookAISummary(
-    severeWeatherOutlook ? [severeWeatherOutlook.outlook] : undefined,
+    id.severeWeatherOutlook,
+    date.toUTC().toISO(),
+    severeWeatherOutlook ? [severeWeatherOutlook.outlook] : [],
   );
 
   const thunderstormOutlookAISummary = useThunderstormOutlookAISummary(
-    thunderstormOutlookItems
-      ? thunderstormOutlookItems.map((o) => o.outlook)
-      : undefined,
+    id.thunderstormOutlook,
+    date.toUTC().toISO(),
+    thunderstormOutlookItems.map((o) => o.outlook),
   );
 
   const isSevereWeatherOutlookLoading =
     severeWeatherOutlookAISummary[0]?.isLoading ?? false;
   const severeWeatherOutlookAISummaryContent =
-    severeWeatherOutlookAISummary[0]?.data?.chanceOfUpgrade || [];
+    severeWeatherOutlookAISummary[0]?.data || [];
 
   const isThunderstormOutlookLoading =
     thunderstormOutlookAISummary.some((query) => query.isLoading) || false;
@@ -111,93 +118,84 @@ export function SummaryItem({
   return (
     <div className="flex flex-col" key={date.toISODate()}>
       <span className="font-semibold">{date.toFormat('cccc dd LLLL')}</span>
-      {isSevereWeatherOutlookLoading || isThunderstormOutlookLoading ? (
+      <div>
+        {issuedWarningsAndWatches.length > 0 &&
+          groupedIssuedWarningsAndWatchesToday.length > 0 && (
+            <ul className="text-sm">
+              {groupedIssuedWarningsAndWatchesToday.map((group) => (
+                <li className="py-2" key={group[0].id}>
+                  <IssuedAlerts issuedWarningsAndWatches={group} date={date} />
+                </li>
+              ))}
+            </ul>
+          )}
+        {groupedIssuedWarningsAndWatchesRemaining.length > 0 && (
+          <ul className="text-sm">
+            {groupedIssuedWarningsAndWatchesRemaining.map((group) => (
+              <li className="py-2" key={group[0].id}>
+                <IssuedAlertsRemaining
+                  issuedWarningsAndWatches={group}
+                  date={date}
+                />
+              </li>
+            ))}
+          </ul>
+        )}
+        {groupedIssuedWarningsAndWatchesEnd.length > 0 && (
+          <ul className="text-sm">
+            {groupedIssuedWarningsAndWatchesEnd.map((group) => (
+              <li className="py-2" key={group[0].id}>
+                <IssuedAlertsEnd issuedWarningsAndWatches={group} date={date} />
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+      {isSevereWeatherOutlookLoading ? (
         <div className="flex flex-col gap-2 py-4">
           <Skeleton className="h-6 w-full" />
           <Skeleton className="h-6 w-full" />
           <Skeleton className="h-6 w-3/4" />
         </div>
       ) : (
-        <>
+        severeWeatherOutlookAISummaryContent.length > 0 && (
           <div>
-            {issuedWarningsAndWatches.length > 0 &&
-              groupedIssuedWarningsAndWatchesToday.length > 0 && (
-                <ul className="text-sm">
-                  {groupedIssuedWarningsAndWatchesToday.map((group) => (
-                    <li className="py-2" key={group[0].id}>
-                      <IssuedAlerts
-                        issuedWarningsAndWatches={group}
-                        date={date}
-                      />
-                    </li>
-                  ))}
-                </ul>
-              )}
-            {groupedIssuedWarningsAndWatchesRemaining.length > 0 && (
-              <ul className="text-sm">
-                {groupedIssuedWarningsAndWatchesRemaining.map((group) => (
-                  <li className="py-2" key={group[0].id}>
-                    <IssuedAlertsRemaining
-                      issuedWarningsAndWatches={group}
-                      date={date}
-                    />
-                  </li>
-                ))}
-              </ul>
-            )}
-            {groupedIssuedWarningsAndWatchesEnd.length > 0 && (
-              <ul className="text-sm">
-                {groupedIssuedWarningsAndWatchesEnd.map((group) => (
-                  <li className="py-2" key={group[0].id}>
-                    <IssuedAlertsEnd
-                      issuedWarningsAndWatches={group}
-                      date={date}
-                    />
-                  </li>
-                ))}
-              </ul>
-            )}
+            <ul className="text-sm list-disc pl-6 space-y-1">
+              {severeWeatherOutlookAISummaryContent.map((outlook, index) => (
+                <li className="py-2" key={index}>
+                  <SevereWeatherOutlookItemComp date={date} outlook={outlook} />
+                </li>
+              ))}
+            </ul>
           </div>
-          <div>
-            {severeWeatherOutlookAISummaryContent.length > 0 && (
-              <ul className="text-sm list-disc pl-6 space-y-1">
-                {severeWeatherOutlookAISummaryContent.map((outlook, index) => (
-                  <li className="py-2" key={index}>
-                    <SevereWeatherOutlookItemComp
-                      date={date}
-                      outlook={outlook}
-                    />
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-          <div>
-            {thunderstormOutlookAISummaryContent.length > 0 && (
-              <ul className="text-sm list-disc pl-6 space-y-1">
-                {thunderstormOutlookAISummaryContent.map((outlook, index) => (
-                  <li className="py-2" key={index}>
-                    <ThunderstormOutlookItemComp
-                      date={date}
-                      outlook={outlook}
-                    />
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-          <div>
-            {issuedWarningsAndWatches.length === 0 &&
-              severeWeatherOutlookAISummaryContent.length === 0 &&
-              thunderstormOutlookAISummaryContent.length === 0 && (
-                <div className="text-sm py-2">
-                  There is <span className="underline">minimal</span> risk of
-                  severe weather.
-                </div>
-              )}
-          </div>
-        </>
+        )
       )}
+      {isThunderstormOutlookLoading ? (
+        <div className="flex flex-col gap-2 py-4">
+          <Skeleton className="h-6 w-full" />
+          <Skeleton className="h-6 w-full" />
+          <Skeleton className="h-6 w-3/4" />
+        </div>
+      ) : (
+        thunderstormOutlookAISummaryContent.length > 0 && (
+          <div>
+            <ul className="text-sm list-disc pl-6 space-y-1">
+              {thunderstormOutlookAISummaryContent.map((outlook, index) => (
+                <li className="py-2" key={index}>
+                  <ThunderstormOutlookItemComp date={date} outlook={outlook} />
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      )}
+      {!isSevereWeatherOutlookLoading &&
+        !isThunderstormOutlookLoading &&
+        issuedWarningsAndWatches.length === 0 &&
+        severeWeatherOutlookAISummaryContent.length === 0 &&
+        thunderstormOutlookAISummaryContent.length === 0 && (
+          <MinimalRiskSevereWeatherOutlook />
+        )}
     </div>
   );
 }
@@ -412,5 +410,16 @@ function AlertRef({ date, alertIds }: { date: DateTime; alertIds: string[] }) {
       size={16}
       onClick={onClick}
     />
+  );
+}
+
+function MinimalRiskSevereWeatherOutlook() {
+  return (
+    <div>
+      <div className="text-sm py-2">
+        There is <span className="underline">minimal</span> risk of severe
+        weather.
+      </div>
+    </div>
   );
 }

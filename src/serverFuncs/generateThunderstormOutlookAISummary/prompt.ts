@@ -36,6 +36,8 @@ GENERAL RULES
   of New Zealand."), do NOT create an item. In that case the assistant MUST
   return an empty array (i.e. no items).
 
+- Do NOT create an item for any sentence where the risk is "Minimal" and the area is generic or non-specific (such as "elsewhere", "the remainder", "the rest of New Zealand", "other areas", or similar phrases). Only create items for specific, named regions or locations.
+
 --------------------------------------------------
 JSON / FORMATTING RULES
 --------------------------------------------------

@@ -3,23 +3,12 @@ import {
   useSevereWeatherOutlook,
   useThunderstormOutlook,
 } from '@/queries';
-import type {
-  IssuedWarningOrWatche,
-  SevereWeatherOutlookItem,
-  ThunderstormOutlookItem,
-} from '@/types';
 import { DateTime, Interval } from 'luxon';
 import { useEffect, useState } from 'react';
 import { Progress } from '../ui/progress';
+import type { Summary } from './SummaryItem';
 import { SummaryItem } from './SummaryItem';
 import { getThunderstormOutlookDate } from './utils';
-
-type Summary = {
-  date: DateTime;
-  issuedWarningsAndWatches: IssuedWarningOrWatche[];
-  severeWeatherOutlook?: SevereWeatherOutlookItem;
-  thunderstormOutlookItems: ThunderstormOutlookItem[];
-};
 
 export function AISummary() {
   const {
@@ -69,6 +58,10 @@ export function AISummary() {
             const outlookDate = DateTime.fromFormat(dateStr, 'dd LLL');
             return date.hasSame(outlookDate, 'day');
           }),
+          id: {
+            thunderstormOutlook: thunderstormOutlook.id,
+            severeWeatherOutlook: severeWeatherOutlook.id,
+          },
         }));
 
       issuedWarningsAndWatches?.entries.forEach((i) => {

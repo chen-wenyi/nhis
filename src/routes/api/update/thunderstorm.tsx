@@ -31,6 +31,9 @@ export const Route = createFileRoute('/api/update/thunderstorm')({
             return new Response('Initial Thunderstorm Outlook data inserted.');
           } else {
             const latestRefDates = latestOutlook.refIssuedDates;
+            console.log('Comparing issuedDates for updates...');
+            console.log('Latest refIssuedDates from DB:', latestRefDates);
+            console.log('Response refIssuedDates:', responseIssuedDates);
             if (responseIssuedDates.toString() !== latestRefDates.toString()) {
               console.log('New Thunderstorm Outlook data found. Updating DB.');
               collection.insertOne({

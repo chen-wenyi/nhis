@@ -1,6 +1,8 @@
 import type {
   IssuedWarningsAndWatchesDocument,
+  SevereWeatherAISummaryDocument,
   SevereWeatherOutlookDocument,
+  ThunderstormAISummaryDocument,
   ThunderstormOutlookDocument,
 } from '@/types';
 import { attachDatabasePool } from '@vercel/functions';
@@ -38,5 +40,17 @@ export async function getThunderstormOutlookCollection() {
 export async function getIssuedWarningsAndWatchesCollection() {
   return getCollection<IssuedWarningsAndWatchesDocument>(
     'issued_warnings_and_watches',
+  );
+}
+
+export async function getSevereWeatherAISummaryCollection() {
+  return getCollection<SevereWeatherAISummaryDocument>(
+    'severe_weather_ai_summary',
+  );
+}
+
+export async function getThunderstormAISummaryCollection() {
+  return getCollection<ThunderstormAISummaryDocument>(
+    'thunderstorm_ai_summary',
   );
 }

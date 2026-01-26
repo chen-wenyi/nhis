@@ -15,3 +15,5 @@ export const ThunderstormAISummarySchema = z.object({
 });
 
 export type ThunderstormAISummary = z.infer<typeof ThunderstormAISummarySchema>;
+
+export type ThunderstormOutlookAISummary = z.infer<typeof OutlookSchema>;

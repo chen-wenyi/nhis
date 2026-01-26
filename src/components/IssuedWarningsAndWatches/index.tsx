@@ -54,12 +54,16 @@ export default function IssuedWarningsAndWatches() {
           <LoadingSkeleton />
         ) : (
           <div className="flex flex-col gap-2 w-75 text-[0.9rem]">
-            {issuedWarningsAndWatches ? (
+            {issuedWarningsAndWatches &&
+            issuedWarningsAndWatches.entries.length > 0 ? (
               sortAlerts(issuedWarningsAndWatches.entries).map((i) => {
                 return <AlertCard issuedWarningOrWatche={i} key={i.id} />;
               })
             ) : (
-              <div>No issued warnings or watches.</div>
+              <div className="flex items-center gap-4">
+                {/* <AllgoodIcon /> */}
+                <span> No issued warnings or watches.</span>
+              </div>
             )}
           </div>
         )}
@@ -188,4 +192,8 @@ function AlertCard({
       )}
     </HoverCard>
   );
+}
+
+function AllgoodIcon() {
+  return <img src="allgood.png" alt="All good icon" className="w-12 h-12" />;
 }
