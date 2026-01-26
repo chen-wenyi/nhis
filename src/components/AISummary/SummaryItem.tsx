@@ -17,7 +17,7 @@ import type {
 import { formatAlertName, sortAlerts } from '@/utils';
 import { useStore } from '@tanstack/react-store';
 import { DateTime } from 'luxon';
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { LuFileSearch2 } from 'react-icons/lu';
 import { Skeleton } from '../ui/skeleton';
 import { AlertIndicator } from './AlertIndicator';
@@ -63,18 +63,6 @@ export function SummaryItem({
   const thunderstormOutlookAISummaryContent = thunderstormOutlookAISummary
     .flatMap((o) => o.data)
     .filter((d) => d !== undefined);
-
-  useEffect(() => {
-    if (
-      isThunderstormOutlookLoading ||
-      thunderstormOutlookAISummaryContent.length === 0
-    )
-      return;
-    console.log(
-      'thunderstormOutlookAISummary',
-      thunderstormOutlookAISummaryContent,
-    );
-  }, [isThunderstormOutlookLoading, thunderstormOutlookAISummaryContent]);
 
   const groupedIssuedWarningsAndWatchesToday = useMemo(() => {
     return groupAlerts(

@@ -10,6 +10,7 @@ export const fetchAISummaryGeneratedAt = createServerFn()
     const result = await collection.findOne({
       'summaryId.thunderstormOutlook': id.thunderstormOutlook,
       'summaryId.severeWeatherOutlook': id.severeWeatherOutlook,
+      'summaryId.issuedWarningsAndWatches': id.issuedWarningsAndWatches,
     });
     return result ? result.lastGeneratedAt : null;
   });

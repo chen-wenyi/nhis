@@ -18,7 +18,6 @@ export function AISummary() {
   const {
     data: issuedWarningsAndWatches,
     isLoading: isIssuedWarningsAndWatchesLoading,
-    isFetched: isIssuedWarningsAndWatchesFetched,
   } = useIssuedWarningsAndWatches();
   const { data: severeWeatherOutlook, isLoading: isSevereWeatherLoading } =
     useSevereWeatherOutlook();
@@ -32,15 +31,11 @@ export function AISummary() {
   const genAt = useAISummaryGeneratedAt(_AISummaryId);
   useAISummaryIsGenerated(_AISummaryId);
 
-  useEffect(() => {
-    console.log('AISummaryId updated:', _AISummaryId);
-  }, [_AISummaryId]);
-
   const [loadingProgress, setLoadingProgress] = useState(0);
 
   useEffect(() => {
     if (
-      isIssuedWarningsAndWatchesFetched &&
+      issuedWarningsAndWatches &&
       severeWeatherOutlook &&
       thunderstormOutlook
     ) {
@@ -55,6 +50,7 @@ export function AISummary() {
       const dates = interval.splitBy({ days: 1 }).map((i) => i.start);
 
       const _AISumId = {
+        issuedWarningsAndWatches: issuedWarningsAndWatches.id,
         thunderstormOutlook: thunderstormOutlook.id,
         severeWeatherOutlook: severeWeatherOutlook.id,
       };
@@ -79,7 +75,7 @@ export function AISummary() {
           AISummaryId: _AISumId,
         }));
 
-      issuedWarningsAndWatches?.entries.forEach((i) => {
+      issuedWarningsAndWatches.entries.forEach((i) => {
         const onset = DateTime.fromISO(i.onset);
         const expires = DateTime.fromISO(i.expires);
         _summaries.forEach((daySummary) => {
@@ -96,7 +92,11 @@ export function AISummary() {
       setSummaries(_summaries);
       setAISummaryId(_AISumId);
     }
-  }, [issuedWarningsAndWatches, severeWeatherOutlook, thunderstormOutlook]);
+  }, [
+    issuedWarningsAndWatches?.id,
+    severeWeatherOutlook?.id,
+    thunderstormOutlook?.id,
+  ]);
 
   useEffect(() => {
     const steps = [

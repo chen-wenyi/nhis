@@ -6,6 +6,7 @@ export type DateString = string; // in ISO format
 export type AISummaryId = {
   thunderstormOutlook: string;
   severeWeatherOutlook: string;
+  issuedWarningsAndWatches: string;
 };
 
 // issued warnings and watches Types

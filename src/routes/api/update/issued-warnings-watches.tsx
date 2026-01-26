@@ -121,7 +121,9 @@ export const Route = createFileRoute('/api/update/issued-warnings-watches')({
               });
 
               // indicate it's an update
-              return new Response('Update complete.');
+              return new Response(
+                'Same day update for Issued Warnings and Watches. Updating entries and insert. Update complete.',
+              );
             } else {
               console.log(
                 'New day update for Issued Warnings and Watches. Inserting new entries.',
@@ -136,7 +138,9 @@ export const Route = createFileRoute('/api/update/issued-warnings-watches')({
                 })),
                 insertedAt: new Date(),
               });
-              return new Response('Insertion complete.');
+              return new Response(
+                'New day update for Issued Warnings and Watches. Inserting new entries. Insertion complete.',
+              );
             }
           } else {
             await collection.insertOne({
@@ -148,7 +152,7 @@ export const Route = createFileRoute('/api/update/issued-warnings-watches')({
               })),
               insertedAt: new Date(),
             });
-            return new Response('Insertion complete.');
+            return new Response('Initial insertion complete.');
           }
         } catch (error) {
           console.error('Error fetching Warnings and Watches:', error);

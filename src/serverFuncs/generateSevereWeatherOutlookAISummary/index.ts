@@ -1,11 +1,9 @@
-import {
-  getAISummaryGenerationTimeCollection,
-  getSevereWeatherAISummaryCollection,
-} from '@/lib/mongodb';
+import { getSevereWeatherAISummaryCollection } from '@/lib/mongodb';
 import type { AISummaryId, DateString } from '@/types';
 import { createServerFn } from '@tanstack/react-start';
 import OpenAI from 'openai';
 import { zodResponseFormat } from 'openai/helpers/zod';
+import { updateAISummaryGeneratedAt } from '../updateAISummaryGenAt';
 import { createUserPrompt, systemPrompt } from './prompt';
 import type { SevereWeatherAISummary } from './schema';
 import { SevereWeatherAISummarySchema } from './schema';
@@ -75,13 +73,7 @@ export const generateSevereWeatherOutlookAISummary = createServerFn()
         insertedAt: new Date(),
       });
 
-      getAISummaryGenerationTimeCollection().then((timeCollection) => {
-        timeCollection.updateOne(
-          { summaryId: id },
-          { $set: { lastGeneratedAt: new Date() } },
-          { upsert: true },
-        );
-      });
+      await updateAISummaryGeneratedAt({ data: { id } });
 
       return result;
     } catch (error) {

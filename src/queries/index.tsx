@@ -1,9 +1,11 @@
+import { checkAISummaryGeneratedAt } from '@/serverFuncs/checkAISummaryGenAt';
 import { fetchAISummaryGeneratedAt } from '@/serverFuncs/fetchAISummaryGenAt';
 import { fetchSevereWeatherOutlook } from '@/serverFuncs/fetchSevereWeatherOutlook';
 import { fetchThunderstormOutlook } from '@/serverFuncs/fetchThunderstormOutlook';
 import { generateSevereWeatherOutlookAISummary } from '@/serverFuncs/generateSevereWeatherOutlookAISummary';
 import { generateThunderstormOutlookAISummary } from '@/serverFuncs/generateThunderstormOutlookAISummary';
 import { fetchIssuedWarningsAndWatches } from '@/serverFuncs/issuedWarningsAndWatches';
+import { updateAISummaryGeneratedAt } from '@/serverFuncs/updateAISummaryGenAt';
 import type { AISummaryId, DateString } from '@/types';
 import { useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
@@ -12,7 +14,7 @@ export const useIssuedWarningsAndWatches = () =>
   useQuery({
     queryKey: ['issuedWarningsAndWatches'],
     queryFn: async () => fetchIssuedWarningsAndWatches(),
-    refetchInterval: 1000 * 60 * 1,
+    refetchInterval: 1000 * 60 * 5, // refetch every 5 minutes
   });
 
 export const useSevereWeatherOutlook = () =>
@@ -87,6 +89,16 @@ export const useAISummaryIsGenerated = (id?: AISummaryId) => {
   const queryClient = useQueryClient();
 
   useEffect(() => {
+    if (id && id.issuedWarningsAndWatches) {
+      checkAISummaryGeneratedAt({ data: { id } }).then((isGenerated) => {
+        if (!isGenerated) {
+          updateAISummaryGeneratedAt({ data: { id } });
+        }
+      });
+    }
+  }, [id?.issuedWarningsAndWatches]);
+
+  useEffect(() => {
     let timeout: NodeJS.Timeout;
     if (id && id.severeWeatherOutlook && id.thunderstormOutlook) {
       timeout = setInterval(() => {
@@ -110,8 +122,6 @@ export const useAISummaryIsGenerated = (id?: AISummaryId) => {
         console.log(
           'severeWeatherQuerySuccessList length:',
           severeWeatherQuerySuccessList.length,
-        );
-        console.log(
           'thunderstormQuerySuccessList length:',
           thunderstormQuerySuccessList.length,
         );
@@ -136,5 +146,9 @@ export const useAISummaryIsGenerated = (id?: AISummaryId) => {
       }, 1000 * 5); // check every 5 seconds
     }
     return () => clearInterval(timeout);
-  }, [id]);
+  }, [
+    id?.issuedWarningsAndWatches,
+    id?.severeWeatherOutlook,
+    id?.thunderstormOutlook,
+  ]);
 };

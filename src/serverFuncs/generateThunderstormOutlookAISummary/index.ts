@@ -1,11 +1,9 @@
-import {
-  getAISummaryGenerationTimeCollection,
-  getThunderstormAISummaryCollection,
-} from '@/lib/mongodb';
+import { getThunderstormAISummaryCollection } from '@/lib/mongodb';
 import type { AISummaryId, DateString } from '@/types';
 import { createServerFn } from '@tanstack/react-start';
 import OpenAI from 'openai';
 import { zodResponseFormat } from 'openai/helpers/zod';
+import { updateAISummaryGeneratedAt } from '../updateAISummaryGenAt';
 import { createUserPrompt, systemPrompt } from './prompt';
 import { ThunderstormAISummarySchema } from './schema';
 
@@ -73,13 +71,7 @@ export const generateThunderstormOutlookAISummary = createServerFn()
         insertedAt: new Date(),
       });
 
-      getAISummaryGenerationTimeCollection().then((timeCollection) => {
-        timeCollection.updateOne(
-          { summaryId: id },
-          { $set: { lastGeneratedAt: new Date() } },
-          { upsert: true },
-        );
-      });
+      await updateAISummaryGeneratedAt({ data: { id } });
 
       return result;
     } catch (error) {
