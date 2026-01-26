@@ -81,7 +81,7 @@ export function ReactMarkdownWithHighlight({
           });
         }
       }
-    }, 500);
+    }, 200);
 
     return () => clearTimeout(timeout);
   }, [content, quotes]);
