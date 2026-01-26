@@ -48,11 +48,16 @@ export function AISummary() {
       thunderstormOutlook
     ) {
       const start = DateTime.now().startOf('day');
-      const end = DateTime.fromFormat(
+      const endDateStr =
         severeWeatherOutlook.outlookItems[
           severeWeatherOutlook.outlookItems.length - 1
-        ].date,
-        'cccc dd LLL',
+        ].date;
+
+      const isOneDigitDay = /\s(\d{1})\s/.test(endDateStr);
+
+      const end = DateTime.fromFormat(
+        endDateStr,
+        isOneDigitDay ? 'cccc d LLL' : 'cccc dd LLL',
       ).endOf('day');
       const interval = Interval.fromDateTimes(start, end);
       const dates = interval.splitBy({ days: 1 }).map((i) => i.start);
