@@ -1,11 +1,15 @@
 import {
+  useAISummaryGeneratedAt,
+  useAISummaryIsGenerated,
   useIssuedWarningsAndWatches,
   useSevereWeatherOutlook,
   useThunderstormOutlook,
 } from '@/queries';
+import type { AISummaryId } from '@/types';
 import { DateTime, Interval } from 'luxon';
 import { useEffect, useState } from 'react';
 import { Progress } from '../ui/progress';
+import { Skeleton } from '../ui/skeleton';
 import type { Summary } from './SummaryItem';
 import { SummaryItem } from './SummaryItem';
 import { getThunderstormOutlookDate } from './utils';
@@ -23,6 +27,15 @@ export function AISummary() {
     useThunderstormOutlook();
 
   const [summaries, setSummaries] = useState<Summary[]>([]);
+
+  const [_AISummaryId, setAISummaryId] = useState<AISummaryId>();
+  const genAt = useAISummaryGeneratedAt(_AISummaryId);
+  useAISummaryIsGenerated(_AISummaryId);
+
+  useEffect(() => {
+    console.log('AISummaryId updated:', _AISummaryId);
+  }, [_AISummaryId]);
+
   const [loadingProgress, setLoadingProgress] = useState(0);
 
   useEffect(() => {
@@ -41,6 +54,11 @@ export function AISummary() {
       const interval = Interval.fromDateTimes(start, end);
       const dates = interval.splitBy({ days: 1 }).map((i) => i.start);
 
+      const _AISumId = {
+        thunderstormOutlook: thunderstormOutlook.id,
+        severeWeatherOutlook: severeWeatherOutlook.id,
+      };
+
       const _summaries: Summary[] = dates
         .filter((d): d is DateTime => d !== null)
         .map((date) => ({
@@ -58,10 +76,7 @@ export function AISummary() {
             const outlookDate = DateTime.fromFormat(dateStr, 'dd LLL');
             return date.hasSame(outlookDate, 'day');
           }),
-          id: {
-            thunderstormOutlook: thunderstormOutlook.id,
-            severeWeatherOutlook: severeWeatherOutlook.id,
-          },
+          AISummaryId: _AISumId,
         }));
 
       issuedWarningsAndWatches?.entries.forEach((i) => {
@@ -77,8 +92,9 @@ export function AISummary() {
         });
       });
 
-      console.log('Generated AI summaries:', _summaries);
+      console.log('Preparing AI summaries Data:', _summaries);
       setSummaries(_summaries);
+      setAISummaryId(_AISumId);
     }
   }, [issuedWarningsAndWatches, severeWeatherOutlook, thunderstormOutlook]);
 
@@ -111,9 +127,21 @@ export function AISummary() {
           </span>
         </div>
       ) : (
-        summaries.map((summary) => (
-          <SummaryItem key={summary.date.toISODate()} {...summary} />
-        ))
+        <>
+          <div className="flex gap-2">
+            <span className="font-semibold">AI Generated At: </span>
+            {genAt.data ? (
+              DateTime.fromJSDate(genAt.data).toLocaleString(
+                DateTime.DATETIME_MED,
+              )
+            ) : (
+              <Skeleton className="w-36 h-6" />
+            )}
+          </div>
+          {summaries.map((summary) => (
+            <SummaryItem key={summary.date.toISODate()} {...summary} />
+          ))}
+        </>
       )}
     </div>
   );

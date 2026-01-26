@@ -1,5 +1,8 @@
-import { getSevereWeatherAISummaryCollection } from '@/lib/mongodb';
-import type { DateString } from '@/types';
+import {
+  getAISummaryGenerationTimeCollection,
+  getSevereWeatherAISummaryCollection,
+} from '@/lib/mongodb';
+import type { AISummaryId, DateString } from '@/types';
 import { createServerFn } from '@tanstack/react-start';
 import OpenAI from 'openai';
 import { zodResponseFormat } from 'openai/helpers/zod';
@@ -9,7 +12,7 @@ import { SevereWeatherAISummarySchema } from './schema';
 
 export const generateSevereWeatherOutlookAISummary = createServerFn()
   .inputValidator(
-    (data: { outlook: string; id: string; date: DateString }) => data,
+    (data: { outlook: string; id: AISummaryId; date: DateString }) => data,
   )
   .handler(async ({ data }): Promise<SevereWeatherAISummary> => {
     console.log('Generating severe weather outlook AI summary...');
@@ -19,7 +22,7 @@ export const generateSevereWeatherOutlookAISummary = createServerFn()
     const collection = await getSevereWeatherAISummaryCollection();
 
     const existingSummary = await collection.findOne({
-      'identifier.severeWeatherOutlookId': id,
+      'identifier.severeWeatherOutlookId': id.severeWeatherOutlook,
       'identifier.date': date,
       'identifier.outlook': outlook,
     });
@@ -65,12 +68,21 @@ export const generateSevereWeatherOutlookAISummary = createServerFn()
       await collection.insertOne({
         summary: result,
         identifier: {
-          severeWeatherOutlookId: id,
+          severeWeatherOutlookId: id.severeWeatherOutlook,
           date,
           outlook,
         },
         insertedAt: new Date(),
       });
+
+      getAISummaryGenerationTimeCollection().then((timeCollection) => {
+        timeCollection.updateOne(
+          { summaryId: id },
+          { $set: { lastGeneratedAt: new Date() } },
+          { upsert: true },
+        );
+      });
+
       return result;
     } catch (error) {
       console.error('Error generating severe weather AI summary:', error);

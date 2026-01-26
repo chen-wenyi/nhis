@@ -1,5 +1,8 @@
-import { getThunderstormAISummaryCollection } from '@/lib/mongodb';
-import type { DateString } from '@/types';
+import {
+  getAISummaryGenerationTimeCollection,
+  getThunderstormAISummaryCollection,
+} from '@/lib/mongodb';
+import type { AISummaryId, DateString } from '@/types';
 import { createServerFn } from '@tanstack/react-start';
 import OpenAI from 'openai';
 import { zodResponseFormat } from 'openai/helpers/zod';
@@ -8,7 +11,7 @@ import { ThunderstormAISummarySchema } from './schema';
 
 export const generateThunderstormOutlookAISummary = createServerFn()
   .inputValidator(
-    (data: { outlook: string; id: string; date: DateString }) => data,
+    (data: { outlook: string; id: AISummaryId; date: DateString }) => data,
   )
   .handler(async ({ data }) => {
     const { outlook, id, date } = data;
@@ -16,14 +19,17 @@ export const generateThunderstormOutlookAISummary = createServerFn()
     const collection = await getThunderstormAISummaryCollection();
 
     const existingSummary = await collection.findOne({
-      'identifier.thunderstormOutlookId': id,
+      'identifier.thunderstormOutlookId': id.thunderstormOutlook,
       'identifier.date': date,
       'identifier.outlook': outlook,
     });
 
     if (existingSummary) {
+      console.log('Found existing thunderstorm AI summary in database');
       return existingSummary.summary;
     }
+
+    console.log('No existing summary found, querying OpenAI API...');
 
     if (!process.env.OPENAI_API_KEY) {
       throw new Error('Missing OPENAI_API_KEY environment variable');
@@ -56,14 +62,23 @@ export const generateThunderstormOutlookAISummary = createServerFn()
         throw new Error('AI response is missing the outlooks field');
       }
 
+      console.log('Inserting new thunderstorm AI summary into database');
       await collection.insertOne({
         summary: result,
         identifier: {
-          thunderstormOutlookId: id,
+          thunderstormOutlookId: id.thunderstormOutlook,
           date,
           outlook,
         },
         insertedAt: new Date(),
+      });
+
+      getAISummaryGenerationTimeCollection().then((timeCollection) => {
+        timeCollection.updateOne(
+          { summaryId: id },
+          { $set: { lastGeneratedAt: new Date() } },
+          { upsert: true },
+        );
       });
 
       return result;

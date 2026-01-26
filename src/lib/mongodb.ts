@@ -1,4 +1,5 @@
 import type {
+  AISummaryId,
   IssuedWarningsAndWatchesDocument,
   SevereWeatherAISummaryDocument,
   SevereWeatherOutlookDocument,
@@ -53,4 +54,11 @@ export async function getThunderstormAISummaryCollection() {
   return getCollection<ThunderstormAISummaryDocument>(
     'thunderstorm_ai_summary',
   );
+}
+
+export async function getAISummaryGenerationTimeCollection() {
+  return getCollection<{
+    summaryId: AISummaryId;
+    lastGeneratedAt: Date;
+  }>('ai_summary_generation_time');
 }

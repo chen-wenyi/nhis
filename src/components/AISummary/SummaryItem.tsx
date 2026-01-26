@@ -9,6 +9,7 @@ import {
   store,
 } from '@/store';
 import type {
+  AISummaryId,
   IssuedWarningOrWatche,
   SevereWeatherOutlookItem,
   ThunderstormOutlookItem,
@@ -29,10 +30,7 @@ export type Summary = {
   issuedWarningsAndWatches: IssuedWarningOrWatche[];
   severeWeatherOutlook?: SevereWeatherOutlookItem;
   thunderstormOutlookItems: ThunderstormOutlookItem[];
-  id: {
-    thunderstormOutlook: string;
-    severeWeatherOutlook: string;
-  };
+  AISummaryId: AISummaryId;
 };
 
 export function SummaryItem({
@@ -40,16 +38,16 @@ export function SummaryItem({
   issuedWarningsAndWatches,
   severeWeatherOutlook,
   thunderstormOutlookItems,
-  id,
+  AISummaryId,
 }: Summary) {
   const severeWeatherOutlookAISummary = useSevereWeatherOutlookAISummary(
-    id.severeWeatherOutlook,
+    AISummaryId,
     date.toUTC().toISO(),
     severeWeatherOutlook ? [severeWeatherOutlook.outlook] : [],
   );
 
   const thunderstormOutlookAISummary = useThunderstormOutlookAISummary(
-    id.thunderstormOutlook,
+    AISummaryId,
     date.toUTC().toISO(),
     thunderstormOutlookItems.map((o) => o.outlook),
   );

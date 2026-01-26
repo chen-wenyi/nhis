@@ -3,6 +3,11 @@ import type { ThunderstormOutlookAISummary } from '@/serverFuncs/generateThunder
 
 export type DateString = string; // in ISO format
 
+export type AISummaryId = {
+  thunderstormOutlook: string;
+  severeWeatherOutlook: string;
+};
+
 // issued warnings and watches Types
 export type CAP = {
   feed: {
