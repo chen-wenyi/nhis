@@ -16,7 +16,7 @@ export const useIssuedWarningsAndWatches = () =>
   useQuery({
     queryKey: ['issuedWarningsAndWatches'],
     queryFn: async () => fetchIssuedWarningsAndWatches(),
-    refetchInterval: 1000 * 60 * 5, // refetch every 5 minutes
+    refetchInterval: 1000 * 60 * 1, // refetch every 1 minute
   });
 
 export const useSevereWeatherOutlook = () =>
@@ -24,6 +24,7 @@ export const useSevereWeatherOutlook = () =>
     queryKey: ['severeWeatherOutlook'],
     queryFn: async () => fetchSevereWeatherOutlook(),
     refetchOnWindowFocus: false,
+    refetchInterval: 1000 * 60 * 5, // refetch every 5 minute
   });
 
 export const useThunderstormOutlook = () =>
@@ -31,6 +32,7 @@ export const useThunderstormOutlook = () =>
     queryKey: ['thunderstormOutlook'],
     queryFn: async () => fetchThunderstormOutlook(),
     refetchOnWindowFocus: false,
+    refetchInterval: 1000 * 60 * 5, // refetch every 5 minutes
   });
 
 export const useSevereWeatherOutlookAISummary = (
