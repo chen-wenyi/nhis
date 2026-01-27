@@ -19,6 +19,7 @@ import { useStore } from '@tanstack/react-store';
 import { DateTime } from 'luxon';
 import { useMemo } from 'react';
 import { LuFileSearch2 } from 'react-icons/lu';
+import { CopyIcon } from '../CopyIcon';
 import { Skeleton } from '../ui/skeleton';
 import { AlertIndicator } from './AlertIndicator';
 import { SevereWeatherOutlookItemComp } from './SevereWeatherOutlookItemComp';
@@ -401,11 +402,12 @@ function AlertRef({ date, alertIds }: { date: DateTime; alertIds: string[] }) {
 
 function MinimalRiskSevereWeatherOutlook() {
   return (
-    <div>
+    <div className="flex items-center gap-1">
       <div className="text-sm py-2">
         There is <span className="underline">minimal</span> risk of severe
         weather.
       </div>
+      <CopyIcon content="There is minimal risk of severe weather." />
     </div>
   );
 }

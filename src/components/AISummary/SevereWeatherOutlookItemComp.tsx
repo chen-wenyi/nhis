@@ -8,6 +8,7 @@ import {
 import { useStore } from '@tanstack/react-store';
 import type { DateTime } from 'luxon';
 import { AiOutlineFileSearch } from 'react-icons/ai';
+import { CopyIcon } from '../CopyIcon';
 import { formatAreasList } from './utils';
 
 export function SevereWeatherOutlookItemComp({
@@ -31,16 +32,24 @@ export function SevereWeatherOutlookItemComp({
       ? 'watch'
       : name;
   const areas = outlook.areas.length > 0 ? formatAreasList(outlook.areas) : '';
+
+  const textContent = `There is ${outlook.chance} confidence that ${event} will reach ${criteria} criteria${
+    areas ? ` for ${areas}` : ''
+  }.`;
+
   return (
     <span>
       There is <span className="underline lowercase">{outlook.chance}</span>{' '}
       confidence that {event} will reach {criteria} criteria
-      {areas && areas.length > 0 ? ` for ${areas}` : ''}.
-      <OutlookRefIcon
-        date={date}
-        quotes={outlook.quotes}
-        keywords={outlook.keywords}
-      />
+      {areas ? ` for ${areas}` : ''}.
+      <span className="inline-flex px-2 gap-1 items-baseline">
+        <OutlookRefIcon
+          date={date}
+          quotes={outlook.quotes}
+          keywords={outlook.keywords}
+        />
+        <CopyIcon content={textContent} />
+      </span>
     </span>
   );
 }
@@ -82,7 +91,7 @@ function OutlookRefIcon({
     <AiOutlineFileSearch
       className={cn(
         'inline align-text-bottom ml-2 text-gray-300 cursor-pointer hover:text-yellow-500',
-        isActive && 'text-yellow-500',
+        isActive && 'text-yellow-500 relative top-0.5',
       )}
       size={16}
       onClick={onClick}
