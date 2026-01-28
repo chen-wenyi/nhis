@@ -40,7 +40,7 @@ export const Route = createFileRoute('/api/update/severe-weather')({
               issuedDate: responseIssuedDate,
               insertedAt: new Date(),
             });
-            generateSevereWeatherOutlookAISummary({
+            await generateSevereWeatherOutlookAISummary({
               data: {
                 reason: 'Initial severe weather outlook ai summary generation',
                 outlookRefId: result.insertedId.toString(),
@@ -61,7 +61,7 @@ export const Route = createFileRoute('/api/update/severe-weather')({
                 issuedDate: responseIssuedDate,
                 insertedAt: new Date(),
               });
-              generateSevereWeatherOutlookAISummary({
+              await generateSevereWeatherOutlookAISummary({
                 data: {
                   reason: 'New severe weather outlook ai summary generation',
                   outlookRefId: result.insertedId.toString(),
