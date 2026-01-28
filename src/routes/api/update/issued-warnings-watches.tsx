@@ -9,6 +9,7 @@ export const Route = createFileRoute('/api/update/issued-warnings-watches')({
   server: {
     handlers: {
       GET: async () => {
+        const logs = ['*** Event: Querying issued warnings and watches ***'];
         const response = fetch('https://alerts.metservice.com/cap/atom');
         try {
           const data = await response.then((res) => res.text());
@@ -17,9 +18,9 @@ export const Route = createFileRoute('/api/update/issued-warnings-watches')({
             attributeNamePrefix: '',
           });
           const { feed } = parser.parse(data) as CAP;
+
           if (!feed.entry) {
             feed.entry = [];
-            console.log('There is no issued warnings and watches entries.');
           }
 
           // if entry is single object, convert to array
@@ -54,19 +55,13 @@ export const Route = createFileRoute('/api/update/issued-warnings-watches')({
             },
           );
 
-          console.log(
-            'Latest issued warnings and watches updated date from DB:',
-            latestRecord?.updatedAtISO,
-            'Response feed updated date:',
-            feed.updated,
+          logs.push(`Queried feed updated at: ${feed.updated}`);
+          logs.push(
+            `Latest Feed from DB updated at: ${latestRecord?.updatedAtISO}`,
           );
 
           if (latestRecord?.updatedAtISO === feed.updated) {
-            console.log(
-              'Issued Warnings and Watches are already up to date. Date:',
-              feed.updated,
-            );
-
+            logs.push('Result: Same feed, no update needed.');
             return new Response(
               'Issued Warnings and Watches are already up to date. Date:' +
                 feed.updated,
@@ -102,12 +97,16 @@ export const Route = createFileRoute('/api/update/issued-warnings-watches')({
               previousFeedUpdatedAtFormatted,
             );
 
+            logs.push(
+              'Result: Different feed updatedAt detected, Comparing dates.',
+            );
+
             if (
               // same day month and year
               newFeedUpdatedAtFormatted === previousFeedUpdatedAtFormatted
             ) {
-              console.log(
-                'Same day update for Issued Warnings and Watches. Updating entries and insert.',
+              logs.push(
+                'Same day update detected. Updating existing entries with new statuses and inserting new record.',
               );
 
               await collection.insertOne({
@@ -119,14 +118,12 @@ export const Route = createFileRoute('/api/update/issued-warnings-watches')({
                 ),
                 insertedAt: new Date(),
               });
-
-              // indicate it's an update
               return new Response(
                 'Same day update for Issued Warnings and Watches. Updating entries and insert. Update complete.',
               );
             } else {
-              console.log(
-                'New day update for Issued Warnings and Watches. Inserting new entries.',
+              logs.push(
+                'Result: New day update detected. Inserting new entries.',
               );
               // new day
               await collection.insertOne({
@@ -157,6 +154,9 @@ export const Route = createFileRoute('/api/update/issued-warnings-watches')({
         } catch (error) {
           console.error('Error fetching Warnings and Watches:', error);
           return new Response('Error fetching Warnings and Watches' + error);
+        } finally {
+          logs.push('*** Finished querying issued warnings and watches ***');
+          console.log(logs.join('\n'));
         }
       },
     },
