@@ -8,6 +8,7 @@ export const Route = createFileRoute('/api/update/severe-weather')({
   server: {
     handlers: {
       GET: async () => {
+        const logs = ['\n*** Event: Querying Severe Weather Outlook ***'];
         const url =
           'https://nhis-services-production.up.railway.app/severe-weather-outlook';
         try {
@@ -23,40 +24,39 @@ export const Route = createFileRoute('/api/update/severe-weather')({
           const latestOutlookIssuedDateStr = latestOutlook?.issuedDate
             ? formatUTCToNZDate(latestOutlook.issuedDate)
             : '';
-          console.log(
-            'Latest outlook issued date from DB:',
-            latestOutlookIssuedDateStr,
-            'Response outlook issued date:',
-            responseIssuedDateStr,
+
+          logs.push(
+            'Queried Severe Weather Outlook issued date: ' +
+              responseIssuedDateStr,
+          );
+          logs.push(
+            'Latest Severe Weather Outlook issued date from DB: ' +
+              latestOutlookIssuedDateStr,
           );
 
           if (
             latestOutlook?.issuedDate &&
             latestOutlook.issuedDate.getTime() === responseIssuedDate.getTime()
           ) {
-            console.log(
-              'Severe Weather Outlook is already up to date. Date:',
-              responseIssuedDateStr,
-            );
+            logs.push('Result: Same issued date, no update needed.');
           } else {
-            console.log(
-              'Inserting new Severe Weather Outlook data. Date:',
-              responseIssuedDateStr,
-            );
+            logs.push('Result: Different issued date, inserting new data.');
             await collection.insertOne({
               ...response.data,
               issuedDate: responseIssuedDate,
               insertedAt: new Date(),
             });
-            console.log('Insertion complete.');
+            logs.push('Insertion complete.');
           }
           return Response.json({
             ok: true,
-            latestOutlook,
           });
         } catch (error) {
           console.error('Error fetching Severe Weather Outlook:', error);
           return Response.error();
+        } finally {
+          logs.push('*** Finished querying Severe Weather Outlook ***');
+          console.log(logs.join('\n'));
         }
       },
     },

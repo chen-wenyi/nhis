@@ -9,7 +9,7 @@ export const Route = createFileRoute('/api/update/issued-warnings-watches')({
   server: {
     handlers: {
       GET: async () => {
-        const logs = ['*** Event: Querying issued warnings and watches ***'];
+        const logs = ['\n*** Event: Querying issued warnings and watches ***'];
         const response = fetch('https://alerts.metservice.com/cap/atom');
         try {
           const data = await response.then((res) => res.text());
