@@ -12,7 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
 import { Route as DemoConvexRouteImport } from './routes/demo/convex'
-import { Route as ApiCreateAblyTokenRouteImport } from './routes/api/create-ably-token'
+import { Route as ApiCreateAblyTokenIndexRouteImport } from './routes/api/create-ably-token/index'
 import { Route as DemoStartServerFuncsRouteImport } from './routes/demo/start.server-funcs'
 import { Route as DemoStartApiRequestRouteImport } from './routes/demo/start.api-request'
 import { Route as DemoApiTqTodosRouteImport } from './routes/demo/api.tq-todos'
@@ -42,10 +42,10 @@ const DemoConvexRoute = DemoConvexRouteImport.update({
   path: '/demo/convex',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiCreateAblyTokenRoute = ApiCreateAblyTokenRouteImport.update({
-  id: '/api/create-ably-token',
-  path: '/api/create-ably-token',
-  getParentRoute: () => rootRouteImport,
+const ApiCreateAblyTokenIndexRoute = ApiCreateAblyTokenIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ApiCreateAblyTokenRoute,
 } as any)
 const DemoStartServerFuncsRoute = DemoStartServerFuncsRouteImport.update({
   id: '/demo/start/server-funcs',
@@ -118,7 +118,6 @@ const DemoStartSsrDataOnlyRoute = DemoStartSsrDataOnlyRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/api/create-ably-token': typeof ApiCreateAblyTokenRoute
   '/demo/convex': typeof DemoConvexRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/api/gen-ai-summary/severe-weather': typeof ApiGenAiSummarySevereWeatherRoute
@@ -130,6 +129,7 @@ export interface FileRoutesByFullPath {
   '/demo/api/tq-todos': typeof DemoApiTqTodosRoute
   '/demo/start/api-request': typeof DemoStartApiRequestRoute
   '/demo/start/server-funcs': typeof DemoStartServerFuncsRoute
+  '/api/create-ably-token/': typeof ApiCreateAblyTokenIndexRoute
   '/demo/start/ssr/data-only': typeof DemoStartSsrDataOnlyRoute
   '/demo/start/ssr/full-ssr': typeof DemoStartSsrFullSsrRoute
   '/demo/start/ssr/spa-mode': typeof DemoStartSsrSpaModeRoute
@@ -137,7 +137,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/api/create-ably-token': typeof ApiCreateAblyTokenRoute
   '/demo/convex': typeof DemoConvexRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/api/gen-ai-summary/severe-weather': typeof ApiGenAiSummarySevereWeatherRoute
@@ -149,6 +148,7 @@ export interface FileRoutesByTo {
   '/demo/api/tq-todos': typeof DemoApiTqTodosRoute
   '/demo/start/api-request': typeof DemoStartApiRequestRoute
   '/demo/start/server-funcs': typeof DemoStartServerFuncsRoute
+  '/api/create-ably-token': typeof ApiCreateAblyTokenIndexRoute
   '/demo/start/ssr/data-only': typeof DemoStartSsrDataOnlyRoute
   '/demo/start/ssr/full-ssr': typeof DemoStartSsrFullSsrRoute
   '/demo/start/ssr/spa-mode': typeof DemoStartSsrSpaModeRoute
@@ -157,7 +157,6 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/api/create-ably-token': typeof ApiCreateAblyTokenRoute
   '/demo/convex': typeof DemoConvexRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/api/gen-ai-summary/severe-weather': typeof ApiGenAiSummarySevereWeatherRoute
@@ -169,6 +168,7 @@ export interface FileRoutesById {
   '/demo/api/tq-todos': typeof DemoApiTqTodosRoute
   '/demo/start/api-request': typeof DemoStartApiRequestRoute
   '/demo/start/server-funcs': typeof DemoStartServerFuncsRoute
+  '/api/create-ably-token/': typeof ApiCreateAblyTokenIndexRoute
   '/demo/start/ssr/data-only': typeof DemoStartSsrDataOnlyRoute
   '/demo/start/ssr/full-ssr': typeof DemoStartSsrFullSsrRoute
   '/demo/start/ssr/spa-mode': typeof DemoStartSsrSpaModeRoute
@@ -178,7 +178,6 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/api/create-ably-token'
     | '/demo/convex'
     | '/demo/tanstack-query'
     | '/api/gen-ai-summary/severe-weather'
@@ -190,6 +189,7 @@ export interface FileRouteTypes {
     | '/demo/api/tq-todos'
     | '/demo/start/api-request'
     | '/demo/start/server-funcs'
+    | '/api/create-ably-token/'
     | '/demo/start/ssr/data-only'
     | '/demo/start/ssr/full-ssr'
     | '/demo/start/ssr/spa-mode'
@@ -197,7 +197,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/api/create-ably-token'
     | '/demo/convex'
     | '/demo/tanstack-query'
     | '/api/gen-ai-summary/severe-weather'
@@ -209,6 +208,7 @@ export interface FileRouteTypes {
     | '/demo/api/tq-todos'
     | '/demo/start/api-request'
     | '/demo/start/server-funcs'
+    | '/api/create-ably-token'
     | '/demo/start/ssr/data-only'
     | '/demo/start/ssr/full-ssr'
     | '/demo/start/ssr/spa-mode'
@@ -216,7 +216,6 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/api/create-ably-token'
     | '/demo/convex'
     | '/demo/tanstack-query'
     | '/api/gen-ai-summary/severe-weather'
@@ -228,6 +227,7 @@ export interface FileRouteTypes {
     | '/demo/api/tq-todos'
     | '/demo/start/api-request'
     | '/demo/start/server-funcs'
+    | '/api/create-ably-token/'
     | '/demo/start/ssr/data-only'
     | '/demo/start/ssr/full-ssr'
     | '/demo/start/ssr/spa-mode'
@@ -236,7 +236,6 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  ApiCreateAblyTokenRoute: typeof ApiCreateAblyTokenRoute
   DemoConvexRoute: typeof DemoConvexRoute
   DemoTanstackQueryRoute: typeof DemoTanstackQueryRoute
   ApiGenAiSummarySevereWeatherRoute: typeof ApiGenAiSummarySevereWeatherRoute
@@ -277,12 +276,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DemoConvexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/create-ably-token': {
-      id: '/api/create-ably-token'
-      path: '/api/create-ably-token'
-      fullPath: '/api/create-ably-token'
-      preLoaderRoute: typeof ApiCreateAblyTokenRouteImport
-      parentRoute: typeof rootRouteImport
+    '/api/create-ably-token/': {
+      id: '/api/create-ably-token/'
+      path: '/'
+      fullPath: '/api/create-ably-token/'
+      preLoaderRoute: typeof ApiCreateAblyTokenIndexRouteImport
+      parentRoute: typeof ApiCreateAblyTokenRoute
     }
     '/demo/start/server-funcs': {
       id: '/demo/start/server-funcs'
@@ -380,7 +379,6 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  ApiCreateAblyTokenRoute: ApiCreateAblyTokenRoute,
   DemoConvexRoute: DemoConvexRoute,
   DemoTanstackQueryRoute: DemoTanstackQueryRoute,
   ApiGenAiSummarySevereWeatherRoute: ApiGenAiSummarySevereWeatherRoute,
