@@ -43,7 +43,7 @@ export const Route = createFileRoute('/api/update/severe-weather')({
             generateSevereWeatherOutlookAISummary({
               data: {
                 reason: 'Initial severe weather outlook ai summary generation',
-                outlookRefId: result.insertedId.id.toString(),
+                outlookRefId: result.insertedId.toString(),
               },
             });
             logs.push('Insertion complete.');
@@ -64,7 +64,7 @@ export const Route = createFileRoute('/api/update/severe-weather')({
               generateSevereWeatherOutlookAISummary({
                 data: {
                   reason: 'New severe weather outlook ai summary generation',
-                  outlookRefId: result.insertedId.id.toString(),
+                  outlookRefId: result.insertedId.toString(),
                 },
               });
               logs.push('Insertion complete.');

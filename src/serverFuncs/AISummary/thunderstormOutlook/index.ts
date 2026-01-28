@@ -83,6 +83,8 @@ export const generateThunderstormOutlookAISummary = createServerFn()
       '\n*** Event: Generating thunderstorm outlook AI summary... ***',
     ];
     logs.push(`Reason for generation: ${data.reason}`);
+    logs.push(`Thunderstorm outlook Id ${data.outlookRefId}`);
+    console.log(logs.join('\n'));
 
     const ThunderstormOutlookCollection =
       await getThunderstormOutlookCollection();

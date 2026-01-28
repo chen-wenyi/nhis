@@ -33,7 +33,7 @@ export const Route = createFileRoute('/api/update/thunderstorm')({
             generateThunderstormOutlookAISummary({
               data: {
                 reason: 'Initial thunderstorm outlook ai summary generation',
-                outlookRefId: result.insertedId.id.toString(),
+                outlookRefId: result.insertedId.toString(),
               },
             });
           } else {
@@ -56,7 +56,7 @@ export const Route = createFileRoute('/api/update/thunderstorm')({
               generateThunderstormOutlookAISummary({
                 data: {
                   reason: 'New thunderstorm outlook ai summary generation',
-                  outlookRefId: result.insertedId.id.toString(),
+                  outlookRefId: result.insertedId.toString(),
                 },
               });
             } else {
