@@ -140,7 +140,9 @@ ${thunderstormOutlook.id}
   ]);
 
   useNHISChannel((message) => {
-    console.log(`Received ${message.name} message:`, message.data);
+    console.log(
+      `Received ${message.name} message: ${message.data} at ${DateTime.now().setZone('Pacific/Auckland').toISO()}`,
+    );
 
     switch (message.name) {
       case Event.AI_SEVERE_WEATHER_OUTLOOK_SUMMARY_GENERATED: {
