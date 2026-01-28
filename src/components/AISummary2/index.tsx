@@ -36,9 +36,13 @@ export function AISummary() {
   const {
     data: severeWeatherOutlook,
     isLoading: isSevereWeatherOutlookLoading,
+    refetch: refetchSevereWeatherOutlook,
   } = useSevereWeatherOutlook();
-  const { data: thunderstormOutlook, isLoading: isThunderstormOutlookLoading } =
-    useThunderstormOutlook();
+  const {
+    data: thunderstormOutlook,
+    isLoading: isThunderstormOutlookLoading,
+    refetch: refetchThunderstormOutlook,
+  } = useThunderstormOutlook();
 
   const {
     data: issuedWarningsAndWatches,
@@ -154,6 +158,7 @@ ${thunderstormOutlook.id}
         break;
       }
       case Event.AI_SEVERE_WEATHER_OUTLOOK_SUMMARY_GENERATING: {
+        refetchSevereWeatherOutlook();
         setSummaries((sum) =>
           sum.map((s) => ({
             ...s,
@@ -163,6 +168,7 @@ ${thunderstormOutlook.id}
         break;
       }
       case Event.AI_THUNDERSTORM_OUTLOOK_SUMMARY_GENERATING: {
+        refetchThunderstormOutlook();
         setSummaries((sum) =>
           sum.map((s) => ({
             ...s,
