@@ -251,17 +251,19 @@ ${thunderstormOutlook.id}
         </div>
       ) : (
         <>
-          <div className="flex gap-2 items-center">
-            <span className="font-semibold">AI Generated At: </span>
-            {isAIGenerating ? (
-              <Skeleton className="w-36 h-6" />
-            ) : generatedAt ? (
-              DateTime.fromJSDate(generatedAt).toLocaleString(
-                DateTime.DATETIME_MED,
-              )
-            ) : (
-              'N/A'
-            )}
+          <div className="flex gap-2 items-center justify-between">
+            <div>
+              <span className="font-semibold">AI Generated At: </span>
+              {isAIGenerating ? (
+                <Skeleton className="w-36 h-6" />
+              ) : generatedAt ? (
+                DateTime.fromJSDate(generatedAt).toFormat(
+                  'h:mm a EEE, d LLL yyyy',
+                )
+              ) : (
+                'N/A'
+              )}
+            </div>
             <Button
               className="cursor-pointer ml-4"
               variant="outline"
