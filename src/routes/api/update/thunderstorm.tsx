@@ -30,7 +30,7 @@ export const Route = createFileRoute('/api/update/thunderstorm')({
               refIssuedDates: responseIssuedDates,
               items: response.data,
             });
-            generateThunderstormOutlookAISummary({
+            await generateThunderstormOutlookAISummary({
               data: {
                 reason: 'Initial thunderstorm outlook ai summary generation',
                 outlookRefId: result.insertedId.toString(),
@@ -53,7 +53,7 @@ export const Route = createFileRoute('/api/update/thunderstorm')({
                 refIssuedDates: responseIssuedDates,
                 items: response.data,
               });
-              generateThunderstormOutlookAISummary({
+              await generateThunderstormOutlookAISummary({
                 data: {
                   reason: 'New thunderstorm outlook ai summary generation',
                   outlookRefId: result.insertedId.toString(),
