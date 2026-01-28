@@ -63,6 +63,8 @@ export const generateThunderstormOutlookAISummary = createServerFn()
       '\n*** Event: Generating thunderstorm outlook AI summary... ***',
     ];
 
+    console.log('Generating thunderstorm outlook AI summary...');
+
     // Ably Publish
     const ablyClient = new Ably.Rest({
       key: process.env.ABLY_API_KEY,
@@ -71,6 +73,8 @@ export const generateThunderstormOutlookAISummary = createServerFn()
 
     try {
       const channel = ablyClient.channels.get('nhis-channel');
+
+      console.log('channel connected');
 
       logs.push(`Reason for generation: ${data.reason}`);
       logs.push(`Thunderstorm outlook Id ${data.outlookRefId}`);
@@ -92,6 +96,8 @@ export const generateThunderstormOutlookAISummary = createServerFn()
           }),
         );
 
+        console.log('ChatGPT completions invoked');
+
         const generatedAt = new Date();
 
         const result: AIThunderstormOutlookSummaryDocument = {
@@ -107,6 +113,8 @@ export const generateThunderstormOutlookAISummary = createServerFn()
             date: outlookDoc.items[idx].header,
           })),
         };
+
+        console.log('starting to insert summary into db');
 
         const AIThunderstormOutlookSummaryCollection =
           await getAIThunderstormOutlookSummaryCollection();
