@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import * as Ably from 'ably';
 
-export const Route = createFileRoute('/api/create-ably-token/')({
+export const Route = createFileRoute('/api/ably/create-token')({
   server: {
     handlers: {
       GET: async () => {
