@@ -12,5 +12,5 @@ export default async (req: Request) => {
 };
 
 export const config: Config = {
-  schedule: '*/10 21 * * *', // Runs every 10 min from 9:00 AM to 9:59 AM in nz timezone
+  schedule: '*/10 20-21 * * *', // Runs every 10 min from 9 - 11 in nz timezone
 };

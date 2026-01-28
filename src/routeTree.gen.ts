@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SearchIndexRouteImport } from './routes/search/index'
 import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
 import { Route as DemoConvexRouteImport } from './routes/demo/convex'
 import { Route as AblyCreateTokenRouteImport } from './routes/ably/create-token'
@@ -30,6 +31,11 @@ import { Route as DemoStartSsrDataOnlyRouteImport } from './routes/demo/start.ss
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SearchIndexRoute = SearchIndexRouteImport.update({
+  id: '/search/',
+  path: '/search/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DemoTanstackQueryRoute = DemoTanstackQueryRouteImport.update({
@@ -121,6 +127,7 @@ export interface FileRoutesByFullPath {
   '/ably/create-token': typeof AblyCreateTokenRoute
   '/demo/convex': typeof DemoConvexRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
+  '/search/': typeof SearchIndexRoute
   '/api/gen-ai-summary/severe-weather': typeof ApiGenAiSummarySevereWeatherRoute
   '/api/gen-ai-summary/thunderstorm': typeof ApiGenAiSummaryThunderstormRoute
   '/api/update/issued-warnings-watches': typeof ApiUpdateIssuedWarningsWatchesRoute
@@ -140,6 +147,7 @@ export interface FileRoutesByTo {
   '/ably/create-token': typeof AblyCreateTokenRoute
   '/demo/convex': typeof DemoConvexRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
+  '/search': typeof SearchIndexRoute
   '/api/gen-ai-summary/severe-weather': typeof ApiGenAiSummarySevereWeatherRoute
   '/api/gen-ai-summary/thunderstorm': typeof ApiGenAiSummaryThunderstormRoute
   '/api/update/issued-warnings-watches': typeof ApiUpdateIssuedWarningsWatchesRoute
@@ -160,6 +168,7 @@ export interface FileRoutesById {
   '/ably/create-token': typeof AblyCreateTokenRoute
   '/demo/convex': typeof DemoConvexRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
+  '/search/': typeof SearchIndexRoute
   '/api/gen-ai-summary/severe-weather': typeof ApiGenAiSummarySevereWeatherRoute
   '/api/gen-ai-summary/thunderstorm': typeof ApiGenAiSummaryThunderstormRoute
   '/api/update/issued-warnings-watches': typeof ApiUpdateIssuedWarningsWatchesRoute
@@ -181,6 +190,7 @@ export interface FileRouteTypes {
     | '/ably/create-token'
     | '/demo/convex'
     | '/demo/tanstack-query'
+    | '/search/'
     | '/api/gen-ai-summary/severe-weather'
     | '/api/gen-ai-summary/thunderstorm'
     | '/api/update/issued-warnings-watches'
@@ -200,6 +210,7 @@ export interface FileRouteTypes {
     | '/ably/create-token'
     | '/demo/convex'
     | '/demo/tanstack-query'
+    | '/search'
     | '/api/gen-ai-summary/severe-weather'
     | '/api/gen-ai-summary/thunderstorm'
     | '/api/update/issued-warnings-watches'
@@ -219,6 +230,7 @@ export interface FileRouteTypes {
     | '/ably/create-token'
     | '/demo/convex'
     | '/demo/tanstack-query'
+    | '/search/'
     | '/api/gen-ai-summary/severe-weather'
     | '/api/gen-ai-summary/thunderstorm'
     | '/api/update/issued-warnings-watches'
@@ -239,6 +251,7 @@ export interface RootRouteChildren {
   AblyCreateTokenRoute: typeof AblyCreateTokenRoute
   DemoConvexRoute: typeof DemoConvexRoute
   DemoTanstackQueryRoute: typeof DemoTanstackQueryRoute
+  SearchIndexRoute: typeof SearchIndexRoute
   ApiGenAiSummarySevereWeatherRoute: typeof ApiGenAiSummarySevereWeatherRoute
   ApiGenAiSummaryThunderstormRoute: typeof ApiGenAiSummaryThunderstormRoute
   ApiUpdateIssuedWarningsWatchesRoute: typeof ApiUpdateIssuedWarningsWatchesRoute
@@ -261,6 +274,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/search/': {
+      id: '/search/'
+      path: '/search'
+      fullPath: '/search/'
+      preLoaderRoute: typeof SearchIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/demo/tanstack-query': {
@@ -383,6 +403,7 @@ const rootRouteChildren: RootRouteChildren = {
   AblyCreateTokenRoute: AblyCreateTokenRoute,
   DemoConvexRoute: DemoConvexRoute,
   DemoTanstackQueryRoute: DemoTanstackQueryRoute,
+  SearchIndexRoute: SearchIndexRoute,
   ApiGenAiSummarySevereWeatherRoute: ApiGenAiSummarySevereWeatherRoute,
   ApiGenAiSummaryThunderstormRoute: ApiGenAiSummaryThunderstormRoute,
   ApiUpdateIssuedWarningsWatchesRoute: ApiUpdateIssuedWarningsWatchesRoute,

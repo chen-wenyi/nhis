@@ -42,7 +42,7 @@ export function SevereWeatherOutlookItemComp({
       There is <span className="underline lowercase">{outlook.chance}</span>{' '}
       confidence that {event} will reach {criteria} criteria
       {areas ? ` for ${areas}` : ''}.
-      <span className="inline-flex px-2 gap-1 items-baseline">
+      <span className="inline-flex gap-1 items-baseline relative top-0.5">
         <OutlookRefIcon
           date={date}
           quotes={outlook.quotes}
@@ -90,8 +90,8 @@ function OutlookRefIcon({
   return (
     <AiOutlineFileSearch
       className={cn(
-        'inline align-text-bottom ml-2 text-gray-300 cursor-pointer hover:text-yellow-500',
-        isActive && 'text-yellow-500 relative top-0.5',
+        'relative top-0.5 inline align-text-bottom ml-1 text-gray-300 cursor-pointer hover:text-yellow-500',
+        isActive && 'text-yellow-500',
       )}
       size={16}
       onClick={onClick}

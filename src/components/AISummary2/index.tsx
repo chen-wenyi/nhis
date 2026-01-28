@@ -77,7 +77,7 @@ ${thunderstormOutlook.id}
 
   useEffect(() => {
     console.log(
-      `${issuedWarningsAndWatches?.id}, ${severeWeatherOutlook?.id}, ${thunderstormOutlook?.id}, ${severeWeatherOutlookAISummary?.id}, ${thunderstormOutlookAISummary?.id}`,
+      `\nissuedWarningsAndWatches : ${issuedWarningsAndWatches?.id}, \nsevereWeatherOutlook: ${severeWeatherOutlook?.id}, \nthunderstormOutlook: ${thunderstormOutlook?.id}, \nsevereWeatherOutlookAISummary: ${severeWeatherOutlookAISummary?.id}, \nthunderstormOutlookAISummary: ${thunderstormOutlookAISummary?.id}`,
     );
     if (
       issuedWarningsAndWatches?.id &&
@@ -221,6 +221,16 @@ ${thunderstormOutlook.id}
   };
 
   const generatedAt = getLatestDate([
+    issuedWarningsAndWatches?.insertedAt,
+    severeWeatherOutlookAISummary?.generatedAt,
+    thunderstormOutlookAISummary?.generatedAt,
+  ]);
+
+  useEffect(() => {
+    console.log(
+      `\n*** AI Summary Generation Time:\nissuedWarningsAndWatches: ${issuedWarningsAndWatches?.insertedAt}, \nsevereWeatherOutlookAISummary: ${severeWeatherOutlookAISummary?.generatedAt}, \nthunderstormOutlookAISummary: ${thunderstormOutlookAISummary?.generatedAt} \n=> Latest: ${generatedAt} ***\n`,
+    );
+  }, [
     issuedWarningsAndWatches?.insertedAt,
     severeWeatherOutlookAISummary?.generatedAt,
     thunderstormOutlookAISummary?.generatedAt,
