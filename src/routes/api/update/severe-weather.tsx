@@ -7,7 +7,7 @@ import axios from 'axios';
 export const Route = createFileRoute('/api/update/severe-weather')({
   server: {
     handlers: {
-      GET: async () => {
+      GET: async (): Promise<Response> => {
         const logs = ['\n*** Event: Querying Severe Weather Outlook ***'];
         const url =
           'https://nhis-services-production.up.railway.app/severe-weather-outlook';
@@ -26,12 +26,10 @@ export const Route = createFileRoute('/api/update/severe-weather')({
             : '';
 
           logs.push(
-            'Queried Severe Weather Outlook issued date: ' +
-              responseIssuedDateStr,
+            `${responseIssuedDateStr} - Queried Severe Weather Outlook issued date`,
           );
           logs.push(
-            'Latest Severe Weather Outlook issued date from DB: ' +
-              latestOutlookIssuedDateStr,
+            `${latestOutlookIssuedDateStr} - Latest Severe Weather Outlook issued date from DB`,
           );
 
           if (
@@ -48,14 +46,12 @@ export const Route = createFileRoute('/api/update/severe-weather')({
             });
             logs.push('Insertion complete.');
           }
-          return Response.json({
-            ok: true,
-          });
+          logs.push('*** Finished querying Severe Weather Outlook ***');
+          return new Response(logs.join('\n'));
         } catch (error) {
           console.error('Error fetching Severe Weather Outlook:', error);
-          return Response.error();
+          return new Response('Error fetching Severe Weather Outlook' + error);
         } finally {
-          logs.push('*** Finished querying Severe Weather Outlook ***');
           console.log(logs.join('\n'));
         }
       },

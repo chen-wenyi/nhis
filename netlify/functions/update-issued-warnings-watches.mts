@@ -8,7 +8,7 @@ export default async (req: Request) => {
   const { next_run } = await req.json();
   console.log('Next invocation at:', next_run);
   const resp = await fetch(url + '/api/update/issued-warnings-watches');
-  console.log('Response status:', await resp.text());
+  console.log(await resp.text());
 };
 
 export const config: Config = {

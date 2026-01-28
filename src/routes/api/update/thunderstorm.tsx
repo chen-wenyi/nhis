@@ -6,7 +6,7 @@ import axios from 'axios';
 export const Route = createFileRoute('/api/update/thunderstorm')({
   server: {
     handlers: {
-      GET: async () => {
+      GET: async (): Promise<Response> => {
         const logs = ['\n*** Event: Querying Thunderstorm Outlook ***'];
         const url =
           'https://nhis-services-production.up.railway.app/thunderstorm-outlook';
@@ -24,45 +24,40 @@ export const Route = createFileRoute('/api/update/thunderstorm')({
 
           if (!latestOutlook) {
             logs.push('No existing Thunderstorm Outlook data found in DB.');
-            collection.insertOne({
+            await collection.insertOne({
               insertedAt: new Date(),
               refIssuedDates: responseIssuedDates,
               items: response.data,
             });
-            return new Response('Initial Thunderstorm Outlook data inserted.');
           } else {
             const latestRefDates = latestOutlook.refIssuedDates;
-            logs.push('Comparing thunderstorm issuedDates for updates...');
             logs.push(
-              `Latest thunderstorm issuedDates from DB: ${latestRefDates}`,
+              `${latestRefDates} - Latest thunderstorm issuedDates from DB`,
             );
             logs.push(
-              `Queried thunderstorm issuedDates: ${responseIssuedDates}`,
+              `${responseIssuedDates} - Queried thunderstorm issuedDates`,
             );
             if (responseIssuedDates.toString() !== latestRefDates.toString()) {
               logs.push(
                 'Result: New Thunderstorm Outlook data found. Updating DB.',
               );
-              collection.insertOne({
+              await collection.insertOne({
                 insertedAt: new Date(),
                 refIssuedDates: responseIssuedDates,
                 items: response.data,
               });
-              return new Response('Thunderstorm Outlook data updated.');
             } else {
               logs.push(
                 'Result: Thunderstorm Outlook data is up to date. No update needed.',
               );
-              return new Response(
-                'No update needed for Thunderstorm Outlook data.',
-              );
             }
           }
+          logs.push('*** Finished querying Thunderstorm Outlook ***');
+          return new Response(logs.join('\n'));
         } catch (error) {
           console.error('Error fetching Thunderstorm Outlook:', error);
           return Response.error();
         } finally {
-          logs.push('*** Finished querying Thunderstorm Outlook ***');
           console.log(logs.join('\n'));
         }
       },

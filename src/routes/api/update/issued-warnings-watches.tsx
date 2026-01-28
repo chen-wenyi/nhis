@@ -8,7 +8,7 @@ import { DateTime } from 'luxon';
 export const Route = createFileRoute('/api/update/issued-warnings-watches')({
   server: {
     handlers: {
-      GET: async () => {
+      GET: async (): Promise<Response> => {
         const logs = ['\n*** Event: Querying issued warnings and watches ***'];
         const response = fetch('https://alerts.metservice.com/cap/atom');
         try {
@@ -55,17 +55,13 @@ export const Route = createFileRoute('/api/update/issued-warnings-watches')({
             },
           );
 
-          logs.push(`Queried feed updated at: ${feed.updated}`);
+          logs.push(`${feed.updated} - Queried feed updated at`);
           logs.push(
-            `Latest Feed from DB updated at: ${latestRecord?.updatedAtISO}`,
+            `${latestRecord?.updatedAtISO} - Latest Feed from DB updated at`,
           );
 
           if (latestRecord?.updatedAtISO === feed.updated) {
             logs.push('Result: Same feed, no update needed.');
-            return new Response(
-              'Issued Warnings and Watches are already up to date. Date:' +
-                feed.updated,
-            );
           } else if (latestRecord) {
             // different updatedAt, need to check if same day
             const newFeedUpdatedAt = DateTime.fromISO(feed.updated, {
@@ -108,7 +104,6 @@ export const Route = createFileRoute('/api/update/issued-warnings-watches')({
               logs.push(
                 'Same day update detected. Updating existing entries with new statuses and inserting new record.',
               );
-
               await collection.insertOne({
                 updatedAt: new Date(feed.updated),
                 updatedAtISO: feed.updated,
@@ -118,9 +113,6 @@ export const Route = createFileRoute('/api/update/issued-warnings-watches')({
                 ),
                 insertedAt: new Date(),
               });
-              return new Response(
-                'Same day update for Issued Warnings and Watches. Updating entries and insert. Update complete.',
-              );
             } else {
               logs.push(
                 'Result: New day update detected. Inserting new entries.',
@@ -135,11 +127,9 @@ export const Route = createFileRoute('/api/update/issued-warnings-watches')({
                 })),
                 insertedAt: new Date(),
               });
-              return new Response(
-                'New day update for Issued Warnings and Watches. Inserting new entries. Insertion complete.',
-              );
             }
           } else {
+            logs.push('No existing data found. Inserting initial data.');
             await collection.insertOne({
               updatedAt: new Date(feed.updated),
               updatedAtISO: feed.updated,
@@ -149,13 +139,13 @@ export const Route = createFileRoute('/api/update/issued-warnings-watches')({
               })),
               insertedAt: new Date(),
             });
-            return new Response('Initial insertion complete.');
           }
+          logs.push('*** Finished querying issued warnings and watches ***');
+          return new Response(logs.join('\n'));
         } catch (error) {
           console.error('Error fetching Warnings and Watches:', error);
           return new Response('Error fetching Warnings and Watches' + error);
         } finally {
-          logs.push('*** Finished querying issued warnings and watches ***');
           console.log(logs.join('\n'));
         }
       },
