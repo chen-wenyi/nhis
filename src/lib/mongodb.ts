@@ -1,5 +1,7 @@
 import type {
+  AISevereWeatherOutlookSummaryDocument,
   AISummaryId,
+  AIThunderstormOutlookSummaryDocument,
   IssuedWarningsAndWatchesDocument,
   SevereWeatherAISummaryDocument,
   SevereWeatherOutlookDocument,
@@ -61,4 +63,16 @@ export async function getAISummaryGenerationTimeCollection() {
     summaryId: AISummaryId;
     lastGeneratedAt: Date;
   }>('ai_summary_generation_time');
+}
+
+export async function getAISevereWeatherOutlookSummaryCollection() {
+  return getCollection<AISevereWeatherOutlookSummaryDocument>(
+    'ai_severe_weather_outlook_summary',
+  );
+}
+
+export async function getAIThunderstormOutlookSummaryCollection() {
+  return getCollection<AIThunderstormOutlookSummaryDocument>(
+    'ai_thunderstorm_outlook_summary',
+  );
 }

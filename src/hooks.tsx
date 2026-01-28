@@ -1,3 +1,5 @@
+import type { AblyMessageCallback } from 'ably/react';
+import { useChannel } from 'ably/react';
 import { useState } from 'react';
 
 /**
@@ -17,4 +19,8 @@ export function useCopyToClipboard(
   }
 
   return [copy, isCopied];
+}
+
+export function useNHISChannel(callbackOnMessage?: AblyMessageCallback) {
+  return useChannel('nhis-channel', callbackOnMessage);
 }

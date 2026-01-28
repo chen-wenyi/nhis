@@ -1,4 +1,5 @@
 import { getThunderstormOutlookCollection } from '@/lib/mongodb';
+import { generateThunderstormOutlookAISummary } from '@/serverFuncs/AISummary/thunderstormOutlook';
 import type { ThunderstormOutlookResp } from '@/types';
 import { createFileRoute } from '@tanstack/react-router';
 import axios from 'axios';
@@ -24,10 +25,16 @@ export const Route = createFileRoute('/api/update/thunderstorm')({
 
           if (!latestOutlook) {
             logs.push('No existing Thunderstorm Outlook data found in DB.');
-            await collection.insertOne({
+            const result = await collection.insertOne({
               insertedAt: new Date(),
               refIssuedDates: responseIssuedDates,
               items: response.data,
+            });
+            generateThunderstormOutlookAISummary({
+              data: {
+                reason: 'Initial thunderstorm outlook ai summary generation',
+                outlookRefId: result.insertedId.id.toString(),
+              },
             });
           } else {
             const latestRefDates = latestOutlook.refIssuedDates;
@@ -41,10 +48,16 @@ export const Route = createFileRoute('/api/update/thunderstorm')({
               logs.push(
                 'Result: New Thunderstorm Outlook data found. Updating DB.',
               );
-              await collection.insertOne({
+              const result = await collection.insertOne({
                 insertedAt: new Date(),
                 refIssuedDates: responseIssuedDates,
                 items: response.data,
+              });
+              generateThunderstormOutlookAISummary({
+                data: {
+                  reason: 'New thunderstorm outlook ai summary generation',
+                  outlookRefId: result.insertedId.id.toString(),
+                },
               });
             } else {
               logs.push(

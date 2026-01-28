@@ -1,5 +1,9 @@
+import type { SevereWeatherAISummary } from '@/serverFuncs/AISummary/severeWeatherOutlook/schema';
 import type { SevereWeatherOutlookAISummary } from '@/serverFuncs/generateSevereWeatherOutlookAISummary/schema';
-import type { ThunderstormOutlookAISummary } from '@/serverFuncs/generateThunderstormOutlookAISummary/schema';
+import type {
+  ThunderstormAISummary,
+  ThunderstormOutlookAISummary,
+} from '@/serverFuncs/generateThunderstormOutlookAISummary/schema';
 
 export type DateString = string; // in ISO format
 
@@ -204,4 +208,50 @@ export type ThunderstormAISummaryDocument = {
     outlook: string;
   };
   insertedAt: Date;
+};
+
+export type AISevereWeatherOutlookSummaryDocument = {
+  outlookRefId: string;
+  genReason: string;
+  generatedAt: Date;
+  generatedAtISO: string;
+  content: {
+    summary: SevereWeatherAISummary;
+    date: string;
+  }[];
+};
+
+export type AISevereWeatherOutlookSummaryResp = {
+  id: string;
+  outlookRefId: string;
+  genReason: string;
+  generatedAt: Date;
+  generatedAtISO: string;
+  content: {
+    summary: SevereWeatherAISummary;
+    date: string;
+  }[];
+};
+
+export type AIThunderstormOutlookSummaryDocument = {
+  outlookRefId: string;
+  genReason: string;
+  generatedAt: Date;
+  generatedAtISO: string;
+  content: {
+    summary: ThunderstormAISummary['outlooks'];
+    date: string;
+  }[];
+};
+
+export type AIThunderstormOutlookSummaryResp = {
+  id: string;
+  outlookRefId: string;
+  genReason: string;
+  generatedAt: Date;
+  generatedAtISO: string;
+  content: {
+    summary: ThunderstormAISummary['outlooks'];
+    date: string;
+  }[];
 };

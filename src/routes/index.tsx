@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 
-import { AISummary } from '@/components/AISummary';
+import { AISummary } from '@/components/AISummary2';
 import Header from '@/components/Header';
 import IssuedWarningsAndWatches from '@/components/IssuedWarningsAndWatches';
 import SevereWeatherOutlook from '@/components/SevereWeatherOutlook';
