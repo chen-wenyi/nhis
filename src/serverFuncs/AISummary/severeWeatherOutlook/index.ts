@@ -65,71 +65,77 @@ export const generateSevereWeatherOutlookAISummary = createServerFn()
   .inputValidator((data: { reason: string; outlookRefId: string }) => data)
   .handler(async ({ data }): Promise<Resp | null> => {
     // Ably Publish
-    const realtimeClient = new Ably.Realtime({
+    const ablyClient = new Ably.Rest({
       key: process.env.ABLY_API_KEY,
       clientId: 'nhis-server',
     });
-
-    const channel = realtimeClient.channels.get('nhis-channel');
-
     const logs = [
       '\n*** Event: Generating severe weather outlook AI summary... ***',
     ];
-    logs.push(`Reason for generation: ${data.reason}`);
+    try {
+      const channel = ablyClient.channels.get('nhis-channel');
 
-    const SevereWeatherOutlookCollection =
-      await getSevereWeatherOutlookCollection();
-    const outlookDoc = await SevereWeatherOutlookCollection.findOne({
-      _id: new ObjectId(data.outlookRefId),
-    });
-    if (outlookDoc) {
-      await channel.publish(
-        Event.AI_SEVERE_WEATHER_OUTLOOK_SUMMARY_GENERATING,
-        outlookDoc._id.toString(),
+      logs.push(`Reason for generation: ${data.reason}`);
+
+      const SevereWeatherOutlookCollection =
+        await getSevereWeatherOutlookCollection();
+      const outlookDoc = await SevereWeatherOutlookCollection.findOne({
+        _id: new ObjectId(data.outlookRefId),
+      });
+      if (outlookDoc) {
+        await channel.publish(
+          Event.AI_SEVERE_WEATHER_OUTLOOK_SUMMARY_GENERATING,
+          outlookDoc._id.toString(),
+        );
+
+        const resps = await Promise.all(
+          outlookDoc.outlookItems.map((item) => {
+            return invokeChatCompletion(item.outlook);
+          }),
+        );
+
+        const generatedAt = new Date();
+
+        const result = {
+          outlookRefId: outlookDoc._id.toString(),
+          genReason: data.reason,
+          generatedAt: generatedAt,
+          generatedAtISO:
+            DateTime.fromJSDate(generatedAt)
+              .setZone('Pacific/Auckland')
+              .toISO() || '',
+          content: resps.map((summary, idx) => ({
+            summary,
+            date: outlookDoc.outlookItems[idx].date,
+          })),
+        };
+
+        const AISevereWeatherOutlookSummaryCollection =
+          await getAISevereWeatherOutlookSummaryCollection();
+        await AISevereWeatherOutlookSummaryCollection.insertOne(result);
+
+        await channel.publish(
+          Event.AI_SEVERE_WEATHER_OUTLOOK_SUMMARY_GENERATED,
+          outlookDoc._id.toString(),
+        );
+
+        logs.push(
+          `Inserted severe weather outlook AI summary for outlook ID: ${outlookDoc._id.toString()}`,
+        );
+        console.log(logs.join('\n'));
+        return result;
+      }
+      logs.push('No severe weather outlook document found in database');
+      return null;
+    } catch (error) {
+      console.error(
+        'Error generating severe weather outlook AI summary:',
+        error,
       );
-
-      const resps = await Promise.all(
-        outlookDoc.outlookItems.map((item) => {
-          return invokeChatCompletion(item.outlook);
-        }),
-      );
-
-      const generatedAt = new Date();
-
-      const result = {
-        outlookRefId: outlookDoc._id.toString(),
-        genReason: data.reason,
-        generatedAt: generatedAt,
-        generatedAtISO:
-          DateTime.fromJSDate(generatedAt)
-            .setZone('Pacific/Auckland')
-            .toISO() || '',
-        content: resps.map((summary, idx) => ({
-          summary,
-          date: outlookDoc.outlookItems[idx].date,
-        })),
-      };
-
-      const AISevereWeatherOutlookSummaryCollection =
-        await getAISevereWeatherOutlookSummaryCollection();
-      await AISevereWeatherOutlookSummaryCollection.insertOne(result);
-
-      await channel.publish(
-        Event.AI_SEVERE_WEATHER_OUTLOOK_SUMMARY_GENERATED,
-        outlookDoc._id.toString(),
-      );
-
-      realtimeClient.close();
-
-      logs.push(
-        `Inserted severe weather outlook AI summary for outlook ID: ${outlookDoc._id.toString()}`,
-      );
+      return null;
+    } finally {
       console.log(logs.join('\n'));
-      return result;
     }
-    logs.push('No severe weather outlook document found in database');
-    console.log(logs.join('\n'));
-    return null;
   });
 
 export const removeSevereWeatherOutlookAISummary = createServerFn()

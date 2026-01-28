@@ -64,13 +64,13 @@ export const generateThunderstormOutlookAISummary = createServerFn()
     ];
 
     // Ably Publish
-    const realtimeClient = new Ably.Realtime({
+    const ablyClient = new Ably.Rest({
       key: process.env.ABLY_API_KEY,
       clientId: 'nhis-server',
     });
 
     try {
-      const channel = realtimeClient.channels.get('nhis-channel');
+      const channel = ablyClient.channels.get('nhis-channel');
 
       logs.push(`Reason for generation: ${data.reason}`);
       logs.push(`Thunderstorm outlook Id ${data.outlookRefId}`);
@@ -117,8 +117,6 @@ export const generateThunderstormOutlookAISummary = createServerFn()
           outlookDoc._id.toString(),
         );
 
-        realtimeClient.close();
-
         logs.push(
           `Inserted thunderstorm outlook AI summary for outlook ID: ${outlookDoc._id.toString()}`,
         );
@@ -130,7 +128,6 @@ export const generateThunderstormOutlookAISummary = createServerFn()
       console.error('Error generating thunderstorm outlook AI summary:', error);
     } finally {
       console.log(logs.join('\n'));
-      realtimeClient.close();
     }
   });
 
