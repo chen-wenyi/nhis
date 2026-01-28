@@ -16,19 +16,7 @@ import { ObjectId } from 'mongodb';
 import OpenAI from 'openai';
 import { zodResponseFormat } from 'openai/helpers/zod';
 import { createUserPrompt, systemPrompt } from './prompt';
-import type { ThunderstormAISummary } from './schema';
 import { ThunderstormAISummarySchema } from './schema';
-
-type Resp = {
-  outlookRefId: string;
-  genReason: string;
-  generatedAt: Date;
-  generatedAtISO: string;
-  content: {
-    summary: ThunderstormAISummary;
-    date: string;
-  }[];
-};
 
 export const getThunderstormOutlookAISummary = createServerFn()
   .inputValidator((data: { outlookRefId: string }) => data)
@@ -71,74 +59,79 @@ export const getThunderstormOutlookAISummary = createServerFn()
 export const generateThunderstormOutlookAISummary = createServerFn()
   .inputValidator((data: { reason: string; outlookRefId: string }) => data)
   .handler(async ({ data }) => {
+    const logs = [
+      '\n*** Event: Generating thunderstorm outlook AI summary... ***',
+    ];
+
     // Ably Publish
     const realtimeClient = new Ably.Realtime({
       key: process.env.ABLY_API_KEY,
       clientId: 'nhis-server',
     });
 
-    const channel = realtimeClient.channels.get('nhis-channel');
+    try {
+      const channel = realtimeClient.channels.get('nhis-channel');
 
-    const logs = [
-      '\n*** Event: Generating thunderstorm outlook AI summary... ***',
-    ];
-    logs.push(`Reason for generation: ${data.reason}`);
-    logs.push(`Thunderstorm outlook Id ${data.outlookRefId}`);
-    console.log(logs.join('\n'));
+      logs.push(`Reason for generation: ${data.reason}`);
+      logs.push(`Thunderstorm outlook Id ${data.outlookRefId}`);
 
-    const ThunderstormOutlookCollection =
-      await getThunderstormOutlookCollection();
-    const outlookDoc = await ThunderstormOutlookCollection.findOne({
-      _id: new ObjectId(data.outlookRefId),
-    });
-    if (outlookDoc) {
-      await channel.publish(
-        Event.AI_THUNDERSTORM_OUTLOOK_SUMMARY_GENERATING,
-        outlookDoc._id.toString(),
-      );
+      const ThunderstormOutlookCollection =
+        await getThunderstormOutlookCollection();
+      const outlookDoc = await ThunderstormOutlookCollection.findOne({
+        _id: new ObjectId(data.outlookRefId),
+      });
+      if (outlookDoc) {
+        await channel.publish(
+          Event.AI_THUNDERSTORM_OUTLOOK_SUMMARY_GENERATING,
+          outlookDoc._id.toString(),
+        );
 
-      const resps = await Promise.all(
-        outlookDoc.items.map((item) => {
-          return invokeChatCompletion(item.outlook);
-        }),
-      );
+        const resps = await Promise.all(
+          outlookDoc.items.map((item) => {
+            return invokeChatCompletion(item.outlook);
+          }),
+        );
 
-      const generatedAt = new Date();
+        const generatedAt = new Date();
 
-      const result: AIThunderstormOutlookSummaryDocument = {
-        outlookRefId: outlookDoc._id.toString(),
-        genReason: data.reason,
-        generatedAt: generatedAt,
-        generatedAtISO:
-          DateTime.fromJSDate(generatedAt)
-            .setZone('Pacific/Auckland')
-            .toISO() || '',
-        content: resps.map((summary, idx) => ({
-          summary,
-          date: outlookDoc.items[idx].header,
-        })),
-      };
+        const result: AIThunderstormOutlookSummaryDocument = {
+          outlookRefId: outlookDoc._id.toString(),
+          genReason: data.reason,
+          generatedAt: generatedAt,
+          generatedAtISO:
+            DateTime.fromJSDate(generatedAt)
+              .setZone('Pacific/Auckland')
+              .toISO() || '',
+          content: resps.map((summary, idx) => ({
+            summary,
+            date: outlookDoc.items[idx].header,
+          })),
+        };
 
-      const AIThunderstormOutlookSummaryCollection =
-        await getAIThunderstormOutlookSummaryCollection();
-      await AIThunderstormOutlookSummaryCollection.insertOne(result);
+        const AIThunderstormOutlookSummaryCollection =
+          await getAIThunderstormOutlookSummaryCollection();
+        await AIThunderstormOutlookSummaryCollection.insertOne(result);
 
-      await channel.publish(
-        Event.AI_THUNDERSTORM_OUTLOOK_SUMMARY_GENERATED,
-        outlookDoc._id.toString(),
-      );
+        await channel.publish(
+          Event.AI_THUNDERSTORM_OUTLOOK_SUMMARY_GENERATED,
+          outlookDoc._id.toString(),
+        );
 
-      realtimeClient.close();
+        realtimeClient.close();
 
-      logs.push(
-        `Inserted thunderstorm outlook AI summary for outlook ID: ${outlookDoc._id.toString()}`,
-      );
+        logs.push(
+          `Inserted thunderstorm outlook AI summary for outlook ID: ${outlookDoc._id.toString()}`,
+        );
+        return result;
+      }
+      logs.push('No thunderstorm outlook document found in database');
+      return null;
+    } catch (error) {
+      console.error('Error generating thunderstorm outlook AI summary:', error);
+    } finally {
       console.log(logs.join('\n'));
-      return result;
+      realtimeClient.close();
     }
-    logs.push('No thunderstorm outlook document found in database');
-    console.log(logs.join('\n'));
-    return null;
   });
 
 export const removeSevereWeatherOutlookAISummary = createServerFn()
