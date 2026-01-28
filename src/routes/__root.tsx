@@ -43,7 +43,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 });
 
 const realtimeClient = new Ably.Realtime({
-  authUrl: '/api/ably/create-token',
+  authUrl: '/ably/create-token',
   clientId: 'nhis-client',
 });
 
