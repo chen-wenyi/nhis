@@ -280,7 +280,7 @@ export const useSevereWeatherOutlookAISummary = (outlookRefId: string) =>
 
 export const useThunderstormOutlookAISummary = (outlookRefId: string) =>
   useQuery({
-    enabled: !!outlookRefId,
+    enabled: false,
     queryKey: ['aiThunderstormOutlookSummary', outlookRefId],
     queryFn: () => getThunderstormOutlookAISummary({ data: { outlookRefId } }),
     refetchOnWindowFocus: false,
