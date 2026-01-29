@@ -48,9 +48,9 @@ export function DiffViewer({ items }: { items: SevereWeatherOutlook[] }) {
     const header = `Issued: ${issuedDate ? `${formatUTCToNZDate(issuedDate)}\n` : '\n'}`;
     const result = `${header}\n ${outlookItems
       .map(({ date, outlook }) => {
-        return `\n${date}\n${outlook.replaceAll('\n', '\n \n')}`;
+        return `\n${date}\n${outlook.replaceAll('\n', ' \n \n')}`;
       })
-      .join('\n \n')}`;
+      .join('\n \n ')}`;
     return result;
   });
 

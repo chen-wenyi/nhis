@@ -51,7 +51,7 @@ export function DiffViewer({ items }: { items: ThunderstormOutlookResp[] }) {
   const outlookStrs = items.map((item) =>
     item
       .map(({ header, outlook, issuedDate }) => {
-        return `\n${header}\n${outlook}\nIssued: ${issuedDate}`;
+        return `\n${header}\n${outlook.replaceAll('\n', ' \n')}\n \nIssued: ${issuedDate}`;
       })
       .join('\n\n'),
   );
