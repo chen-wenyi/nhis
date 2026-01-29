@@ -252,7 +252,7 @@ ${thunderstormOutlook.id}
       ) : (
         <>
           <div className="flex gap-2 items-center justify-between">
-            <div>
+            <div className="flex items-center gap-2">
               <span className="font-semibold">AI Generated At: </span>
               {isAIGenerating ? (
                 <Skeleton className="w-36 h-6" />
