@@ -15,6 +15,7 @@ import { Button } from '../ui/button';
 import { ButtonGroup } from '../ui/button-group';
 import { Skeleton } from '../ui/skeleton';
 import { ReactMarkdownWithHighlight } from './ReactMarkdownWithHighlight';
+import { RevisionHistory } from './RevisionHistory';
 
 export default function ThunderstormOutlook() {
   const {
@@ -43,7 +44,7 @@ export default function ThunderstormOutlook() {
             </Button>
           </ButtonGroup>
         </CardTitle>
-        <CardDescription className="mt-2 ml-1">
+        <CardDescription className="mt-2 ml-1 flex justify-between items-center h-8">
           <span>
             Source:{' '}
             <a
@@ -55,6 +56,7 @@ export default function ThunderstormOutlook() {
               MetService
             </a>
           </span>
+          <RevisionHistory />
         </CardDescription>
       </CardHeader>
       <CardContent>

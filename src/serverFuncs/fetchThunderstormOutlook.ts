@@ -42,3 +42,33 @@ export const getThunderstormOutlookById = createServerFn()
       }));
     },
   );
+
+export const getThunderstormOutlookHistory = createServerFn()
+  .inputValidator((data: { dateStr: string }) => data) // DD MMM format
+  .handler(
+    async ({
+      data,
+    }): Promise<(ThunderstormOutlook & { insertedAt: Date })[]> => {
+      const collection = await getThunderstormOutlookCollection();
+
+      const query = {
+        items: {
+          $ne: [],
+          $not: {
+            $elemMatch: {
+              issuedDate: { $not: { $regex: data.dateStr } },
+            },
+          },
+        },
+      };
+
+      const outlooks = await collection.find(query).toArray();
+
+      return outlooks.map((outlook) => ({
+        insertedAt: outlook.insertedAt,
+        id: outlook._id.toString(),
+        items: outlook.items,
+        refIssuedDates: outlook.refIssuedDates,
+      }));
+    },
+  );
