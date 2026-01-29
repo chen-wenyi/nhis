@@ -48,49 +48,6 @@ export function RevisionHistory() {
 }
 
 export function DiffViewer({ items }: { items: ThunderstormOutlookResp[] }) {
-  // const items: ThunderstormOutlookResp[] = [
-  //   [
-  //     {
-  //       header: 'Valid to midnight Wed, 28 Jan',
-  //       outlook:
-  //         'A combination of wind convergence and afternoon and early evening heating is expected to bring a low risk of a few thunderstorms to inland parts of the central North Island, as depicted on the chart.\n\nThere is minimal risk of thunderstorms or significant convection expected elsewhere during this period.',
-  //       issuedDate: '7:32am Wed, 28 Jan',
-  //     },
-  //     {
-  //       header: 'Valid from midnight Wed, 28 Jan to noon Thu, 29 Jan',
-  //       outlook:
-  //         'There is minimal risk of thunderstorms or significant convection during this period.',
-  //       issuedDate: '7:39pm Wed, 28 Jan',
-  //     },
-  //     {
-  //       header: 'Valid from noon Thu, 29 Jan to midnight Thu, 29 Jan',
-  //       outlook:
-  //         'A front moves northwards over the lower South Island during Thursday afternoon, and there is a low risk of thunderstorms on a southerly change for Dunedin, North Otago and about the Canterbury Plains and foothills south of Ashburton.\n\nThere is minimal risk of thunderstorms or significant convection expected elsewhere during this period.',
-  //       issuedDate: '7:54pm Wed, 28 Jan',
-  //     },
-  //   ],
-  //   [
-  //     {
-  //       header: 'Valid to midnight Wed, 28 Jan',
-  //       outlook:
-  //         'A combination of wind convergence and afternoon and early evening heating is expected to bring a low risk of a few thunderstorms to inland parts of the central North Island, as depicted on the chart.\n\nThere is minimal risk of thunderstorms or significant convection expected elsewhere during this period.',
-  //       issuedDate: '7:32am Wed, 28 Jan',
-  //     },
-  //     {
-  //       header: 'Valid from midnight Wed, 28 Jan to noon Thu, 29 Jan',
-  //       outlook:
-  //         'There is minimal risk of thunderstorms or significant convection during this period.',
-  //       issuedDate: '9:03am Wed, 28 Jan',
-  //     },
-  //     {
-  //       header: 'Valid from noon Thu, 29 Jan to midnight Thu, 29 Jan',
-  //       outlook:
-  //         'A front moves northwards over the lower South Island tomorrow afternoon and there is a low risk of thunderstorms on a southerly change for coastal North Otago and the far south of Canterbury plains.\n\nThere is minimal risk of thunderstorms or significant convection expected elsewhere during this period.',
-  //       issuedDate: '9:10am Wed, 28 Jan',
-  //     },
-  //   ],
-  // ];
-
   const outlookStrs = items.map((item) =>
     item
       .map(({ header, outlook, issuedDate }) => {

@@ -45,15 +45,13 @@ export function RevisionHistory() {
 
 export function DiffViewer({ items }: { items: SevereWeatherOutlook[] }) {
   const outlookStrs = items.map(({ outlookItems, issuedDate }) => {
-    const header = `Issued: ${issuedDate ? formatUTCToNZDate(issuedDate) : ''}\n`;
-    return (
-      header +
-      outlookItems
-        .map(({ date, outlook }) => {
-          return `\n${date}\n${outlook}`;
-        })
-        .join('\n\n')
-    );
+    const header = `Issued: ${issuedDate ? `${formatUTCToNZDate(issuedDate)}\n` : '\n'}`;
+    const result = `${header}\n ${outlookItems
+      .map(({ date, outlook }) => {
+        return `\n${date}\n${outlook.replaceAll('\n', '\n \n')}`;
+      })
+      .join('\n \n')}`;
+    return result;
   });
 
   const length = outlookStrs.length;

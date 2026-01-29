@@ -132,7 +132,7 @@ function SevereWeatherOutlookItem({
     <div ref={isActive ? ref : null}>
       <div className="text-lg font-semibold">{date}</div>
       <ReactMarkdownWithHighlight
-        markdown={outlook}
+        markdown={outlook.replaceAll('\n', '\n \n')}
         quotes={activeSevereWeatherOutlookReference?.quotes || []}
         keywords={activeSevereWeatherOutlookReference?.keywords || []}
       />
