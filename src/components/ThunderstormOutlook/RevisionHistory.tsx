@@ -6,30 +6,27 @@ import { useState } from 'react';
 import ReactDiffViewer, { DiffMethod } from 'react-diff-viewer';
 import { Button } from '../ui/button';
 import { ButtonGroup } from '../ui/button-group';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTrigger,
-} from '../ui/dialog';
-
-type DDMMM = string; // 29 Jan
-
-type Props = {
-  outlookId: string;
-  dateStrs: DDMMM[];
-};
+import { Dialog, DialogContent, DialogTrigger } from '../ui/dialog';
 
 export function RevisionHistory() {
   const { data: outlook } = useThunderstormOutlook();
 
+  const issuedDateStrs = outlook?.items.map((item) =>
+    item.issuedDate.split(', ')[1].trim(),
+  );
+
+  // if every issued date is the same, assign only one date string
+  const uniqueIssuedDateStrs = Array.from(new Set(issuedDateStrs));
+
+  const issuedDateStr =
+    uniqueIssuedDateStrs.length === 1 ? uniqueIssuedDateStrs[0] : '';
+
   const { data: revisionHistory } = useQuery({
-    enabled: !!outlook,
+    enabled: !!outlook && !!issuedDateStr,
     queryKey: ['thunderstormOutlookRevisionHistory', outlook?.id],
-    queryFn: async () => {
-      // fetch revision history data here if needed
-      return getThunderstormOutlookHistory({ data: { dateStr: '29 Jan' } });
-    },
+    queryFn: async () =>
+      getThunderstormOutlookHistory({ data: { dateStr: issuedDateStr } }),
+    staleTime: Infinity,
   });
 
   if (!revisionHistory || revisionHistory.length <= 1) {
@@ -38,15 +35,13 @@ export function RevisionHistory() {
 
   return (
     <Dialog>
-      <DialogTrigger>
+      <DialogTrigger asChild>
         <Button variant="outline" size="sm">
           Revision History
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-[80vw]! h-[70vh]">
-        <DialogHeader>
-          {<DiffViewer items={revisionHistory.map(({ items }) => items)} />}
-        </DialogHeader>
+      <DialogContent className="max-w-[80vw]! h-[80vh]">
+        {<DiffViewer items={revisionHistory.map(({ items }) => items)} />}
       </DialogContent>
     </Dialog>
   );
@@ -113,7 +108,7 @@ export function DiffViewer({ items }: { items: ThunderstormOutlookResp[] }) {
   const [newIndex, setNewIndex] = useState(length - 1);
 
   return (
-    <div className="w-full h-full">
+    <div className="flex flex-col w-full h-full min-h-0">
       <div className="flex pb-2">
         <div className="flex-1 flex items-center justify-center">
           <ButtonGroup>
@@ -146,7 +141,7 @@ export function DiffViewer({ items }: { items: ThunderstormOutlookResp[] }) {
           </ButtonGroup>
         </div>
       </div>
-      <div className="max-h-[90%] overflow-auto">
+      <div className="flex-1 overflow-auto">
         <ReactDiffViewer
           oldValue={outlookStrs[oldIndex]}
           newValue={outlookStrs[newIndex]}

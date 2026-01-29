@@ -16,13 +16,10 @@ import { Button } from '../ui/button';
 import { ButtonGroup } from '../ui/button-group';
 import { Skeleton } from '../ui/skeleton';
 import { ReactMarkdownWithHighlight } from './ReactMarkdownWithHighlight';
+import { RevisionHistory } from './RevisionHistory';
 
 export default function SevereWeatherOutlook() {
-  const {
-    data: severeWeatherOutlook,
-    isLoading,
-    error,
-  } = useSevereWeatherOutlook();
+  const { data: severeWeatherOutlook, isFetching } = useSevereWeatherOutlook();
 
   return (
     <Card>
@@ -45,29 +42,32 @@ export default function SevereWeatherOutlook() {
           </ButtonGroup>
         </CardTitle>
         <CardDescription className="mt-2 ml-1">
-          <div className="flex gap-6">
-            <span>
-              Source:{' '}
-              <a
-                href="https://www.metservice.com/warnings/severe-weather-outlook"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline"
-              >
-                MetService
-              </a>
-            </span>
-            <span>
-              Issued:{' '}
-              {severeWeatherOutlook?.issuedDate
-                ? formatUTCToNZDate(severeWeatherOutlook.issuedDate)
-                : ''}
-            </span>
+          <div className="flex gap-6 items-start justify-between">
+            <div className="flex flex-col gap-1">
+              <div>
+                Source:{' '}
+                <a
+                  href="https://www.metservice.com/warnings/severe-weather-outlook"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline"
+                >
+                  MetService
+                </a>
+              </div>
+              <div>
+                Issued:{' '}
+                {severeWeatherOutlook?.issuedDate
+                  ? formatUTCToNZDate(severeWeatherOutlook.issuedDate)
+                  : ''}
+              </div>
+            </div>
+            <RevisionHistory />
           </div>
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {isLoading ? (
+        {isFetching ? (
           <LoadingSkeleton />
         ) : (
           <div className="flex flex-col gap-6">

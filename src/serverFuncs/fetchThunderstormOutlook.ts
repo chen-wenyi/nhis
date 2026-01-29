@@ -43,8 +43,9 @@ export const getThunderstormOutlookById = createServerFn()
     },
   );
 
+type DDMMM = string; // 29 Jan or 9 Jan
 export const getThunderstormOutlookHistory = createServerFn()
-  .inputValidator((data: { dateStr: string }) => data) // DD MMM format
+  .inputValidator((data: { dateStr: DDMMM }) => data) // DD MMM format
   .handler(
     async ({
       data,
@@ -62,7 +63,9 @@ export const getThunderstormOutlookHistory = createServerFn()
         },
       };
 
-      const outlooks = await collection.find(query).toArray();
+      const outlooks = await collection
+        .find(query, { sort: { insertedAt: 1 } })
+        .toArray();
 
       return outlooks.map((outlook) => ({
         insertedAt: outlook.insertedAt,
