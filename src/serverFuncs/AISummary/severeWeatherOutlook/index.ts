@@ -36,9 +36,12 @@ export const getSevereWeatherOutlookAISummary = createServerFn()
 
       const collection = await getAISevereWeatherOutlookSummaryCollection();
 
-      const summaryDoc = await collection.findOne({
-        outlookRefId: data.outlookRefId,
-      });
+      const summaryDoc = await collection.findOne(
+        {
+          outlookRefId: data.outlookRefId,
+        },
+        { sort: { generatedAt: -1 } },
+      );
 
       if (summaryDoc) {
         console.log(

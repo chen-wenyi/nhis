@@ -240,6 +240,12 @@ ${thunderstormOutlook.id}
     (s) => s.isThunderstormOutlookLoading || s.isSevereWeatherOutlookLoading,
   );
 
+  const handleGeneratedAtClick = () => {
+    console.log(
+      `\n*** AI Summary Generation Time Details ***\nissuedWarningsAndWatches: ${issuedWarningsAndWatches?.id}\ninsertedAt: ${issuedWarningsAndWatches?.insertedAt}\n\nsevereWeatherOutlookAISummary: ${severeWeatherOutlookAISummary?.id}\ngeneratedAt: ${severeWeatherOutlookAISummary?.generatedAt}\n\nthunderstormOutlookAISummary: ${thunderstormOutlookAISummary?.id}\ngeneratedAt: ${thunderstormOutlookAISummary?.generatedAt}\n*******************************\n`,
+    );
+  };
+
   return (
     <div className="flex flex-col gap-4 p-4 h-full overflow-y-auto">
       {isDataLoading ? (
@@ -253,7 +259,9 @@ ${thunderstormOutlook.id}
         <>
           <div className="flex gap-2 items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="font-semibold">AI Generated At: </span>
+              <span className="font-semibold" onClick={handleGeneratedAtClick}>
+                AI Generated At:{' '}
+              </span>
               {isAIGenerating ? (
                 <Skeleton className="w-36 h-6" />
               ) : generatedAt ? (
