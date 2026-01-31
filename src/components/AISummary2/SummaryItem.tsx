@@ -76,56 +76,41 @@ export function SummaryItem({
   return (
     <div className="flex flex-col" key={date.toISODate()}>
       <span className="font-semibold">{date.toFormat('cccc dd LLLL')}</span>
-      {!(
-        isSevereWeatherOutlookAISummaryFetching ||
-        isThunderstormOutlookAISummaryFetching
-      ) && (
-        <div>
-          {issuedWarningsAndWatches.length > 0 &&
-            groupedIssuedWarningsAndWatchesToday.length > 0 && (
-              <ul className="text-sm">
-                {groupedIssuedWarningsAndWatchesToday.map((group) => (
-                  <li className="py-2" key={group[0].id}>
-                    <IssuedAlerts
-                      issuedWarningsAndWatches={group}
-                      date={date}
-                    />
-                  </li>
-                ))}
-              </ul>
-            )}
-          {groupedIssuedWarningsAndWatchesRemaining.length > 0 && (
+      <div>
+        {issuedWarningsAndWatches.length > 0 &&
+          groupedIssuedWarningsAndWatchesToday.length > 0 && (
             <ul className="text-sm">
-              {groupedIssuedWarningsAndWatchesRemaining.map((group) => (
+              {groupedIssuedWarningsAndWatchesToday.map((group) => (
                 <li className="py-2" key={group[0].id}>
-                  <IssuedAlertsRemaining
-                    issuedWarningsAndWatches={group}
-                    date={date}
-                  />
+                  <IssuedAlerts issuedWarningsAndWatches={group} date={date} />
                 </li>
               ))}
             </ul>
           )}
-          {groupedIssuedWarningsAndWatchesEnd.length > 0 && (
-            <ul className="text-sm">
-              {groupedIssuedWarningsAndWatchesEnd.map((group) => (
-                <li className="py-2" key={group[0].id}>
-                  <IssuedAlertsEnd
-                    issuedWarningsAndWatches={group}
-                    date={date}
-                  />
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      )}
+        {groupedIssuedWarningsAndWatchesRemaining.length > 0 && (
+          <ul className="text-sm">
+            {groupedIssuedWarningsAndWatchesRemaining.map((group) => (
+              <li className="py-2" key={group[0].id}>
+                <IssuedAlertsRemaining
+                  issuedWarningsAndWatches={group}
+                  date={date}
+                />
+              </li>
+            ))}
+          </ul>
+        )}
+        {groupedIssuedWarningsAndWatchesEnd.length > 0 && (
+          <ul className="text-sm">
+            {groupedIssuedWarningsAndWatchesEnd.map((group) => (
+              <li className="py-2" key={group[0].id}>
+                <IssuedAlertsEnd issuedWarningsAndWatches={group} date={date} />
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
       {isSevereWeatherOutlookAISummaryFetching ? (
-        <div className="flex flex-col gap-2 py-4">
-          <Skeleton className="h-6 w-full" />
-          <Skeleton className="h-6 w-full" />
-          <Skeleton className="h-6 w-3/4" />
-        </div>
+        <Skeleton className="h-6 w-full my-1" />
       ) : (
         severeWeatherOutlookAISummary.length > 0 && (
           <div>
@@ -140,11 +125,7 @@ export function SummaryItem({
         )
       )}
       {isThunderstormOutlookAISummaryFetching ? (
-        <div className="flex flex-col gap-2 py-4">
-          <Skeleton className="h-6 w-full" />
-          <Skeleton className="h-6 w-full" />
-          <Skeleton className="h-6 w-3/4" />
-        </div>
+        <Skeleton className="h-6 w-full my-1" />
       ) : (
         thunderstormOutlookAISummary.length > 0 && (
           <div>

@@ -15,10 +15,20 @@ import {
   getThunderstormOutlookAISummary,
 } from '@/serverFuncs/AISummary/thunderstormOutlook';
 import { useQuery } from '@tanstack/react-query';
+import { MoreHorizontalIcon, RefreshCw } from 'lucide-react';
 import { DateTime, Interval } from 'luxon';
 import { useEffect, useRef, useState } from 'react';
-import { TbRefresh } from 'react-icons/tb';
+import { AiFillThunderbolt } from 'react-icons/ai';
+import { IoRainy } from 'react-icons/io5';
 import { Button } from '../ui/button';
+import { ButtonGroup } from '../ui/button-group';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '../ui/dropdown-menu';
 import { Progress } from '../ui/progress';
 import { Skeleton } from '../ui/skeleton';
 import type { Summary } from './SummaryItem';
@@ -224,7 +234,7 @@ ${thunderstormOutlook.id}
     isThunderstormOutlookLoading,
   ]);
 
-  const regenerate = () => {
+  const regenerateAll = () => {
     if (severeWeatherOutlook?.id) {
       generateSevereWeatherOutlookAISummary({
         data: {
@@ -233,6 +243,28 @@ ${thunderstormOutlook.id}
         },
       });
     }
+    if (thunderstormOutlook?.id) {
+      generateThunderstormOutlookAISummary({
+        data: {
+          reason: 'Triggered by user regeneration',
+          outlookRefId: thunderstormOutlook.id,
+        },
+      });
+    }
+  };
+
+  const regenerateSevereWether = () => {
+    if (severeWeatherOutlook?.id) {
+      generateSevereWeatherOutlookAISummary({
+        data: {
+          reason: 'Triggered by user regeneration',
+          outlookRefId: severeWeatherOutlook.id,
+        },
+      });
+    }
+  };
+
+  const regenerateThunderstorm = () => {
     if (thunderstormOutlook?.id) {
       generateThunderstormOutlookAISummary({
         data: {
@@ -295,15 +327,12 @@ ${thunderstormOutlook.id}
                 'N/A'
               )}
             </div>
-            <Button
-              className="cursor-pointer ml-4"
-              variant="outline"
-              onClick={regenerate}
-              disabled={isAIGenerating}
-            >
-              Regenerate
-              <TbRefresh className={cn(isAIGenerating && 'animate-spin')} />
-            </Button>
+            <RegenerateButtonGroup
+              regenerateAll={regenerateAll}
+              regenerateSevereWether={regenerateSevereWether}
+              regenerateThunderstorm={regenerateThunderstorm}
+              isAIGenerating={isAIGenerating}
+            />
           </div>
           {summaries.map((summary) => (
             <SummaryItem
@@ -320,6 +349,51 @@ ${thunderstormOutlook.id}
         </>
       )}
     </div>
+  );
+}
+
+function RegenerateButtonGroup({
+  regenerateAll,
+  regenerateSevereWether,
+  regenerateThunderstorm,
+  isAIGenerating,
+}: {
+  regenerateAll: () => void;
+  regenerateSevereWether: () => void;
+  regenerateThunderstorm: () => void;
+  isAIGenerating: boolean;
+}) {
+  return (
+    <ButtonGroup>
+      <Button
+        className="cursor-pointer ml-4"
+        variant="outline"
+        onClick={regenerateAll}
+        disabled={isAIGenerating}
+      >
+        Regenerate
+        <RefreshCw className={cn(isAIGenerating && 'animate-spin')} />
+      </Button>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" size="icon" aria-label="More Options">
+            <MoreHorizontalIcon />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-65">
+          <DropdownMenuGroup>
+            <DropdownMenuItem onClick={regenerateSevereWether}>
+              <IoRainy className="text-black" />
+              Severe Weather Outlook Only
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={regenerateThunderstorm}>
+              <AiFillThunderbolt className="text-black" />
+              Thunderstorm Outlook Only
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </ButtonGroup>
   );
 }
 
