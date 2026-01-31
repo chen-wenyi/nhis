@@ -132,6 +132,20 @@ ${thunderstormOutlook.id}
           .find((daySummary) => daySummary.date.hasSame(outlookDate, 'day'))
           ?.thunderstormOutlookAISummary.push(...item.summary);
       });
+
+      issuedWarningsAndWatches.entries.forEach((i) => {
+        const onset = DateTime.fromISO(i.onset);
+        const expires = DateTime.fromISO(i.expires);
+        _summaries.forEach((daySummary) => {
+          if (
+            daySummary.date >= onset.startOf('day') &&
+            daySummary.date <= expires.endOf('day')
+          ) {
+            daySummary.issuedWarningsAndWatches.push(i);
+          }
+        });
+      });
+
       console.log('Generated summaries:', _summaries);
       setSummaries(_summaries);
     }
