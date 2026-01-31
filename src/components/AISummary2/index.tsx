@@ -261,7 +261,7 @@ ${thunderstormOutlook.id}
 
   const handleGeneratedAtClick = () => {
     console.log(
-      `\n*** AI Summary Generation Time Details ***\nissuedWarningsAndWatches: ${issuedWarningsAndWatches?.id}\ninsertedAt: ${issuedWarningsAndWatches?.insertedAt}\n\nsevereWeatherOutlookAISummary: ${severeWeatherOutlookAISummary?.id}\ngeneratedAt: ${severeWeatherOutlookAISummary?.generatedAt}\n\nthunderstormOutlookAISummary: ${thunderstormOutlookAISummary?.id}\ngeneratedAt: ${thunderstormOutlookAISummary?.generatedAt}\n*******************************\n`,
+      `\n*** AI Summary Generation Time Details ***\nissuedWarningsAndWatches: ${issuedWarningsAndWatches?.id}\ninsertedAt: ${issuedWarningsAndWatches?.insertedAt}\n\nsevereWeatherOutlook: ${severeWeatherOutlook?.id}\n\nthunderstormOutlook: ${thunderstormOutlook?.id}\n\nsevereWeatherOutlookAISummary: ${severeWeatherOutlookAISummary?.id}\ngeneratedAt: ${severeWeatherOutlookAISummary?.generatedAt}\n\nthunderstormOutlookAISummary: ${thunderstormOutlookAISummary?.id}\ngeneratedAt: ${thunderstormOutlookAISummary?.generatedAt}\n*******************************\n`,
     );
   };
 
