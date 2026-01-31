@@ -33,13 +33,13 @@ export function SevereWeatherOutlookItemComp({
       : name;
   const areas = outlook.areas.length > 0 ? formatAreasList(outlook.areas) : '';
 
-  const textContent = `There is ${outlook.chance} confidence that ${event} will reach ${criteria} criteria${
+  const textContent = `There is ${outlook.chance.toLowerCase()} confidence that ${event} will reach ${criteria} criteria${
     areas ? ` for ${areas}` : ''
   }.`;
 
   return (
     <span>
-      There is <span className="underline lowercase">{outlook.chance}</span>{' '}
+      There is <span className="underline">{outlook.chance.toLowerCase()}</span>{' '}
       confidence that {event} will reach {criteria} criteria
       {areas ? ` for ${areas}` : ''}.
       <span className="inline-flex gap-1 items-baseline relative top-0.5">

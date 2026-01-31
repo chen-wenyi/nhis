@@ -178,34 +178,47 @@ function IssuedAlerts({
         <AlertIndicator data={issuedWarningOrAlert} />
       </div>
       <span>
-        {isMultipleAreas ? (
+        {!isMultipleAreas ? (
           <div className="flex flex-col gap-1">
-            <div>
+            <div className="flex gap-1">
               MetService has issued{' '}
               {formatAlertName(issuedWarningOrAlert.headline, isMultipleAreas)}{' '}
               for the following areas:
+              <div>
+                <CopyIcon
+                  content={`MetService has issued ${formatAlertName(issuedWarningOrAlert.headline, isMultipleAreas)} for the following areas:`}
+                />
+              </div>
             </div>
             <ul className="list-disc pl-6 space-y-1">
-              {issuedWarningsAndWatches.map((i, idx) => (
-                <li key={idx}>
-                  {i.areaDesc.length > 0 ? i.areaDesc : 'Multiple areas'}
-                  {formatAlertDuration(
-                    DateTime.fromISO(i.onset),
-                    DateTime.fromISO(i.expires),
-                  )}
-                  {i.ChanceOfUpgrade && upgradeTo && (
-                    <span>
-                      . There is a{' '}
-                      <span className="underline lowercase">
-                        {i.ChanceOfUpgrade}
-                      </span>{' '}
-                      confidence of upgrading to a {upgradeTo}
-                    </span>
-                  )}
-                  <span>.</span>
-                  <AlertRef date={date} alertIds={[i.id]} />
-                </li>
-              ))}
+              {issuedWarningsAndWatches.map(
+                ({ id, areaDesc, ChanceOfUpgrade, onset, expires }, idx) => {
+                  const content = `${areaDesc.length > 0 ? areaDesc : 'Multiple areas'}${formatAlertDuration(DateTime.fromISO(onset), DateTime.fromISO(expires))}. ${ChanceOfUpgrade && upgradeTo ? `There is a ${ChanceOfUpgrade.toLowerCase()} confidence of upgrading to a ${upgradeTo}` : ''}.`;
+                  return (
+                    <li key={idx}>
+                      {areaDesc.length > 0 ? areaDesc : 'Multiple areas'}
+                      {formatAlertDuration(
+                        DateTime.fromISO(onset),
+                        DateTime.fromISO(expires),
+                      )}
+                      {ChanceOfUpgrade && upgradeTo && (
+                        <span>
+                          . There is a{' '}
+                          <span className="underline lowercase">
+                            {ChanceOfUpgrade}
+                          </span>{' '}
+                          confidence of upgrading to a {upgradeTo}
+                        </span>
+                      )}
+                      <span>.</span>
+                      <div className="inline-flex justify-center items-baseline gap-1 relative top-0.5">
+                        <AlertRef date={date} alertIds={[id]} />
+                        <CopyIcon content={content} />
+                      </div>
+                    </li>
+                  );
+                },
+              )}
             </ul>
           </div>
         ) : (
@@ -222,12 +235,17 @@ function IssuedAlerts({
             {chance && upgradeTo && (
               <span>
                 . There is a{' '}
-                <span className="underline lowercase">{chance}</span> confidence
-                of upgrading to a {upgradeTo}
+                <span className="underline">{chance.toLowerCase()}</span>{' '}
+                confidence of upgrading to a {upgradeTo}
               </span>
             )}
             <span>.</span>
-            <AlertRef date={date} alertIds={[issuedWarningOrAlert.id]} />
+            <div className="inline-flex justify-center items-baseline gap-1 relative top-0.5">
+              <AlertRef date={date} alertIds={[issuedWarningOrAlert.id]} />
+              <CopyIcon
+                content={`A ${formatAlertName(issuedWarningOrAlert.headline, isMultipleAreas)} has been issued ${issuedWarningOrAlert.areaDesc.length > 0 ? `for ${issuedWarningOrAlert.areaDesc}` : ''}${formatAlertDuration(DateTime.fromISO(issuedWarningOrAlert.onset), DateTime.fromISO(issuedWarningOrAlert.expires))}${chance && upgradeTo ? `. There is a ${chance.toLowerCase()} confidence of upgrading to a ${upgradeTo}` : ''}.`}
+              />
+            </div>
           </>
         )}
       </span>
@@ -247,6 +265,9 @@ function IssuedAlertsRemaining({
     a.areaDesc.split(',').map((area) => area.trim()),
   );
   const isMultipleAreas = issuedWarningsAndWatches.length > 1;
+  const content = isMultipleAreas
+    ? `The ${formatAlertName(issuedWarningOrAlert.headline, isMultipleAreas)} remain in place for ${formatAreasList(allAreas)}.`
+    : `The ${formatAlertName(issuedWarningOrAlert.headline, isMultipleAreas)} remains in place for ${formatAreasList(allAreas)}.`;
   return (
     <div className="flex items-stretch gap-2">
       <div className="flex justify-center min-h-full">
@@ -254,27 +275,14 @@ function IssuedAlertsRemaining({
       </div>
       <span>
         <div className="flex gap-1">
-          {isMultipleAreas ? (
-            <div>
-              The{' '}
-              {formatAlertName(issuedWarningOrAlert.headline, isMultipleAreas)}{' '}
-              remain in place for {formatAreasList(allAreas)}.
-              <AlertRef
-                date={date}
-                alertIds={issuedWarningsAndWatches.map((m) => m.id)}
-              />
-            </div>
-          ) : (
-            <div>
-              The{' '}
-              {formatAlertName(issuedWarningOrAlert.headline, isMultipleAreas)}{' '}
-              remains in place for {formatAreasList(allAreas)}.
-              <AlertRef
-                date={date}
-                alertIds={issuedWarningsAndWatches.map((m) => m.id)}
-              />
-            </div>
-          )}
+          {content}
+          <div className="inline-flex justify-center items-baseline gap-1 relative top-0.5">
+            <AlertRef
+              date={date}
+              alertIds={issuedWarningsAndWatches.map((m) => m.id)}
+            />
+            <CopyIcon content={content} />
+          </div>
         </div>
       </span>
     </div>
