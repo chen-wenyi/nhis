@@ -24,8 +24,8 @@ export type Summary = {
   issuedWarningsAndWatches: IssuedWarningOrWatche[];
   severeWeatherOutlookAISummary: SevereWeatherAISummary;
   thunderstormOutlookAISummary: ThunderstormOutlookAISummary[];
-  isSevereWeatherOutlookLoading: boolean;
-  isThunderstormOutlookLoading: boolean;
+  isSevereWeatherOutlookAISummaryFetching: boolean;
+  isThunderstormOutlookAISummaryFetching: boolean;
 };
 
 export function SummaryItem({
@@ -33,8 +33,8 @@ export function SummaryItem({
   issuedWarningsAndWatches,
   severeWeatherOutlookAISummary,
   thunderstormOutlookAISummary,
-  isSevereWeatherOutlookLoading,
-  isThunderstormOutlookLoading,
+  isSevereWeatherOutlookAISummaryFetching,
+  isThunderstormOutlookAISummaryFetching,
 }: Summary) {
   const groupedIssuedWarningsAndWatchesToday = useMemo(() => {
     return groupAlerts(
@@ -76,40 +76,51 @@ export function SummaryItem({
   return (
     <div className="flex flex-col" key={date.toISODate()}>
       <span className="font-semibold">{date.toFormat('cccc dd LLLL')}</span>
-      <div>
-        {issuedWarningsAndWatches.length > 0 &&
-          groupedIssuedWarningsAndWatchesToday.length > 0 && (
+      {!(
+        isSevereWeatherOutlookAISummaryFetching ||
+        isThunderstormOutlookAISummaryFetching
+      ) && (
+        <div>
+          {issuedWarningsAndWatches.length > 0 &&
+            groupedIssuedWarningsAndWatchesToday.length > 0 && (
+              <ul className="text-sm">
+                {groupedIssuedWarningsAndWatchesToday.map((group) => (
+                  <li className="py-2" key={group[0].id}>
+                    <IssuedAlerts
+                      issuedWarningsAndWatches={group}
+                      date={date}
+                    />
+                  </li>
+                ))}
+              </ul>
+            )}
+          {groupedIssuedWarningsAndWatchesRemaining.length > 0 && (
             <ul className="text-sm">
-              {groupedIssuedWarningsAndWatchesToday.map((group) => (
+              {groupedIssuedWarningsAndWatchesRemaining.map((group) => (
                 <li className="py-2" key={group[0].id}>
-                  <IssuedAlerts issuedWarningsAndWatches={group} date={date} />
+                  <IssuedAlertsRemaining
+                    issuedWarningsAndWatches={group}
+                    date={date}
+                  />
                 </li>
               ))}
             </ul>
           )}
-        {groupedIssuedWarningsAndWatchesRemaining.length > 0 && (
-          <ul className="text-sm">
-            {groupedIssuedWarningsAndWatchesRemaining.map((group) => (
-              <li className="py-2" key={group[0].id}>
-                <IssuedAlertsRemaining
-                  issuedWarningsAndWatches={group}
-                  date={date}
-                />
-              </li>
-            ))}
-          </ul>
-        )}
-        {groupedIssuedWarningsAndWatchesEnd.length > 0 && (
-          <ul className="text-sm">
-            {groupedIssuedWarningsAndWatchesEnd.map((group) => (
-              <li className="py-2" key={group[0].id}>
-                <IssuedAlertsEnd issuedWarningsAndWatches={group} date={date} />
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-      {isSevereWeatherOutlookLoading ? (
+          {groupedIssuedWarningsAndWatchesEnd.length > 0 && (
+            <ul className="text-sm">
+              {groupedIssuedWarningsAndWatchesEnd.map((group) => (
+                <li className="py-2" key={group[0].id}>
+                  <IssuedAlertsEnd
+                    issuedWarningsAndWatches={group}
+                    date={date}
+                  />
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
+      {isSevereWeatherOutlookAISummaryFetching ? (
         <div className="flex flex-col gap-2 py-4">
           <Skeleton className="h-6 w-full" />
           <Skeleton className="h-6 w-full" />
@@ -128,7 +139,7 @@ export function SummaryItem({
           </div>
         )
       )}
-      {isThunderstormOutlookLoading ? (
+      {isThunderstormOutlookAISummaryFetching ? (
         <div className="flex flex-col gap-2 py-4">
           <Skeleton className="h-6 w-full" />
           <Skeleton className="h-6 w-full" />
@@ -147,8 +158,8 @@ export function SummaryItem({
           </div>
         )
       )}
-      {!isSevereWeatherOutlookLoading &&
-        !isThunderstormOutlookLoading &&
+      {!isSevereWeatherOutlookAISummaryFetching &&
+        !isThunderstormOutlookAISummaryFetching &&
         issuedWarningsAndWatches.length === 0 &&
         severeWeatherOutlookAISummary.length === 0 &&
         thunderstormOutlookAISummary.length === 0 && (

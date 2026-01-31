@@ -118,7 +118,7 @@ export const generateThunderstormOutlookAISummary = createServerFn()
 
         const AIThunderstormOutlookSummaryCollection =
           await getAIThunderstormOutlookSummaryCollection();
-        await AIThunderstormOutlookSummaryCollection.insertOne(result);
+        await AIThunderstormOutlookSummaryCollection.insertOne({ ...result });
 
         await channel.publish(
           Event.AI_THUNDERSTORM_OUTLOOK_SUMMARY_GENERATED,

@@ -115,7 +115,7 @@ export const generateSevereWeatherOutlookAISummary = createServerFn()
 
         const AISevereWeatherOutlookSummaryCollection =
           await getAISevereWeatherOutlookSummaryCollection();
-        await AISevereWeatherOutlookSummaryCollection.insertOne(result);
+        await AISevereWeatherOutlookSummaryCollection.insertOne({ ...result });
 
         await channel.publish(
           Event.AI_SEVERE_WEATHER_OUTLOOK_SUMMARY_GENERATED,

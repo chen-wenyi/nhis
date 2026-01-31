@@ -1,5 +1,6 @@
 import { useNHISChannel } from '@/hooks';
 import { Event } from '@/lib/ably';
+import { cn } from '@/lib/utils';
 import {
   useIssuedWarningsAndWatches,
   useSevereWeatherOutlook,
@@ -28,10 +29,24 @@ import {
   isOneDigitDay,
 } from './utils';
 
+type SummaryWithoutFetchingFlags = Omit<
+  Summary,
+  | 'isSevereWeatherOutlookAISummaryFetching'
+  | 'isThunderstormOutlookAISummaryFetching'
+>;
+
 export function AISummary() {
   const isSummaryLoaded = useRef(false);
   const [loadingProgress, setLoadingProgress] = useState(0);
-  const [summaries, setSummaries] = useState<Summary[]>([]);
+  const [summaries, setSummaries] = useState<SummaryWithoutFetchingFlags[]>([]);
+  const [
+    isSevereWeatherOutlookAISummaryFetching,
+    setIsSevereWeatherOutlookAISummaryFetching,
+  ] = useState(false);
+  const [
+    isThunderstormOutlookAISummaryFetching,
+    setIsThunderstormOutlookAISummaryFetching,
+  ] = useState(false);
 
   const {
     data: severeWeatherOutlook,
@@ -99,16 +114,13 @@ ${thunderstormOutlook.id}
       const interval = Interval.fromDateTimes(start, end);
       const dates = interval.splitBy({ days: 1 }).map((i) => i.start);
 
-      const _summaries: Summary[] = dates
+      const _summaries: SummaryWithoutFetchingFlags[] = dates
         .filter((d): d is DateTime => d !== null)
         .map((date) => ({
           date,
           issuedWarningsAndWatches: [],
           severeWeatherOutlookAISummary: [],
           thunderstormOutlookAISummary: [],
-
-          isSevereWeatherOutlookLoading: false,
-          isThunderstormOutlookLoading: false,
         }));
 
       severeWeatherOutlookAISummary.content.forEach((item) => {
@@ -149,6 +161,8 @@ ${thunderstormOutlook.id}
 
       console.log('Generated summaries:', _summaries);
       setSummaries(_summaries);
+      setIsThunderstormOutlookAISummaryFetching(false);
+      setIsSevereWeatherOutlookAISummaryFetching(false);
     }
   }, [
     issuedWarningsAndWatches?.id,
@@ -177,23 +191,13 @@ ${thunderstormOutlook.id}
         break;
       }
       case Event.AI_SEVERE_WEATHER_OUTLOOK_SUMMARY_GENERATING: {
+        setIsSevereWeatherOutlookAISummaryFetching(true);
         refetchSevereWeatherOutlook();
-        setSummaries((sum) =>
-          sum.map((s) => ({
-            ...s,
-            isSevereWeatherOutlookLoading: true,
-          })),
-        );
         break;
       }
       case Event.AI_THUNDERSTORM_OUTLOOK_SUMMARY_GENERATING: {
+        setIsThunderstormOutlookAISummaryFetching(true);
         refetchThunderstormOutlook();
-        setSummaries((sum) =>
-          sum.map((s) => ({
-            ...s,
-            isThunderstormOutlookLoading: true,
-          })),
-        );
         break;
       }
       default:
@@ -201,7 +205,7 @@ ${thunderstormOutlook.id}
     }
   });
 
-  const isDataLoading =
+  const isRefDataLoading =
     isIssuedWarningsAndWatchesLoading ||
     isSevereWeatherOutlookLoading ||
     isThunderstormOutlookLoading;
@@ -255,9 +259,9 @@ ${thunderstormOutlook.id}
     thunderstormOutlookAISummary?.generatedAt,
   ]);
 
-  const isAIGenerating = summaries.some(
-    (s) => s.isThunderstormOutlookLoading || s.isSevereWeatherOutlookLoading,
-  );
+  const isAIGenerating =
+    isSevereWeatherOutlookAISummaryFetching ||
+    isThunderstormOutlookAISummaryFetching;
 
   const handleGeneratedAtClick = () => {
     console.log(
@@ -267,7 +271,7 @@ ${thunderstormOutlook.id}
 
   return (
     <div className="flex flex-col gap-4 p-4 h-full overflow-y-auto">
-      {isDataLoading ? (
+      {isRefDataLoading ? (
         <div className="w-full h-full flex flex-col justify-center items-center gap-2">
           <Progress value={loadingProgress} className="w-100" />
           <span className="text-sm animate-pulse">
@@ -295,13 +299,23 @@ ${thunderstormOutlook.id}
               className="cursor-pointer ml-4"
               variant="outline"
               onClick={regenerate}
+              disabled={isAIGenerating}
             >
               Regenerate
-              <TbRefresh />
+              <TbRefresh className={cn(isAIGenerating && 'animate-spin')} />
             </Button>
           </div>
           {summaries.map((summary) => (
-            <SummaryItem key={summary.date.toISODate()} {...summary} />
+            <SummaryItem
+              key={summary.date.toISODate()}
+              {...summary}
+              isSevereWeatherOutlookAISummaryFetching={
+                isSevereWeatherOutlookAISummaryFetching
+              }
+              isThunderstormOutlookAISummaryFetching={
+                isThunderstormOutlookAISummaryFetching
+              }
+            />
           ))}
         </>
       )}
