@@ -45,12 +45,12 @@ export function RevisionHistory() {
 
 export function DiffViewer({ items }: { items: SevereWeatherOutlook[] }) {
   const outlookStrs = items.map(({ outlookItems, issuedDate }) => {
-    const header = `Issued: ${issuedDate ? `${formatUTCToNZDate(issuedDate)}\n` : '\n'}`;
+    const header = `{issued}Issued: ${issuedDate ? `${formatUTCToNZDate(issuedDate)}\n` : '\n'}`;
     const result = `${header}\n ${outlookItems
       .map(({ date, outlook }) => {
-        return `\n${date}\n${outlook.replaceAll('\n', ' \n \n')}`;
+        return `\n{title}${date}\n${outlook.replaceAll('\n', ' \n\n')}`;
       })
-      .join('\n \n ')}`;
+      .join('\n\n ')}`;
     return result;
   });
 
@@ -104,6 +104,16 @@ export function DiffViewer({ items }: { items: SevereWeatherOutlook[] }) {
           hideLineNumbers={true}
           compareMethod={DiffMethod.WORDS}
           showDiffOnly={false}
+          renderContent={(str) => {
+            if (!str) return str;
+            if (str.startsWith('{title}')) {
+              return <strong>{str.replace('{title}', '')}</strong>;
+            } else if (str.startsWith('{issued}')) {
+              return <em>{str.replace('{issued}', '')}</em>;
+            } else {
+              return str;
+            }
+          }}
         />
       </div>
     </div>

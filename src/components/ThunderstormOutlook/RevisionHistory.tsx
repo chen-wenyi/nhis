@@ -51,9 +51,9 @@ export function DiffViewer({ items }: { items: ThunderstormOutlookResp[] }) {
   const outlookStrs = items.map((item) =>
     item
       .map(({ header, outlook, issuedDate }) => {
-        return `\n${header}\n${outlook.replaceAll('\n', ' \n')}\n \nIssued: ${issuedDate}`;
+        return `\n{title}${header}\n${outlook.replaceAll('\n', ' \n')}\n \n{issued}Issued: ${issuedDate}`;
       })
-      .join('\n\n'),
+      .join('\n \n'),
   );
 
   const length = outlookStrs.length;
@@ -106,6 +106,16 @@ export function DiffViewer({ items }: { items: ThunderstormOutlookResp[] }) {
           hideLineNumbers={true}
           compareMethod={DiffMethod.WORDS}
           showDiffOnly={false}
+          renderContent={(str) => {
+            if (!str) return str;
+            if (str.startsWith('{title}')) {
+              return <strong>{str.replace('{title}', '')}</strong>;
+            } else if (str.startsWith('{issued}')) {
+              return <em>{str.replace('{issued}', '')}</em>;
+            } else {
+              return str;
+            }
+          }}
         />
       </div>
     </div>
