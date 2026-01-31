@@ -47,6 +47,7 @@ export function AISummary() {
   const {
     data: issuedWarningsAndWatches,
     isLoading: isIssuedWarningsAndWatchesLoading,
+    refetch: refetchIssuedWarningsAndWatches,
   } = useIssuedWarningsAndWatches();
   const {
     data: severeWeatherOutlookAISummary,
@@ -163,6 +164,10 @@ ${thunderstormOutlook.id}
     );
 
     switch (message.name) {
+      case Event.ISSUED_WARNINGS_WATCHES_UPDATED: {
+        refetchIssuedWarningsAndWatches();
+        break;
+      }
       case Event.AI_SEVERE_WEATHER_OUTLOOK_SUMMARY_GENERATED: {
         refetchSevereWeatherOutlookAISummary();
         break;

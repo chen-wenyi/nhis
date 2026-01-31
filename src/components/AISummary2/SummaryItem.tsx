@@ -302,6 +302,10 @@ function IssuedAlertsEnd({
   );
   const isMultipleAreas = issuedWarningsAndWatches.length > 1;
 
+  const content = isMultipleAreas
+    ? `The ${formatAlertName(issuedWarningOrAlert.headline, isMultipleAreas)} remain in place for ${formatAreasList(allAreas)}.`
+    : `The ${formatAlertName(issuedWarningOrAlert.headline, isMultipleAreas)} remains in place for ${formatAreasList(allAreas)} until ${`${DateTime.fromISO(issuedWarningOrAlert.expires).toFormat('HHmm')}hrs`} today.`;
+
   return (
     <div className="flex items-stretch gap-2">
       <div className="flex justify-center min-h-full">
@@ -309,29 +313,16 @@ function IssuedAlertsEnd({
       </div>
       <span>
         <div className="flex gap-1">
-          {isMultipleAreas ? (
-            <div>
-              The{' '}
-              {formatAlertName(issuedWarningOrAlert.headline, isMultipleAreas)}{' '}
-              remain in place for {formatAreasList(allAreas)}.
+          <div>
+            {content}
+            <div className="inline-flex justify-center items-baseline gap-1 relative top-0.5">
               <AlertRef
                 date={date}
                 alertIds={issuedWarningsAndWatches.map((m) => m.id)}
               />
+              <CopyIcon content={content} />
             </div>
-          ) : (
-            <div>
-              The{' '}
-              {formatAlertName(issuedWarningOrAlert.headline, isMultipleAreas)}{' '}
-              remains in place for {formatAreasList(allAreas)} until{' '}
-              {`${DateTime.fromISO(issuedWarningOrAlert.expires).toFormat('HHmm')}hrs`}{' '}
-              today.
-              <AlertRef
-                date={date}
-                alertIds={issuedWarningsAndWatches.map((m) => m.id)}
-              />
-            </div>
-          )}
+          </div>
         </div>
       </span>
     </div>
@@ -362,7 +353,7 @@ function AlertRef({ date, alertIds }: { date: DateTime; alertIds: string[] }) {
   return (
     <LuFileSearch2
       className={cn(
-        'inline align-text-bottom ml-2 text-gray-300 cursor-pointer hover:text-blue-500',
+        'inline align-text-bottom ml-2 text-gray-300 cursor-pointer hover:text-blue-500 relative top-0.5',
         isActive && 'text-blue-500',
       )}
       size={16}

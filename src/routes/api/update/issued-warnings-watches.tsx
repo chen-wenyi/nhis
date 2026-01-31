@@ -1,9 +1,24 @@
+import { Event } from '@/lib/ably';
 import { getIssuedWarningsAndWatchesCollection } from '@/lib/mongodb';
 import type { Alert, CAP, IssuedWarningOrWatche } from '@/types';
 import { createFileRoute } from '@tanstack/react-router';
+import * as Ably from 'ably';
 import { XMLParser } from 'fast-xml-parser';
 import lodash from 'lodash';
 import { DateTime } from 'luxon';
+
+async function AblyPublish(id: string) {
+  try {
+    const ablyClient = new Ably.Rest({
+      key: process.env.ABLY_API_KEY,
+      clientId: 'nhis-server',
+    });
+    const channel = ablyClient.channels.get('nhis-channel');
+    await channel.publish(Event.ISSUED_WARNINGS_WATCHES_UPDATED, id);
+  } catch (error) {
+    console.error('Error publishing to Ably:', error);
+  }
+}
 
 export const Route = createFileRoute('/api/update/issued-warnings-watches')({
   server: {
@@ -104,7 +119,7 @@ export const Route = createFileRoute('/api/update/issued-warnings-watches')({
               logs.push(
                 'Same day update detected. Updating existing entries with new statuses and inserting new record.',
               );
-              await collection.insertOne({
+              const doc = await collection.insertOne({
                 updatedAt: new Date(feed.updated),
                 updatedAtISO: feed.updated,
                 entries: updateStatus(
@@ -113,12 +128,13 @@ export const Route = createFileRoute('/api/update/issued-warnings-watches')({
                 ),
                 insertedAt: new Date(),
               });
+              await AblyPublish(doc.insertedId.toString());
             } else {
               logs.push(
                 'Result: New day update detected. Inserting new entries.',
               );
               // new day
-              await collection.insertOne({
+              const doc = await collection.insertOne({
                 updatedAt: new Date(feed.updated),
                 updatedAtISO: feed.updated,
                 entries: issuedWarningsAndWatches.map((i) => ({
@@ -127,10 +143,11 @@ export const Route = createFileRoute('/api/update/issued-warnings-watches')({
                 })),
                 insertedAt: new Date(),
               });
+              await AblyPublish(doc.insertedId.toString());
             }
           } else {
             logs.push('No existing data found. Inserting initial data.');
-            await collection.insertOne({
+            const doc = await collection.insertOne({
               updatedAt: new Date(feed.updated),
               updatedAtISO: feed.updated,
               entries: issuedWarningsAndWatches.map((i) => ({
@@ -139,6 +156,7 @@ export const Route = createFileRoute('/api/update/issued-warnings-watches')({
               })),
               insertedAt: new Date(),
             });
+            await AblyPublish(doc.insertedId.toString());
           }
           logs.push('*** Finished querying issued warnings and watches ***');
           return new Response(logs.join('\n'));

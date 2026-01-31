@@ -40,6 +40,8 @@ export const setActiveAlertReference = (
     return {
       ...state,
       activeAlertReference,
+      activeThunderstormOutlookReference: undefined,
+      activeSevereWeatherOutlookReference: undefined,
     };
   });
 };
@@ -51,8 +53,9 @@ export const setActiveSevereWeatherOutlookReference = (
     return {
       ...state,
       activeOutlookTab: 'severeWeatherOutlook',
-      activeThunderstormOutlookReference: undefined,
       activeSevereWeatherOutlookReference,
+      activeThunderstormOutlookReference: undefined,
+      activeAlertReference: undefined,
     };
   });
 };
@@ -64,8 +67,9 @@ export const setActiveThunderstormOutlookReference = (
     return {
       ...state,
       activeOutlookTab: 'thunderstormOutlook',
-      activeSevereWeatherOutlookReference: undefined,
       activeThunderstormOutlookReference,
+      activeSevereWeatherOutlookReference: undefined,
+      activeAlertReference: undefined,
     };
   });
 };
