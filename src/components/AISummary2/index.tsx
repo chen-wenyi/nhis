@@ -319,12 +319,14 @@ ${thunderstormOutlook.id}
               </span>
               {isAIGenerating ? (
                 <Skeleton className="w-36 h-6" />
-              ) : generatedAt ? (
-                DateTime.fromJSDate(generatedAt).toFormat(
-                  'h:mm a EEE, d LLL yyyy',
-                )
               ) : (
-                'N/A'
+                <span className="text-gray-600 font-normal">
+                  {generatedAt
+                    ? DateTime.fromJSDate(generatedAt).toFormat(
+                        'h:mm a EEE, d LLL yyyy',
+                      )
+                    : 'N/A'}
+                </span>
               )}
             </div>
             <RegenerateButtonGroup
