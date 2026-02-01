@@ -221,17 +221,8 @@ export type AISevereWeatherOutlookSummaryDocument = {
   }[];
 };
 
-export type AISevereWeatherOutlookSummaryResp = {
-  id: string;
-  outlookRefId: string;
-  genReason: string;
-  generatedAt: Date;
-  generatedAtISO: string;
-  content: {
-    summary: SevereWeatherAISummary;
-    date: string;
-  }[];
-};
+export type AISevereWeatherOutlookSummaryResp =
+  AISevereWeatherOutlookSummaryDocument & { id: string };
 
 export type AIThunderstormOutlookSummaryDocument = {
   outlookRefId: string;
@@ -244,14 +235,5 @@ export type AIThunderstormOutlookSummaryDocument = {
   }[];
 };
 
-export type AIThunderstormOutlookSummaryResp = {
-  id: string;
-  outlookRefId: string;
-  genReason: string;
-  generatedAt: Date;
-  generatedAtISO: string;
-  content: {
-    summary: ThunderstormAISummary['outlooks'];
-    date: string;
-  }[];
-};
+export type AIThunderstormOutlookSummaryResp =
+  AIThunderstormOutlookSummaryDocument & { id: string };
