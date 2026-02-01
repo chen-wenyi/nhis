@@ -118,8 +118,8 @@ ${thunderstormOutlook.id}
         ].date;
 
       const end = DateTime.fromFormat(
-        endDateStr,
-        isOneDigitDay(endDateStr) ? 'cccc d LLL' : 'cccc dd LLL',
+        endDateStr.trim(),
+        isOneDigitDay(endDateStr.trim()) ? 'cccc d LLL' : 'cccc dd LLL',
       ).endOf('day');
       const interval = Interval.fromDateTimes(start, end);
       const dates = interval.splitBy({ days: 1 }).map((i) => i.start);
@@ -135,8 +135,8 @@ ${thunderstormOutlook.id}
 
       severeWeatherOutlookAISummary.content.forEach((item) => {
         const outlookDate = DateTime.fromFormat(
-          item.date,
-          isOneDigitDay(item.date) ? 'cccc d LLL' : 'cccc dd LLL',
+          item.date.trim(),
+          isOneDigitDay(item.date.trim()) ? 'cccc d LLL' : 'cccc dd LLL',
         );
         _summaries
           .find((daySummary) => daySummary.date.hasSame(outlookDate, 'day'))
@@ -148,8 +148,8 @@ ${thunderstormOutlook.id}
         if (!dateStr) return false;
 
         const outlookDate = DateTime.fromFormat(
-          dateStr,
-          isOneDigitDay(dateStr) ? 'd LLL' : 'dd LLL',
+          dateStr.trim(),
+          isOneDigitDay(dateStr.trim()) ? 'd LLL' : 'dd LLL',
         );
         _summaries
           .find((daySummary) => daySummary.date.hasSame(outlookDate, 'day'))

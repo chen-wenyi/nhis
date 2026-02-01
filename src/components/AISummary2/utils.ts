@@ -130,5 +130,5 @@ export function getLatestDate(dates: (Date | undefined)[]): Date | null {
 }
 
 export function isOneDigitDay(dateStr: string) {
-  return /\s(\d{1})\s/.test(dateStr);
+  return /\b\d\s\w{3}\b/.test(dateStr);
 }
