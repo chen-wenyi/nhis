@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SearchIndexRouteImport } from './routes/search/index'
-import { Route as DiffIndexRouteImport } from './routes/diff/index'
 import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
 import { Route as DemoConvexRouteImport } from './routes/demo/convex'
 import { Route as AblyCreateTokenRouteImport } from './routes/ably/create-token'
@@ -22,8 +21,6 @@ import { Route as DemoApiNamesRouteImport } from './routes/demo/api.names'
 import { Route as ApiUpdateThunderstormRouteImport } from './routes/api/update/thunderstorm'
 import { Route as ApiUpdateSevereWeatherRouteImport } from './routes/api/update/severe-weather'
 import { Route as ApiUpdateIssuedWarningsWatchesRouteImport } from './routes/api/update/issued-warnings-watches'
-import { Route as ApiGenAiSummaryThunderstormRouteImport } from './routes/api/gen-ai-summary/thunderstorm'
-import { Route as ApiGenAiSummarySevereWeatherRouteImport } from './routes/api/gen-ai-summary/severe-weather'
 import { Route as DemoStartSsrIndexRouteImport } from './routes/demo/start.ssr.index'
 import { Route as DemoStartSsrSpaModeRouteImport } from './routes/demo/start.ssr.spa-mode'
 import { Route as DemoStartSsrFullSsrRouteImport } from './routes/demo/start.ssr.full-ssr'
@@ -37,11 +34,6 @@ const IndexRoute = IndexRouteImport.update({
 const SearchIndexRoute = SearchIndexRouteImport.update({
   id: '/search/',
   path: '/search/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DiffIndexRoute = DiffIndexRouteImport.update({
-  id: '/diff/',
-  path: '/diff/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DemoTanstackQueryRoute = DemoTanstackQueryRouteImport.update({
@@ -95,18 +87,6 @@ const ApiUpdateIssuedWarningsWatchesRoute =
     path: '/api/update/issued-warnings-watches',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiGenAiSummaryThunderstormRoute =
-  ApiGenAiSummaryThunderstormRouteImport.update({
-    id: '/api/gen-ai-summary/thunderstorm',
-    path: '/api/gen-ai-summary/thunderstorm',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiGenAiSummarySevereWeatherRoute =
-  ApiGenAiSummarySevereWeatherRouteImport.update({
-    id: '/api/gen-ai-summary/severe-weather',
-    path: '/api/gen-ai-summary/severe-weather',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const DemoStartSsrIndexRoute = DemoStartSsrIndexRouteImport.update({
   id: '/demo/start/ssr/',
   path: '/demo/start/ssr/',
@@ -133,10 +113,7 @@ export interface FileRoutesByFullPath {
   '/ably/create-token': typeof AblyCreateTokenRoute
   '/demo/convex': typeof DemoConvexRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
-  '/diff/': typeof DiffIndexRoute
   '/search/': typeof SearchIndexRoute
-  '/api/gen-ai-summary/severe-weather': typeof ApiGenAiSummarySevereWeatherRoute
-  '/api/gen-ai-summary/thunderstorm': typeof ApiGenAiSummaryThunderstormRoute
   '/api/update/issued-warnings-watches': typeof ApiUpdateIssuedWarningsWatchesRoute
   '/api/update/severe-weather': typeof ApiUpdateSevereWeatherRoute
   '/api/update/thunderstorm': typeof ApiUpdateThunderstormRoute
@@ -154,10 +131,7 @@ export interface FileRoutesByTo {
   '/ably/create-token': typeof AblyCreateTokenRoute
   '/demo/convex': typeof DemoConvexRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
-  '/diff': typeof DiffIndexRoute
   '/search': typeof SearchIndexRoute
-  '/api/gen-ai-summary/severe-weather': typeof ApiGenAiSummarySevereWeatherRoute
-  '/api/gen-ai-summary/thunderstorm': typeof ApiGenAiSummaryThunderstormRoute
   '/api/update/issued-warnings-watches': typeof ApiUpdateIssuedWarningsWatchesRoute
   '/api/update/severe-weather': typeof ApiUpdateSevereWeatherRoute
   '/api/update/thunderstorm': typeof ApiUpdateThunderstormRoute
@@ -176,10 +150,7 @@ export interface FileRoutesById {
   '/ably/create-token': typeof AblyCreateTokenRoute
   '/demo/convex': typeof DemoConvexRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
-  '/diff/': typeof DiffIndexRoute
   '/search/': typeof SearchIndexRoute
-  '/api/gen-ai-summary/severe-weather': typeof ApiGenAiSummarySevereWeatherRoute
-  '/api/gen-ai-summary/thunderstorm': typeof ApiGenAiSummaryThunderstormRoute
   '/api/update/issued-warnings-watches': typeof ApiUpdateIssuedWarningsWatchesRoute
   '/api/update/severe-weather': typeof ApiUpdateSevereWeatherRoute
   '/api/update/thunderstorm': typeof ApiUpdateThunderstormRoute
@@ -199,10 +170,7 @@ export interface FileRouteTypes {
     | '/ably/create-token'
     | '/demo/convex'
     | '/demo/tanstack-query'
-    | '/diff/'
     | '/search/'
-    | '/api/gen-ai-summary/severe-weather'
-    | '/api/gen-ai-summary/thunderstorm'
     | '/api/update/issued-warnings-watches'
     | '/api/update/severe-weather'
     | '/api/update/thunderstorm'
@@ -220,10 +188,7 @@ export interface FileRouteTypes {
     | '/ably/create-token'
     | '/demo/convex'
     | '/demo/tanstack-query'
-    | '/diff'
     | '/search'
-    | '/api/gen-ai-summary/severe-weather'
-    | '/api/gen-ai-summary/thunderstorm'
     | '/api/update/issued-warnings-watches'
     | '/api/update/severe-weather'
     | '/api/update/thunderstorm'
@@ -241,10 +206,7 @@ export interface FileRouteTypes {
     | '/ably/create-token'
     | '/demo/convex'
     | '/demo/tanstack-query'
-    | '/diff/'
     | '/search/'
-    | '/api/gen-ai-summary/severe-weather'
-    | '/api/gen-ai-summary/thunderstorm'
     | '/api/update/issued-warnings-watches'
     | '/api/update/severe-weather'
     | '/api/update/thunderstorm'
@@ -263,10 +225,7 @@ export interface RootRouteChildren {
   AblyCreateTokenRoute: typeof AblyCreateTokenRoute
   DemoConvexRoute: typeof DemoConvexRoute
   DemoTanstackQueryRoute: typeof DemoTanstackQueryRoute
-  DiffIndexRoute: typeof DiffIndexRoute
   SearchIndexRoute: typeof SearchIndexRoute
-  ApiGenAiSummarySevereWeatherRoute: typeof ApiGenAiSummarySevereWeatherRoute
-  ApiGenAiSummaryThunderstormRoute: typeof ApiGenAiSummaryThunderstormRoute
   ApiUpdateIssuedWarningsWatchesRoute: typeof ApiUpdateIssuedWarningsWatchesRoute
   ApiUpdateSevereWeatherRoute: typeof ApiUpdateSevereWeatherRoute
   ApiUpdateThunderstormRoute: typeof ApiUpdateThunderstormRoute
@@ -294,13 +253,6 @@ declare module '@tanstack/react-router' {
       path: '/search'
       fullPath: '/search/'
       preLoaderRoute: typeof SearchIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/diff/': {
-      id: '/diff/'
-      path: '/diff'
-      fullPath: '/diff/'
-      preLoaderRoute: typeof DiffIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/demo/tanstack-query': {
@@ -373,20 +325,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiUpdateIssuedWarningsWatchesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/gen-ai-summary/thunderstorm': {
-      id: '/api/gen-ai-summary/thunderstorm'
-      path: '/api/gen-ai-summary/thunderstorm'
-      fullPath: '/api/gen-ai-summary/thunderstorm'
-      preLoaderRoute: typeof ApiGenAiSummaryThunderstormRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/gen-ai-summary/severe-weather': {
-      id: '/api/gen-ai-summary/severe-weather'
-      path: '/api/gen-ai-summary/severe-weather'
-      fullPath: '/api/gen-ai-summary/severe-weather'
-      preLoaderRoute: typeof ApiGenAiSummarySevereWeatherRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/demo/start/ssr/': {
       id: '/demo/start/ssr/'
       path: '/demo/start/ssr'
@@ -423,10 +361,7 @@ const rootRouteChildren: RootRouteChildren = {
   AblyCreateTokenRoute: AblyCreateTokenRoute,
   DemoConvexRoute: DemoConvexRoute,
   DemoTanstackQueryRoute: DemoTanstackQueryRoute,
-  DiffIndexRoute: DiffIndexRoute,
   SearchIndexRoute: SearchIndexRoute,
-  ApiGenAiSummarySevereWeatherRoute: ApiGenAiSummarySevereWeatherRoute,
-  ApiGenAiSummaryThunderstormRoute: ApiGenAiSummaryThunderstormRoute,
   ApiUpdateIssuedWarningsWatchesRoute: ApiUpdateIssuedWarningsWatchesRoute,
   ApiUpdateSevereWeatherRoute: ApiUpdateSevereWeatherRoute,
   ApiUpdateThunderstormRoute: ApiUpdateThunderstormRoute,
