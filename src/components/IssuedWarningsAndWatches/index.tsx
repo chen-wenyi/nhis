@@ -36,7 +36,7 @@ export default function IssuedWarningsAndWatches() {
       <CardHeader>
         <CardTitle>Issued Warnings And Watches</CardTitle>
         <CardDescription>
-          <span>
+          <div>
             Source:{' '}
             <a
               href="https://www.metservice.com/warnings/home"
@@ -46,7 +46,13 @@ export default function IssuedWarningsAndWatches() {
             >
               MetService
             </a>
-          </span>
+          </div>
+          <div>
+            Last updated:{' '}
+            {issuedWarningsAndWatches?.updatedAt
+              ? formatUTCToNZDate(issuedWarningsAndWatches.updatedAt)
+              : ''}
+          </div>
         </CardDescription>
       </CardHeader>
       <CardContent>
