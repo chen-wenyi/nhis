@@ -46,7 +46,7 @@ const realtimeClient = new Ably.Realtime({
   authUrl: '/ably/create-token',
   clientId: 'nhis-client',
   recover: (lastConnectionDetails, cb) => {
-    console.log(`lastConnectionDetails: ${lastConnectionDetails}`);
+    console.log(`lastConnectionDetails:`, lastConnectionDetails);
     cb(true); /* recover connection */
   },
 });

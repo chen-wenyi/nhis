@@ -1,4 +1,4 @@
-import { useNHISChannel } from '@/hooks';
+import { useNHISChannel, useNHISChannelStateListener } from '@/hooks';
 import { Event } from '@/lib/ably';
 import { cn } from '@/lib/utils';
 import {
@@ -214,6 +214,8 @@ ${thunderstormOutlook.id}
         break;
     }
   });
+
+  useNHISChannelStateListener();
 
   const isRefDataLoading =
     isIssuedWarningsAndWatchesLoading ||

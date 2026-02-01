@@ -1,5 +1,5 @@
 import type { AblyMessageCallback } from 'ably/react';
-import { useChannel } from 'ably/react';
+import { useChannel, useChannelStateListener } from 'ably/react';
 import { useState } from 'react';
 
 /**
@@ -23,4 +23,10 @@ export function useCopyToClipboard(
 
 export function useNHISChannel(callbackOnMessage?: AblyMessageCallback) {
   return useChannel('nhis-channel', callbackOnMessage);
+}
+
+export function useNHISChannelStateListener() {
+  return useChannelStateListener('nhis-channel', (state) => {
+    console.log('NHIS Channel state changed to:', state);
+  });
 }
