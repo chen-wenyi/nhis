@@ -269,8 +269,13 @@ function updateStatus(
     return entry;
   });
 
+  const allIds = [
+    ...newIds,
+    ...newEntries.flatMap(({ _history }) => _history.map((h) => h.id)),
+  ];
+
   oldEntries
-    .filter((entry) => !newIds.includes(entry.id))
+    .filter((entry) => !allIds.includes(entry.id))
     .forEach((removedEntry) => {
       updatedEntries.push({ ...removedEntry, _status: 'removed' });
     });

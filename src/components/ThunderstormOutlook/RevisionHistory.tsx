@@ -1,12 +1,19 @@
 import { useThunderstormOutlook } from '@/queries';
 import { getThunderstormOutlookHistory } from '@/serverFuncs/fetchThunderstormOutlook';
 import type { ThunderstormOutlookResp } from '@/types';
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import ReactDiffViewer, { DiffMethod } from 'react-diff-viewer';
 import { Button } from '../ui/button';
 import { ButtonGroup } from '../ui/button-group';
-import { Dialog, DialogContent, DialogTrigger } from '../ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger,
+} from '../ui/dialog';
 
 export function RevisionHistory() {
   const { data: outlook } = useThunderstormOutlook();
@@ -41,6 +48,10 @@ export function RevisionHistory() {
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-[80vw]! h-[80vh]">
+        <VisuallyHidden>
+          <DialogTitle></DialogTitle>
+          <DialogDescription></DialogDescription>
+        </VisuallyHidden>
         {<DiffViewer items={revisionHistory.map(({ items }) => items)} />}
       </DialogContent>
     </Dialog>

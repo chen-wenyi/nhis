@@ -22,7 +22,9 @@ export function AlertHistory({
             className="mb-4 w-full border p-4 rounded-md shadow bg-white"
           >
             <div className="text-xs mb-1 flex items-center relative">
-              <span>{formatUTCToNZDate(new Date(i.sent))}</span>
+              <span onClick={() => console.log(i.id)}>
+                {formatUTCToNZDate(new Date(i.sent))}
+              </span>
               {index === 0 && (
                 <Badge className="absolute right-0 mx-2">Latest</Badge>
               )}

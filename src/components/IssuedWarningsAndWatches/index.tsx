@@ -140,7 +140,9 @@ function AlertCard({
           )}
         >
           <div className="text-xs text-gray-500 mb-1 relative flex items-center justify-between">
-            <span>{formatUTCToNZDate(new Date(sent))}</span>
+            <span onClick={() => console.log(id)}>
+              {formatUTCToNZDate(new Date(sent))}
+            </span>
             <div className="flex gap-1 justify-center items-center">
               {_status && (
                 <Badge
