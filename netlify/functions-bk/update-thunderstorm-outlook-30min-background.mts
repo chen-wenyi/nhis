@@ -7,6 +7,7 @@ const url = process.env.URL!;
 export default async (req: Request, context: Context) => {
   const { next_run } = await req.json();
   console.log('Next invocation at:', next_run);
+
   const resp = await fetch(url + '/api/update/thunderstorm');
   console.log(await resp.text());
 };
