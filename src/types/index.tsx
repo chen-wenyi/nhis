@@ -1,9 +1,11 @@
-import type { SevereWeatherAISummary } from '@/serverFuncs/AISummary/severeWeatherOutlook/schema';
-import type { SevereWeatherOutlookAISummary } from '@/serverFuncs/generateSevereWeatherOutlookAISummary/schema';
+import type {
+  SevereWeatherAISummary,
+  SevereWeatherOutlookAISummary,
+} from '@/serverFuncs/AISummary/severeWeatherOutlook/schema';
 import type {
   ThunderstormAISummary,
   ThunderstormOutlookAISummary,
-} from '@/serverFuncs/generateThunderstormOutlookAISummary/schema';
+} from '@/serverFuncs/AISummary/thunderstormOutlook/schema';
 
 export type DateString = string; // in ISO format
 

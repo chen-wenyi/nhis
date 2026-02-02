@@ -67,6 +67,8 @@ export function DiffViewer({ items }: { items: ThunderstormOutlookResp[] }) {
       .join('\n \n'),
   );
 
+  console.log('outlookStrs', outlookStrs);
+
   const length = outlookStrs.length;
   if (length < 2) {
     return <div>No previous summary to compare.</div>;
@@ -111,6 +113,7 @@ export function DiffViewer({ items }: { items: ThunderstormOutlookResp[] }) {
       </div>
       <div className="flex-1 overflow-auto">
         <ReactDiffViewer
+          extraLinesSurroundingDiff={5}
           oldValue={outlookStrs[oldIndex]}
           newValue={outlookStrs[newIndex]}
           splitView={true}
