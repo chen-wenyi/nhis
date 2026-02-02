@@ -9,6 +9,7 @@ export default async (req: Request) => {
   console.log('Next invocation at:', next_run);
   const resp = await fetch(url + '/api/update/issued-warnings-watches');
   console.log(await resp.text());
+  return new Response('Ok');
 };
 
 export const config: Config = {

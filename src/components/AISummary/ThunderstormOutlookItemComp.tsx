@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import type { ThunderstormAISummary } from '@/serverFuncs/generateThunderstormOutlookAISummary/schema';
+import type { ThunderstormAISummary } from '@/serverFuncs/AISummary/thunderstormOutlook/schema';
 import {
   removeactiveThunderstormOutlookReference,
   setActiveThunderstormOutlookReference,

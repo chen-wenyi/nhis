@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import type { SevereWeatherOutlookAISummary } from '@/serverFuncs/generateSevereWeatherOutlookAISummary/schema';
+import type { SevereWeatherOutlookAISummary } from '@/serverFuncs/AISummary/severeWeatherOutlook/schema';
 import {
   removeactiveSevereWeatherOutlookReference,
   setActiveSevereWeatherOutlookReference,

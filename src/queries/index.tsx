@@ -5,11 +5,9 @@ import {
 import { fetchAISummaryGeneratedAt } from '@/serverFuncs/fetchAISummaryGenAt';
 import { fetchSevereWeatherOutlook } from '@/serverFuncs/fetchSevereWeatherOutlook';
 import { fetchThunderstormOutlook } from '@/serverFuncs/fetchThunderstormOutlook';
-import { generateSevereWeatherOutlookAISummary } from '@/serverFuncs/generateSevereWeatherOutlookAISummary';
-import { generateThunderstormOutlookAISummary } from '@/serverFuncs/generateThunderstormOutlookAISummary';
 import { fetchIssuedWarningsAndWatches } from '@/serverFuncs/issuedWarningsAndWatches';
-import type { AISummaryId, DateString } from '@/types';
-import { useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
+import type { AISummaryId } from '@/types';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
 export const useIssuedWarningsAndWatches = () =>
@@ -36,44 +34,6 @@ export const useThunderstormOutlook = () =>
     refetchOnWindowFocus: false,
     staleTime: Infinity,
     // refetchInterval: 1000 * 60 * 5, // refetch every 5 minutes
-  });
-
-export const useSevereWeatherOutlookAISummary = (
-  id: AISummaryId,
-  date: DateString,
-  outlooks: string[],
-) =>
-  useQueries({
-    queries: outlooks.map((outlook) => ({
-      queryKey: [
-        'aiSevereWeatherOutlookSummary',
-        id.severeWeatherOutlook,
-        date,
-        outlook,
-      ],
-      queryFn: () =>
-        generateSevereWeatherOutlookAISummary({ data: { outlook, id, date } }),
-      refetchOnWindowFocus: false,
-    })),
-  });
-
-export const useThunderstormOutlookAISummary = (
-  id: AISummaryId,
-  date: DateString,
-  outlooks: string[],
-) =>
-  useQueries({
-    queries: outlooks.map((outlook) => ({
-      queryKey: [
-        'aiThunderstormOutlookSummary',
-        id.thunderstormOutlook,
-        date,
-        outlook,
-      ],
-      queryFn: () =>
-        generateThunderstormOutlookAISummary({ data: { outlook, id, date } }),
-      refetchOnWindowFocus: false,
-    })),
   });
 
 export const useAISummaryGeneratedAt = (id?: AISummaryId) =>
