@@ -7,6 +7,7 @@ import {
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 
 import type { QueryClient } from '@tanstack/react-query';
+import { Analytics } from '@vercel/analytics/next';
 import * as Ably from 'ably';
 import { AblyProvider, ChannelProvider } from 'ably/react';
 import ConvexProvider from '../integrations/convex/provider';
@@ -73,6 +74,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             ]}
           />
         </ConvexProvider>
+        <Analytics />
         <Scripts />
       </body>
     </html>
