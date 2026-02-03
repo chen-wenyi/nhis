@@ -39,15 +39,21 @@ export default function SevereWeatherOutlook() {
     switch (message.name) {
       case EVENT.SEVERE_WEATHER_OUTLOOK_UPDATING: {
         setIsUpdating(true);
-        toast.info(message.data.message);
+        toast.info('Severe Weather Outlook', {
+          description: message.data.message,
+        });
         break;
       }
       case EVENT.SEVERE_WEATHER_OUTLOOK_UPDATED: {
         if (message.data.stale) {
-          toast.success(message.data.message);
+          toast.success('Severe Weather Outlook', {
+            description: message.data.message,
+          });
           refetch();
         } else {
-          toast.info(message.data.message);
+          toast.info('Severe Weather Outlook', {
+            description: message.data.message,
+          });
         }
         setIsUpdating(false);
         break;

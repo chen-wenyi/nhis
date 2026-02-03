@@ -40,15 +40,21 @@ export default function ThunderstormOutlook() {
     switch (message.name) {
       case EVENT.THUNDERSTORM_OUTLOOK_UPDATING: {
         setIsUpdating(true);
-        toast.info(message.data.message);
+        toast.info('Thunderstorm Outlook', {
+          description: message.data.message,
+        });
         break;
       }
       case EVENT.THUNDERSTORM_OUTLOOK_UPDATED: {
         if (message.data.stale) {
-          toast.success(message.data.message);
+          toast.success('Thunderstorm Outlook', {
+            description: message.data.message,
+          });
           refetch();
         } else {
-          toast.info(message.data.message);
+          toast.info('Thunderstorm Outlook', {
+            description: message.data.message,
+          });
         }
         setIsUpdating(false);
         break;

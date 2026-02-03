@@ -48,15 +48,21 @@ export default function IssuedWarningsAndWatches() {
     switch (message.name) {
       case EVENT.ISSUED_ALERTS_UPDATING: {
         setIsUpdating(true);
-        toast.info(message.data.message);
+        toast.info('Issued Warnings/Watches', {
+          description: message.data.message,
+        });
         break;
       }
       case EVENT.ISSUED_ALERTS_UPDATED: {
         if (message.data.stale) {
-          toast.success(message.data.message);
+          toast.success('Issued Warnings/Watches', {
+            description: message.data.message,
+          });
           refetch();
         } else {
-          toast.info(message.data.message);
+          toast.info('Issued Warnings/Watches', {
+            description: message.data.message,
+          });
         }
         setIsUpdating(false);
         break;

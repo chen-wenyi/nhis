@@ -17,7 +17,7 @@ function App() {
     <div className="flex flex-col h-dvh w-full overscroll-none">
       <Header />
       <main className="flex flex-1 m-2 gap-3 min-h-0">
-        <Toaster position="top-center" duration={10000} expand />
+        <Toaster position="top-center" duration={10000} />
         <div className="flex-1">
           <AISummary />
         </div>
@@ -32,6 +32,15 @@ function App() {
           )}
         </div>
       </main>
+      {/* <button
+        onClick={() =>
+          toast.success('Thunderstorm Outlook', {
+            description: 'Data is already up-to-date.',
+          })
+        }
+      >
+        123
+      </button> */}
     </div>
   );
 }
