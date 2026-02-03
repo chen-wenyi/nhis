@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SearchIndexRouteImport } from './routes/search/index'
+import { Route as AlertIndexRouteImport } from './routes/alert/index'
 import { Route as AblyCreateTokenRouteImport } from './routes/ably/create-token'
 import { Route as ApiUpdateIssuedWarningsWatchesRouteImport } from './routes/api/update/issued-warnings-watches'
 
@@ -22,6 +23,11 @@ const IndexRoute = IndexRouteImport.update({
 const SearchIndexRoute = SearchIndexRouteImport.update({
   id: '/search/',
   path: '/search/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlertIndexRoute = AlertIndexRouteImport.update({
+  id: '/alert/',
+  path: '/alert/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AblyCreateTokenRoute = AblyCreateTokenRouteImport.update({
@@ -39,12 +45,14 @@ const ApiUpdateIssuedWarningsWatchesRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/ably/create-token': typeof AblyCreateTokenRoute
+  '/alert/': typeof AlertIndexRoute
   '/search/': typeof SearchIndexRoute
   '/api/update/issued-warnings-watches': typeof ApiUpdateIssuedWarningsWatchesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/ably/create-token': typeof AblyCreateTokenRoute
+  '/alert': typeof AlertIndexRoute
   '/search': typeof SearchIndexRoute
   '/api/update/issued-warnings-watches': typeof ApiUpdateIssuedWarningsWatchesRoute
 }
@@ -52,6 +60,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/ably/create-token': typeof AblyCreateTokenRoute
+  '/alert/': typeof AlertIndexRoute
   '/search/': typeof SearchIndexRoute
   '/api/update/issued-warnings-watches': typeof ApiUpdateIssuedWarningsWatchesRoute
 }
@@ -60,18 +69,21 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/ably/create-token'
+    | '/alert/'
     | '/search/'
     | '/api/update/issued-warnings-watches'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/ably/create-token'
+    | '/alert'
     | '/search'
     | '/api/update/issued-warnings-watches'
   id:
     | '__root__'
     | '/'
     | '/ably/create-token'
+    | '/alert/'
     | '/search/'
     | '/api/update/issued-warnings-watches'
   fileRoutesById: FileRoutesById
@@ -79,6 +91,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AblyCreateTokenRoute: typeof AblyCreateTokenRoute
+  AlertIndexRoute: typeof AlertIndexRoute
   SearchIndexRoute: typeof SearchIndexRoute
   ApiUpdateIssuedWarningsWatchesRoute: typeof ApiUpdateIssuedWarningsWatchesRoute
 }
@@ -97,6 +110,13 @@ declare module '@tanstack/react-router' {
       path: '/search'
       fullPath: '/search/'
       preLoaderRoute: typeof SearchIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alert/': {
+      id: '/alert/'
+      path: '/alert'
+      fullPath: '/alert/'
+      preLoaderRoute: typeof AlertIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ably/create-token': {
@@ -119,6 +139,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AblyCreateTokenRoute: AblyCreateTokenRoute,
+  AlertIndexRoute: AlertIndexRoute,
   SearchIndexRoute: SearchIndexRoute,
   ApiUpdateIssuedWarningsWatchesRoute: ApiUpdateIssuedWarningsWatchesRoute,
 }

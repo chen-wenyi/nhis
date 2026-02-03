@@ -1,11 +1,8 @@
 import type {
   AISevereWeatherOutlookSummaryDocument,
-  AISummaryId,
   AIThunderstormOutlookSummaryDocument,
-  IssuedWarningsAndWatchesDocument,
-  SevereWeatherAISummaryDocument,
+  IssuedAlertEntriesDocument,
   SevereWeatherOutlookDocument,
-  ThunderstormAISummaryDocument,
   ThunderstormOutlookDocument,
 } from '@/types';
 import { attachDatabasePool } from '@vercel/functions';
@@ -40,29 +37,8 @@ export async function getThunderstormOutlookCollection() {
   return getCollection<ThunderstormOutlookDocument>('thunderstorm_outlook');
 }
 
-export async function getIssuedWarningsAndWatchesCollection() {
-  return getCollection<IssuedWarningsAndWatchesDocument>(
-    'issued_warnings_and_watches',
-  );
-}
-
-export async function getSevereWeatherAISummaryCollection() {
-  return getCollection<SevereWeatherAISummaryDocument>(
-    'severe_weather_ai_summary',
-  );
-}
-
-export async function getThunderstormAISummaryCollection() {
-  return getCollection<ThunderstormAISummaryDocument>(
-    'thunderstorm_ai_summary',
-  );
-}
-
-export async function getAISummaryGenerationTimeCollection() {
-  return getCollection<{
-    summaryId: AISummaryId;
-    lastGeneratedAt: Date;
-  }>('ai_summary_generation_time');
+export async function getIssuedAlertCollection() {
+  return getCollection<IssuedAlertEntriesDocument>('issued_alert_entries');
 }
 
 export async function getAISevereWeatherOutlookSummaryCollection() {

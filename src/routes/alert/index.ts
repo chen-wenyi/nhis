@@ -11,7 +11,7 @@ async function AblyPublish(id: string) {
   try {
     const ablyClient = new Ably.Rest({
       key: process.env.ABLY_API_KEY,
-      clientId: 'nhis-server',
+      clientId: 'nhis-alert-update-service',
     });
     const channel = ablyClient.channels.get('nhis-channel');
     await channel.publish(Event.ISSUED_WARNINGS_WATCHES_UPDATED, id);
@@ -20,7 +20,7 @@ async function AblyPublish(id: string) {
   }
 }
 
-export const Route = createFileRoute('/api/update/issued-warnings-watches')({
+export const Route = createFileRoute('/alert/')({
   server: {
     handlers: {
       GET: async (): Promise<Response> => {
@@ -58,7 +58,7 @@ export const Route = createFileRoute('/api/update/issued-warnings-watches')({
           );
 
           const issuedWarningsAndWatches: IssuedAlert[] = alerts.map((alert) =>
-            convertAlertToIssuedWarningAndWatches(alert),
+            convertAlertToIssuedAlert(alert),
           );
 
           const collection = await getIssuedAlertCollection();
@@ -205,10 +205,10 @@ async function fetchAlertHistory(id: string): Promise<Alert[]> {
   return history;
 }
 
-function convertAlertToIssuedWarningAndWatches(alert: Alert): IssuedAlert {
+function convertAlertToIssuedAlert(alert: Alert): IssuedAlert {
   const _history =
     alert._history?.map((histAlert) => {
-      return convertAlertToIssuedWarningAndWatches(histAlert);
+      return convertAlertToIssuedAlert(histAlert);
     }) || [];
   return {
     id: alert.identifier,

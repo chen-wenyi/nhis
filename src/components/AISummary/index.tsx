@@ -6,8 +6,12 @@ import {
   useSevereWeatherOutlook,
   useThunderstormOutlook,
 } from '@/queries';
-import { getSevereWeatherOutlookAISummary } from '@/serverFuncs/AISummary/severeWeatherOutlook';
-import { getThunderstormOutlookAISummary } from '@/serverFuncs/AISummary/thunderstormOutlook';
+
+import {
+  getSevereWeatherOutlookAISummaryById,
+  getThunderstormOutlookAISummaryById,
+} from '@/serverFuncs/AISummary';
+
 import { useQuery } from '@tanstack/react-query';
 import { createServerFn } from '@tanstack/react-start';
 import axios from 'axios';
@@ -402,7 +406,8 @@ export const useSevereWeatherOutlookAISummary = (outlookRefId: string) =>
   useQuery({
     enabled: false,
     queryKey: ['aiSevereWeatherOutlookSummary', outlookRefId],
-    queryFn: () => getSevereWeatherOutlookAISummary({ data: { outlookRefId } }),
+    queryFn: () =>
+      getSevereWeatherOutlookAISummaryById({ data: { outlookRefId } }),
     refetchOnWindowFocus: false,
   });
 
@@ -410,7 +415,8 @@ export const useThunderstormOutlookAISummary = (outlookRefId: string) =>
   useQuery({
     enabled: false,
     queryKey: ['aiThunderstormOutlookSummary', outlookRefId],
-    queryFn: () => getThunderstormOutlookAISummary({ data: { outlookRefId } }),
+    queryFn: () =>
+      getThunderstormOutlookAISummaryById({ data: { outlookRefId } }),
     refetchOnWindowFocus: false,
   });
 

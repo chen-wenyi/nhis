@@ -2,12 +2,15 @@ import { Button } from '@/components/ui/button';
 import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import {
-  getAISevereWeatherOutlookSummaryCollection,
-  getIssuedWarningsAndWatchesCollection,
+  getIssuedAlertCollection,
   getSevereWeatherOutlookCollection,
   getThunderstormOutlookCollection,
 } from '@/lib/mongodb';
-import { getThunderstormOutlookAISummary } from '@/serverFuncs/AISummary/thunderstormOutlook';
+import {
+  getSevereWeatherOutlookAISummaryById,
+  getThunderstormOutlookAISummaryById,
+} from '@/serverFuncs/AISummary';
+
 import type {
   AISevereWeatherOutlookSummaryResp,
   AIThunderstormOutlookSummaryResp,
@@ -171,7 +174,7 @@ function SearchSevereWeatherOutlookAISummary() {
     useState<AISevereWeatherOutlookSummaryResp | null>(null);
 
   const onSearch = async () => {
-    const _summary = await getSevereWeatherOutlookAISummary({
+    const _summary = await getSevereWeatherOutlookAISummaryById({
       data: { outlookRefId: value.trim() },
     });
     setSummary(_summary);
@@ -208,7 +211,7 @@ function SearchThunderstormAISummary() {
     useState<AIThunderstormOutlookSummaryResp | null>(null);
 
   const onSearch = async () => {
-    const _summary = await getThunderstormOutlookAISummary({
+    const _summary = await getThunderstormOutlookAISummaryById({
       data: { outlookRefId: value.trim() },
     });
     setSummary(_summary);
@@ -265,7 +268,7 @@ const getThunderstormOutlookById = createServerFn()
 const getIssuedWarningsAndWatchesById = createServerFn()
   .inputValidator((data: { id: string }) => data)
   .handler(async ({ data }): Promise<IssuedWarningsAndWatches[]> => {
-    const collection = await getIssuedWarningsAndWatchesCollection();
+    const collection = await getIssuedAlertCollection();
     const issuedWarningsAndWatches = await collection
       .find({ _id: ObjectId.createFromHexString(data.id) })
       .toArray();
@@ -303,43 +306,5 @@ const getSevereWeatherOutlookById = createServerFn()
         outlookItems: outlook.outlookItems,
         insertedAt: outlook.insertedAt,
       }));
-    },
-  );
-
-const getSevereWeatherOutlookAISummary = createServerFn()
-  .inputValidator((data: { outlookRefId: string }) => data)
-  .handler(
-    async ({ data }): Promise<AISevereWeatherOutlookSummaryResp | null> => {
-      console.log(
-        `Event: Fetching severe weather outlook AI summary for outlook ID: ${data.outlookRefId}...`,
-      );
-
-      const collection = await getAISevereWeatherOutlookSummaryCollection();
-
-      const summaryDoc = await collection.findOne(
-        {
-          outlookRefId: data.outlookRefId,
-        },
-        { sort: { generatedAt: -1 } },
-      );
-
-      if (summaryDoc) {
-        console.log(
-          `Result: Found severe weather outlook AI summary for outlook ID: ${data.outlookRefId}`,
-        );
-        return {
-          id: summaryDoc._id.toString(),
-          outlookRefId: summaryDoc.outlookRefId,
-          genReason: summaryDoc.genReason,
-          generatedAt: summaryDoc.generatedAt,
-          generatedAtISO: summaryDoc.generatedAtISO,
-          content: summaryDoc.content,
-        };
-      } else {
-        console.log(
-          `Result: No severe weather outlook AI summary found for outlook ID: ${data.outlookRefId}`,
-        );
-        return null;
-      }
     },
   );

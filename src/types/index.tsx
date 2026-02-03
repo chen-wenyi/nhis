@@ -1,13 +1,4 @@
-import type {
-  SevereWeatherAISummary,
-  SevereWeatherOutlookAISummary,
-} from '@/serverFuncs/AISummary/severeWeatherOutlook/schema';
-import type {
-  ThunderstormAISummary,
-  ThunderstormOutlookAISummary,
-} from '@/serverFuncs/AISummary/thunderstormOutlook/schema';
-
-export type DateString = string; // in ISO format
+import type { DateString, IssuedAlert } from './alert';
 
 export type AISummaryId = {
   thunderstormOutlook: string;
@@ -15,79 +6,12 @@ export type AISummaryId = {
   issuedWarningsAndWatches: string;
 };
 
-// issued warnings and watches Types
-export type CAP = {
-  feed: {
-    entry?: Array<{
-      id: string;
-      link: { href: string };
-      published: string;
-      updated: string;
-      title: string;
-      summary: string;
-    }>;
-    updated: string;
-  };
-};
-
-export type Alert = {
-  identifier: string;
-  sent: string;
-  references?: string;
-  info: {
-    // 'category', 'event', 'responseType', 'urgency', 'severity', 'certainty', 'onset', 'expires', 'senderName', 'headline', 'description', 'instruction', 'web', 'parameter', 'area'
-    area: {
-      areaDesc: string;
-      polygon: string[];
-    };
-    category: string;
-    event: string;
-    responseType: string;
-    urgency: string;
-    severity: string;
-    certainty: string;
-    onset: string;
-    expires: string;
-    senderName: string;
-    headline: string;
-    description: string;
-    instruction: string;
-    web: string;
-    parameter: Array<{
-      valueName: string;
-      value: string;
-    }>;
-  };
-  _history?: Alert[];
-};
-
-// Issued Warnings and Watches
-export type IssuedWarningOrWatche = {
-  id: string;
-  sent: DateString;
-  event: string;
-  responseType: string;
-  urgency: string;
-  severity: string;
-  certainty: string;
-  onset: DateString;
-  expires: DateString;
-  headline: string;
-  description: string;
-  instruction: string;
-  areaDesc: string;
-  _status: 'removed' | 'updated' | 'new' | '';
-  _history: IssuedWarningOrWatche[];
-  ColourCode?: string;
-  ChanceOfUpgrade?: string;
-};
-
-export type IssuedWarningsAndWatches = {
+export type IssuedAlertEntries = {
   id: string;
   updatedAt: Date;
   updatedAtISO: DateString;
-  entries: IssuedWarningOrWatche[];
-  insertedAt: Date;
+  entries: IssuedAlert[];
+  insertedAt: Date; // need for AI GeneratedAt
 };
 
 // Severe Weather Outlook Types
@@ -187,30 +111,7 @@ export type ThunderstormOutlookDocument = Omit<ThunderstormOutlook, 'id'> & {
   insertedAt: Date;
 };
 
-export type IssuedWarningsAndWatchesDocument = Omit<
-  IssuedWarningsAndWatches,
-  'id'
->;
-
-export type SevereWeatherAISummaryDocument = {
-  summary: SevereWeatherOutlookAISummary;
-  identifier: {
-    severeWeatherOutlookId: string;
-    date: DateString;
-    outlook: string;
-  };
-  insertedAt: Date;
-};
-
-export type ThunderstormAISummaryDocument = {
-  summary: ThunderstormOutlookAISummary[];
-  identifier: {
-    thunderstormOutlookId: string;
-    date: DateString;
-    outlook: string;
-  };
-  insertedAt: Date;
-};
+export type IssuedAlertEntriesDocument = Omit<IssuedAlertEntries, 'id'>;
 
 export type AISevereWeatherOutlookSummaryDocument = {
   outlookRefId: string;
@@ -218,13 +119,23 @@ export type AISevereWeatherOutlookSummaryDocument = {
   generatedAt: Date;
   generatedAtISO: string;
   content: {
-    summary: SevereWeatherAISummary;
+    summary: {
+      upgradeTo:
+        | 'Heavy Rain Watch'
+        | 'Strong Wind Watch'
+        | 'Heavy Snow Watch'
+        | 'Heavy Rain Warning'
+        | 'Strong Wind Warning'
+        | 'Heavy Snow Warning'
+        | 'Red Warning';
+      chance: 'Minimal' | 'Low' | 'Moderate' | 'High';
+      areas: string[];
+      quotes: string[];
+      keywords: string[];
+    }[];
     date: string;
   }[];
 };
-
-export type AISevereWeatherOutlookSummaryResp =
-  AISevereWeatherOutlookSummaryDocument & { id: string };
 
 export type AIThunderstormOutlookSummaryDocument = {
   outlookRefId: string;
@@ -232,10 +143,19 @@ export type AIThunderstormOutlookSummaryDocument = {
   generatedAt: Date;
   generatedAtISO: string;
   content: {
-    summary: ThunderstormAISummary['outlooks'];
+    summary: {
+      risk: 'Minimal' | 'Low' | 'Moderate' | 'High';
+      areas: string[];
+      when: string[];
+      quotes: string[];
+      keywords: string[];
+    }[];
     date: string;
   }[];
 };
+
+export type AISevereWeatherOutlookSummaryResp =
+  AISevereWeatherOutlookSummaryDocument & { id: string };
 
 export type AIThunderstormOutlookSummaryResp =
   AIThunderstormOutlookSummaryDocument & { id: string };
