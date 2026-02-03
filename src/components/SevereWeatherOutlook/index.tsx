@@ -97,9 +97,9 @@ export default function SevereWeatherOutlook() {
                     'animate-spin': isUpdating,
                     'cursor-pointer hover:scale-110': !isUpdating,
                   })}
-                  onClick={() => {
+                  onClick={async () => {
                     if (!isUpdating) {
-                      fetchLatestSevereWeatherOutlook();
+                      await fetchLatestSevereWeatherOutlook();
                     }
                   }}
                   size={16}
@@ -194,5 +194,7 @@ function LoadingSkeleton() {
 }
 
 const fetchLatestSevereWeatherOutlook = createServerFn().handler(() => {
-  fetch(`https://update-severe-weather-outlook-production.up.railway.app`);
+  return fetch(
+    `https://update-severe-weather-outlook-production.up.railway.app`,
+  );
 });

@@ -6,6 +6,7 @@ import IssuedWarningsAndWatches from '@/components/IssuedWarningsAndWatches';
 import SevereWeatherOutlook from '@/components/SevereWeatherOutlook';
 import ThunderstormOutlook from '@/components/ThunderstormOutlook';
 import { Toaster } from '@/components/ui/sonner';
+import { toastInfo, toastSuccess, toastUpdateToDate } from '@/lib/toast';
 import { store } from '@/store';
 import { useStore } from '@tanstack/react-store';
 
@@ -32,7 +33,7 @@ function App() {
           )}
         </div>
       </main>
-      {/* <button
+      <button
         onClick={() => {
           toastSuccess('Test Success', 'This is a success message!');
           toastInfo('Test Success', 'This is a success message!');
@@ -40,7 +41,7 @@ function App() {
         }}
       >
         123
-      </button> */}
+      </button>
     </div>
   );
 }

@@ -96,9 +96,9 @@ export default function ThunderstormOutlook() {
                 'cursor-pointer hover:scale-110': !isUpdating,
               })}
               size={16}
-              onClick={() => {
+              onClick={async () => {
                 if (!isUpdating) {
-                  fetchLatestThunderstormOutlook();
+                  await fetchLatestThunderstormOutlook();
                 }
               }}
             />
@@ -195,5 +195,5 @@ function LoadingSkeleton() {
 }
 
 const fetchLatestThunderstormOutlook = createServerFn().handler(() => {
-  fetch(`https://update-thunderstorm-outlook-production.up.railway.app`);
+  return fetch(`https://update-thunderstorm-outlook-production.up.railway.app`);
 });

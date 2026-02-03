@@ -53,7 +53,7 @@ const realtimeClient = new Ably.Realtime({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className="light">
       <head>
         <HeadContent />
       </head>

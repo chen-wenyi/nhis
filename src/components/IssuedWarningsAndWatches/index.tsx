@@ -91,9 +91,9 @@ export default function IssuedWarningsAndWatches() {
                 'animate-spin': isUpdating,
                 'cursor-pointer hover:scale-110': !isUpdating,
               })}
-              onClick={() => {
+              onClick={async () => {
                 if (!isUpdating) {
-                  fetchLatestIssuedAlerts();
+                  await fetchLatestIssuedAlerts();
                 }
               }}
               size={16}
@@ -255,5 +255,5 @@ function AllgoodIcon() {
 }
 
 const fetchLatestIssuedAlerts = createServerFn().handler(() => {
-  fetch(`https://update-alerts-production.up.railway.app`);
+  return fetch(`https://update-alerts-production.up.railway.app`);
 });
