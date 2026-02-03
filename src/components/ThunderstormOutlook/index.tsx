@@ -24,6 +24,8 @@ import { ReactMarkdownWithHighlight } from './ReactMarkdownWithHighlight';
 import { RevisionHistory } from './RevisionHistory';
 
 export default function ThunderstormOutlook() {
+  const activeOutlookTab = useStore(store, (state) => state.activeOutlookTab);
+
   const {
     data: thunderstormOutlook,
     isLoading,
@@ -58,7 +60,9 @@ export default function ThunderstormOutlook() {
     }
   });
   return (
-    <Card>
+    <Card
+      className={activeOutlookTab === 'thunderstormOutlook' ? 'flex' : 'hidden'}
+    >
       <CardHeader>
         <CardTitle>
           <ButtonGroup className="w-full flex">

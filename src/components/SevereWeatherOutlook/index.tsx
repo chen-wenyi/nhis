@@ -24,6 +24,8 @@ import { ReactMarkdownWithHighlight } from './ReactMarkdownWithHighlight';
 import { RevisionHistory } from './RevisionHistory';
 
 export default function SevereWeatherOutlook() {
+  const activeOutlookTab = useStore(store, (state) => state.activeOutlookTab);
+
   const {
     data: severeWeatherOutlook,
     isFetching,
@@ -58,7 +60,11 @@ export default function SevereWeatherOutlook() {
   });
 
   return (
-    <Card>
+    <Card
+      className={
+        activeOutlookTab === 'severeWeatherOutlook' ? 'flex' : 'hidden'
+      }
+    >
       <CardHeader>
         <CardTitle>
           <ButtonGroup className="w-full flex">

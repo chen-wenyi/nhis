@@ -6,13 +6,10 @@ import IssuedWarningsAndWatches from '@/components/IssuedWarningsAndWatches';
 import SevereWeatherOutlook from '@/components/SevereWeatherOutlook';
 import ThunderstormOutlook from '@/components/ThunderstormOutlook';
 import { Toaster } from '@/components/ui/sonner';
-import { store } from '@/store';
-import { useStore } from '@tanstack/react-store';
 
 export const Route = createFileRoute('/')({ component: App });
 
 function App() {
-  const activeOutlookTab = useStore(store, (state) => state.activeOutlookTab);
   return (
     <div className="flex flex-col h-dvh w-full overscroll-none">
       <Header />
@@ -24,12 +21,10 @@ function App() {
         <div className="w-90">
           <IssuedWarningsAndWatches />
         </div>
-        <div className="w-[30%]">
-          {activeOutlookTab === 'severeWeatherOutlook' ? (
-            <SevereWeatherOutlook />
-          ) : (
-            <ThunderstormOutlook />
-          )}
+        <div className="w-[30%]  min-h-full">
+          <SevereWeatherOutlook />
+
+          <ThunderstormOutlook />
         </div>
       </main>
       {/* <button
