@@ -21,6 +21,7 @@ import { useStore } from '@tanstack/react-store';
 import { RefreshCcw } from 'lucide-react';
 import { DateTime } from 'luxon';
 import { useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 import { Badge } from '../ui/badge';
 import { Skeleton } from '../ui/skeleton';
 import { AlertHistory } from './AlertHistory';
@@ -46,10 +47,12 @@ export default function IssuedWarningsAndWatches() {
     switch (message.name) {
       case EVENT.ISSUED_ALERTS_UPDATING: {
         setIsUpdating(true);
+        toast.info(message.data);
         break;
       }
       case EVENT.ISSUED_ALERTS_UPDATED: {
         setIsUpdating(false);
+        toast.info(message.data);
         refetch();
         break;
       }
