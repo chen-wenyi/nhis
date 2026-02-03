@@ -1,16 +1,13 @@
 import { TanStackDevtools } from '@tanstack/react-devtools';
+import type { QueryClient } from '@tanstack/react-query';
 import {
   HeadContent,
   Scripts,
   createRootRouteWithContext,
 } from '@tanstack/react-router';
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
-
-import type { QueryClient } from '@tanstack/react-query';
-import { Analytics } from '@vercel/analytics/next';
 import * as Ably from 'ably';
 import { AblyProvider, ChannelProvider } from 'ably/react';
-import ConvexProvider from '../integrations/convex/provider';
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools';
 import appCss from '../styles.css?url';
 
@@ -55,26 +52,23 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <ConvexProvider>
-          <AblyProvider client={realtimeClient}>
-            <ChannelProvider channelName="nhis-channel">
-              {children}
-            </ChannelProvider>
-          </AblyProvider>
-          <TanStackDevtools
-            config={{
-              position: 'bottom-right',
-            }}
-            plugins={[
-              {
-                name: 'Tanstack Router',
-                render: <TanStackRouterDevtoolsPanel />,
-              },
-              TanStackQueryDevtools,
-            ]}
-          />
-        </ConvexProvider>
-        <Analytics />
+        <AblyProvider client={realtimeClient}>
+          <ChannelProvider channelName="nhis-channel">
+            {children}
+          </ChannelProvider>
+        </AblyProvider>
+        <TanStackDevtools
+          config={{
+            position: 'bottom-right',
+          }}
+          plugins={[
+            {
+              name: 'Tanstack Router',
+              render: <TanStackRouterDevtoolsPanel />,
+            },
+            TanStackQueryDevtools,
+          ]}
+        />
         <Scripts />
       </body>
     </html>
