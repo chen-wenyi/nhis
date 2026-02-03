@@ -1,4 +1,4 @@
-import type { IssuedWarningOrWatche } from './types';
+import type { IssuedAlert } from './types/alert';
 
 export function formatAlertName(
   title: string,
@@ -34,10 +34,8 @@ const ALERT_SORT_ORDER = [
   'Strong Wind Watch',
 ];
 
-export function sortAlerts(
-  issuedWarningsAndWatches: IssuedWarningOrWatche[],
-): IssuedWarningOrWatche[] {
-  const sorted = [...issuedWarningsAndWatches].sort((a, b) => {
+export function sortAlerts(issuedAlerts: IssuedAlert[]): IssuedAlert[] {
+  const sorted = [...issuedAlerts].sort((a, b) => {
     const aHeadline = a.headline;
     const bHeadline = b.headline;
 

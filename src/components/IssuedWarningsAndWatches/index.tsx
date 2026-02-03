@@ -10,13 +10,17 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from '@/components/ui/hover-card';
+import { useNHISChannel } from '@/hooks';
+import { EVENT } from '@/lib/ably';
 import { cn, formatUTCToNZDate } from '@/lib/utils';
 import { useIssuedWarningsAndWatches } from '@/queries';
 import { store } from '@/store';
-import type { IssuedWarningOrWatche } from '@/types';
+import type { IssuedAlert } from '@/types/alert';
 import { sortAlerts } from '@/utils';
 import { useStore } from '@tanstack/react-store';
-import { useEffect, useRef } from 'react';
+import { RefreshCcw } from 'lucide-react';
+import { DateTime } from 'luxon';
+import { useEffect, useRef, useState } from 'react';
 import { Badge } from '../ui/badge';
 import { Skeleton } from '../ui/skeleton';
 import { AlertHistory } from './AlertHistory';
@@ -29,23 +33,54 @@ export default function IssuedWarningsAndWatches() {
     data: issuedWarningsAndWatches,
     error: _error,
     isLoading,
+    refetch,
   } = useIssuedWarningsAndWatches();
+
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  useNHISChannel((message) => {
+    console.log(
+      `Received ${message.name} message: ${message.data} at ${DateTime.now().setZone('Pacific/Auckland').toISO()}`,
+    );
+
+    switch (message.name) {
+      case EVENT.ISSUED_ALERTS_UPDATING: {
+        setIsUpdating(true);
+        break;
+      }
+      case EVENT.ISSUED_ALERTS_UPDATED: {
+        setIsUpdating(false);
+        refetch();
+        break;
+      }
+      default:
+        break;
+    }
+  });
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>Issued Warnings And Watches</CardTitle>
         <CardDescription>
-          <div>
-            Source:{' '}
-            <a
-              href="https://www.metservice.com/warnings/home"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline"
-            >
-              MetService
-            </a>
+          <div className="flex items-center gap-4">
+            <span>
+              Source:{' '}
+              <a
+                href="https://www.metservice.com/warnings/home"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline"
+              >
+                MetService
+              </a>
+            </span>
+            <RefreshCcw
+              className={cn('cursor-pointer hover:scale-110', {
+                'animate-spin': isUpdating,
+              })}
+              size={16}
+            />
           </div>
           <div>
             Last updated:{' '}
@@ -63,7 +98,7 @@ export default function IssuedWarningsAndWatches() {
             {issuedWarningsAndWatches &&
             issuedWarningsAndWatches.entries.length > 0 ? (
               sortAlerts(issuedWarningsAndWatches.entries).map((i) => {
-                return <AlertCard issuedWarningOrWatche={i} key={i.id} />;
+                return <AlertCard issuedAlert={i} key={i.id} />;
               })
             ) : (
               <div className="flex items-center gap-4">
@@ -90,11 +125,7 @@ function LoadingSkeleton() {
   );
 }
 
-function AlertCard({
-  issuedWarningOrWatche,
-}: {
-  issuedWarningOrWatche: IssuedWarningOrWatche;
-}) {
+function AlertCard({ issuedAlert }: { issuedAlert: IssuedAlert }) {
   const {
     id,
     sent,
@@ -106,7 +137,7 @@ function AlertCard({
     ChanceOfUpgrade,
     // description intentionally unused here; Details component uses the whole object
     // keep property to avoid changing shape
-  } = issuedWarningOrWatche;
+  } = issuedAlert;
 
   const scrollIntoViewRef = useRef<HTMLDivElement | null>(null);
 
@@ -174,7 +205,7 @@ function AlertCard({
               )}
             </div>
           </div>
-          <AlertIndicator data={issuedWarningOrWatche} />
+          <AlertIndicator data={issuedAlert} />
           <div>
             <span className="font-bold">Area: </span>
             <span>{areaDesc.replace(/,/g, ', ')}</span>
@@ -189,7 +220,7 @@ function AlertCard({
           </div>
 
           <div>
-            <DetailsToggle issuedWarningOrWatche={issuedWarningOrWatche} />
+            <DetailsToggle issuedAlert={issuedAlert} />
           </div>
         </div>
       </HoverCardTrigger>

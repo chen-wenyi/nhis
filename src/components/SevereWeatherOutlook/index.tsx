@@ -6,11 +6,16 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { useNHISChannel } from '@/hooks';
+import { EVENT } from '@/lib/ably';
+import { cn } from '@/lib/utils';
 import { useSevereWeatherOutlook } from '@/queries';
 import { setActiveOutlookTab, store } from '@/store';
 import { useStore } from '@tanstack/react-store';
+import { RefreshCcw } from 'lucide-react';
 import { DateTime } from 'luxon';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 import { Button } from '../ui/button';
 import { ButtonGroup } from '../ui/button-group';
 import { Skeleton } from '../ui/skeleton';
@@ -18,7 +23,34 @@ import { ReactMarkdownWithHighlight } from './ReactMarkdownWithHighlight';
 import { RevisionHistory } from './RevisionHistory';
 
 export default function SevereWeatherOutlook() {
-  const { data: severeWeatherOutlook, isFetching } = useSevereWeatherOutlook();
+  const {
+    data: severeWeatherOutlook,
+    isFetching,
+    refetch,
+  } = useSevereWeatherOutlook();
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  useNHISChannel((message) => {
+    console.log(
+      `Received ${message.name} message: ${message.data} at ${DateTime.now().setZone('Pacific/Auckland').toISO()}`,
+    );
+
+    switch (message.name) {
+      case EVENT.SEVERE_WEATHER_OUTLOOK_UPDATING: {
+        setIsUpdating(true);
+        toast.info(message.data);
+        break;
+      }
+      case EVENT.SEVERE_WEATHER_OUTLOOK_UPDATED: {
+        refetch();
+        setIsUpdating(false);
+        toast.info(message.data);
+        break;
+      }
+      default:
+        break;
+    }
+  });
 
   return (
     <Card>
@@ -43,16 +75,24 @@ export default function SevereWeatherOutlook() {
         <CardDescription className="mt-2 ml-1">
           <div className="flex gap-6 items-start justify-between">
             <div className="flex flex-col gap-1">
-              <div>
-                Source:{' '}
-                <a
-                  href="https://www.metservice.com/warnings/severe-weather-outlook"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline"
-                >
-                  MetService
-                </a>
+              <div className="flex items-center gap-4">
+                <span>
+                  Source:{' '}
+                  <a
+                    href="https://www.metservice.com/warnings/severe-weather-outlook"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline"
+                  >
+                    MetService
+                  </a>
+                </span>
+                <RefreshCcw
+                  className={cn('cursor-pointer hover:scale-110', {
+                    'animate-spin': isUpdating,
+                  })}
+                  size={16}
+                />
               </div>
               <div>Issued: {severeWeatherOutlook?.issuedDate}</div>
             </div>

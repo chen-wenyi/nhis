@@ -1,4 +1,4 @@
-import { Event } from '@/lib/ably';
+import { EVENT } from '@/lib/ably';
 import { getIssuedAlertCollection } from '@/lib/mongodb';
 import type { Alert, CAP, IssuedAlert } from '@/types/alert';
 import { createFileRoute } from '@tanstack/react-router';
@@ -14,7 +14,7 @@ async function AblyPublish(id: string) {
       clientId: 'nhis-alert-update-service',
     });
     const channel = ablyClient.channels.get('nhis-channel');
-    await channel.publish(Event.ISSUED_WARNINGS_WATCHES_UPDATED, id);
+    await channel.publish(EVENT.ISSUED_ALERTS_UPDATED, id);
   } catch (error) {
     console.error('Error publishing to Ably:', error);
   }

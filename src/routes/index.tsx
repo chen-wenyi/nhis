@@ -17,7 +17,7 @@ function App() {
     <div className="flex flex-col h-dvh w-full overscroll-none">
       <Header />
       <main className="flex flex-1 m-2 gap-3 min-h-0">
-        <Toaster position="top-center" />
+        <Toaster position="top-center" duration={6000} expand />
         <div className="flex-1">
           <AISummary />
         </div>

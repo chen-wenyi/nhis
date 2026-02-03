@@ -1,15 +1,11 @@
 import { cn } from '@/lib/utils';
-import type { IssuedWarningOrWatche } from '@/types';
+import type { IssuedAlert } from '@/types/alert';
 import { useState } from 'react';
 import { analyseDescription } from './utils';
 
-export function DetailsToggle({
-  issuedWarningOrWatche,
-}: {
-  issuedWarningOrWatche: IssuedWarningOrWatche;
-}) {
+export function DetailsToggle({ issuedAlert }: { issuedAlert: IssuedAlert }) {
   const [open, setOpen] = useState(false);
-  const detail = analyseDescription(issuedWarningOrWatche.description);
+  const detail = analyseDescription(issuedAlert.description);
 
   return (
     <>
@@ -65,13 +61,13 @@ export function DetailsToggle({
               <tbody>
                 <tr>
                   <td className="text-center pr-4 px-2 py-1 border-t border-gray-200">
-                    {issuedWarningOrWatche.urgency || 'N/A'}
+                    {issuedAlert.urgency || 'N/A'}
                   </td>
                   <td className="text-center pr-4 px-2 py-1 border-t border-gray-200">
-                    {issuedWarningOrWatche.severity || 'N/A'}
+                    {issuedAlert.severity || 'N/A'}
                   </td>
                   <td className="text-center px-2 py-1 border-t border-gray-200">
-                    {issuedWarningOrWatche.certainty || 'N/A'}
+                    {issuedAlert.certainty || 'N/A'}
                   </td>
                 </tr>
               </tbody>

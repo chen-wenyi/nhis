@@ -6,11 +6,16 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { useNHISChannel } from '@/hooks';
+import { EVENT } from '@/lib/ably';
+import { cn } from '@/lib/utils';
 import { useThunderstormOutlook } from '@/queries';
 import { setActiveOutlookTab, store } from '@/store';
 import { useStore } from '@tanstack/react-store';
+import { RefreshCcw } from 'lucide-react';
 import { DateTime } from 'luxon';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 import { Button } from '../ui/button';
 import { ButtonGroup } from '../ui/button-group';
 import { Skeleton } from '../ui/skeleton';
@@ -21,9 +26,32 @@ export default function ThunderstormOutlook() {
   const {
     data: thunderstormOutlook,
     isLoading,
-    error,
+    refetch,
   } = useThunderstormOutlook();
 
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  useNHISChannel((message) => {
+    console.log(
+      `Received ${message.name} message: ${message.data} at ${DateTime.now().setZone('Pacific/Auckland').toISO()}`,
+    );
+
+    switch (message.name) {
+      case EVENT.THUNDERSTORM_OUTLOOK_UPDATING: {
+        setIsUpdating(true);
+        toast.info(message.data);
+        break;
+      }
+      case EVENT.THUNDERSTORM_OUTLOOK_UPDATED: {
+        refetch();
+        setIsUpdating(false);
+        toast.info(message.data);
+        break;
+      }
+      default:
+        break;
+    }
+  });
   return (
     <Card>
       <CardHeader>
@@ -45,17 +73,25 @@ export default function ThunderstormOutlook() {
           </ButtonGroup>
         </CardTitle>
         <CardDescription className="mt-2 ml-1 flex justify-between items-center h-8">
-          <span>
-            Source:{' '}
-            <a
-              href="https://www.metservice.com/warnings/thunderstorm-outlook"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline"
-            >
-              MetService
-            </a>
-          </span>
+          <div className="flex items-center gap-4">
+            <span>
+              Source:{' '}
+              <a
+                href="https://www.metservice.com/warnings/thunderstorm-outlook"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline"
+              >
+                MetService
+              </a>
+            </span>
+            <RefreshCcw
+              className={cn('cursor-pointer hover:scale-110', {
+                'animate-spin': isUpdating,
+              })}
+              size={16}
+            />
+          </div>
           <RevisionHistory />
         </CardDescription>
       </CardHeader>

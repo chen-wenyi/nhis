@@ -1,5 +1,5 @@
 import { useNHISChannel, useNHISChannelStateListener } from '@/hooks';
-import { Event } from '@/lib/ably';
+import { EVENT } from '@/lib/ably';
 import { cn } from '@/lib/utils';
 import {
   useIssuedWarningsAndWatches,
@@ -50,6 +50,7 @@ export function AISummary() {
   const isSummaryLoaded = useRef(false);
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [summaries, setSummaries] = useState<SummaryWithoutFetchingFlags[]>([]);
+
   const [
     isSevereWeatherOutlookAISummaryFetching,
     setIsSevereWeatherOutlookAISummaryFetching,
@@ -62,7 +63,6 @@ export function AISummary() {
   const {
     data: severeWeatherOutlook,
     isLoading: isSevereWeatherOutlookLoading,
-    refetch: refetchSevereWeatherOutlook,
   } = useSevereWeatherOutlook();
   const {
     data: thunderstormOutlook,
@@ -189,24 +189,19 @@ ${thunderstormOutlook.id}
     );
 
     switch (message.name) {
-      case Event.ISSUED_WARNINGS_WATCHES_UPDATED: {
-        refetchIssuedWarningsAndWatches();
-        break;
-      }
-      case Event.AI_SEVERE_WEATHER_OUTLOOK_SUMMARY_GENERATED: {
+      case EVENT.AI_SEVERE_WEATHER_OUTLOOK_SUMMARY_GENERATED: {
         refetchSevereWeatherOutlookAISummary();
         break;
       }
-      case Event.AI_THUNDERSTORM_OUTLOOK_SUMMARY_GENERATED: {
+      case EVENT.AI_THUNDERSTORM_OUTLOOK_SUMMARY_GENERATED: {
         refetchThunderstormOutlookAISummary();
         break;
       }
-      case Event.AI_SEVERE_WEATHER_OUTLOOK_SUMMARY_GENERATING: {
+      case EVENT.AI_SEVERE_WEATHER_OUTLOOK_SUMMARY_GENERATING: {
         setIsSevereWeatherOutlookAISummaryFetching(true);
-        refetchSevereWeatherOutlook();
         break;
       }
-      case Event.AI_THUNDERSTORM_OUTLOOK_SUMMARY_GENERATING: {
+      case EVENT.AI_THUNDERSTORM_OUTLOOK_SUMMARY_GENERATING: {
         setIsThunderstormOutlookAISummaryFetching(true);
         refetchThunderstormOutlook();
         break;
