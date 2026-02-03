@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/card';
 import { useNHISChannel } from '@/hooks';
 import { EVENT } from '@/lib/ably';
+import { toastInfo, toastSuccess, toastUpdateToDate } from '@/lib/toast';
 import { cn } from '@/lib/utils';
 import { useSevereWeatherOutlook } from '@/queries';
 import { setActiveOutlookTab, store } from '@/store';
@@ -16,7 +17,6 @@ import { useStore } from '@tanstack/react-store';
 import { RefreshCcw } from 'lucide-react';
 import { DateTime } from 'luxon';
 import { useEffect, useRef, useState } from 'react';
-import { toast } from 'sonner';
 import { Button } from '../ui/button';
 import { ButtonGroup } from '../ui/button-group';
 import { Skeleton } from '../ui/skeleton';
@@ -39,21 +39,15 @@ export default function SevereWeatherOutlook() {
     switch (message.name) {
       case EVENT.SEVERE_WEATHER_OUTLOOK_UPDATING: {
         setIsUpdating(true);
-        toast.info('Severe Weather Outlook', {
-          description: message.data.message,
-        });
+        toastInfo('Severe Weather Outlook', message.data.message);
         break;
       }
       case EVENT.SEVERE_WEATHER_OUTLOOK_UPDATED: {
         if (message.data.stale) {
-          toast.success('Severe Weather Outlook', {
-            description: message.data.message,
-          });
+          toastSuccess('Severe Weather Outlook', message.data.message);
           refetch();
         } else {
-          toast.info('Severe Weather Outlook', {
-            description: message.data.message,
-          });
+          toastUpdateToDate('Severe Weather Outlook', message.data.message);
         }
         setIsUpdating(false);
         break;

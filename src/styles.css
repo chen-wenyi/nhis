@@ -151,3 +151,44 @@ code {
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
+/* Custom bell shake animation */
+@keyframes bell-shake {
+  0%,
+  50%,
+  100% {
+    transform: rotate(0deg);
+  }
+  5%,
+  15%,
+  25%,
+  35%,
+  45% {
+    transform: rotate(-15deg);
+  }
+  10%,
+  20%,
+  30%,
+  40% {
+    transform: rotate(15deg);
+  }
+}
+
+@theme {
+  --animate-bell-shake: bell-shake 2s ease-in-out infinite;
+}
+
+/* Custom scale pulse animation */
+@keyframes scale-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+}
+
+@theme {
+  --animate-scale-pulse: scale-pulse 0.6s ease-in-out 0.5s;
+}

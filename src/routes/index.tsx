@@ -33,11 +33,11 @@ function App() {
         </div>
       </main>
       {/* <button
-        onClick={() =>
-          toast.success('Thunderstorm Outlook', {
-            description: 'Data is already up-to-date.',
-          })
-        }
+        onClick={() => {
+          toastSuccess('Test Success', 'This is a success message!');
+          toastInfo('Test Success', 'This is a success message!');
+          toastUpdateToDate('Test Update', 'This is an update message!');
+        }}
       >
         123
       </button> */}

@@ -1,15 +1,12 @@
 import { Badge } from '@/components/ui/badge';
 import { formatUTCToNZDate } from '@/lib/utils';
-import type { IssuedWarningOrWatche } from '@/types';
+
+import type { IssuedAlert } from '@/types/alert';
 import { AlertIndicator } from './AlertIndicator';
 import { DetailsToggle } from './DetailsToggle';
 import { getPeriodDescription } from './utils';
 
-export function AlertHistory({
-  history,
-}: {
-  history: IssuedWarningOrWatche[];
-}) {
+export function AlertHistory({ history }: { history: IssuedAlert[] }) {
   return (
     <div>
       <div className="flex items-center justify-center">
@@ -43,7 +40,7 @@ export function AlertHistory({
               <span>{i.ChanceOfUpgrade || 'N/A'}</span>
             </div>
             <div>
-              <DetailsToggle issuedWarningOrWatche={i} />
+              <DetailsToggle issuedAlert={i} />
             </div>
           </div>
         ))}

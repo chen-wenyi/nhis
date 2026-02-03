@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/hover-card';
 import { useNHISChannel } from '@/hooks';
 import { EVENT } from '@/lib/ably';
+import { toastInfo, toastUpdateToDate } from '@/lib/toast';
 import { cn, formatUTCToNZDate } from '@/lib/utils';
 import { useIssuedWarningsAndWatches } from '@/queries';
 import { store } from '@/store';
@@ -48,9 +49,7 @@ export default function IssuedWarningsAndWatches() {
     switch (message.name) {
       case EVENT.ISSUED_ALERTS_UPDATING: {
         setIsUpdating(true);
-        toast.info('Issued Warnings and Watches', {
-          description: message.data.message,
-        });
+        toastInfo('Issued Warnings and Watches', message.data.message);
         break;
       }
       case EVENT.ISSUED_ALERTS_UPDATED: {
@@ -60,9 +59,10 @@ export default function IssuedWarningsAndWatches() {
           });
           refetch();
         } else {
-          toast.info('Issued Warnings and Watches', {
-            description: message.data.message,
-          });
+          toastUpdateToDate(
+            'Issued Warnings and Watches',
+            message.data.message,
+          );
         }
         setIsUpdating(false);
         break;
