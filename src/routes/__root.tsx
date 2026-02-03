@@ -6,6 +6,7 @@ import {
   createRootRouteWithContext,
 } from '@tanstack/react-router';
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
+import { Analytics } from '@vercel/analytics/react';
 import * as Ably from 'ably';
 import { AblyProvider, ChannelProvider } from 'ably/react';
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools';
@@ -57,6 +58,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             {children}
           </ChannelProvider>
         </AblyProvider>
+        <Analytics />
         <TanStackDevtools
           config={{
             position: 'bottom-right',
