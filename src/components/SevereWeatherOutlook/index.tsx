@@ -11,6 +11,7 @@ import { EVENT } from '@/lib/ably';
 import { cn } from '@/lib/utils';
 import { useSevereWeatherOutlook } from '@/queries';
 import { setActiveOutlookTab, store } from '@/store';
+import { createServerFn } from '@tanstack/react-start';
 import { useStore } from '@tanstack/react-store';
 import { RefreshCcw } from 'lucide-react';
 import { DateTime } from 'luxon';
@@ -38,13 +39,17 @@ export default function SevereWeatherOutlook() {
     switch (message.name) {
       case EVENT.SEVERE_WEATHER_OUTLOOK_UPDATING: {
         setIsUpdating(true);
-        toast.info(message.data);
+        toast.info(message.data.message);
         break;
       }
       case EVENT.SEVERE_WEATHER_OUTLOOK_UPDATED: {
-        refetch();
+        if (message.data.stale) {
+          toast.success(message.data.message);
+          refetch();
+        } else {
+          toast.info(message.data.message);
+        }
         setIsUpdating(false);
-        toast.info(message.data);
         break;
       }
       default:
@@ -88,9 +93,15 @@ export default function SevereWeatherOutlook() {
                   </a>
                 </span>
                 <RefreshCcw
-                  className={cn('cursor-pointer hover:scale-110', {
+                  className={cn({
                     'animate-spin': isUpdating,
+                    'cursor-pointer hover:scale-110': !isUpdating,
                   })}
+                  onClick={() => {
+                    if (!isUpdating) {
+                      fetchLatestSevereWeatherOutlook();
+                    }
+                  }}
                   size={16}
                 />
               </div>
@@ -181,3 +192,7 @@ function LoadingSkeleton() {
     </div>
   );
 }
+
+const fetchLatestSevereWeatherOutlook = createServerFn().handler(() => {
+  fetch(`https://update-severe-weather-outlook-production.up.railway.app`);
+});

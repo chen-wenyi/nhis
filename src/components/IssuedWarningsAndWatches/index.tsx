@@ -17,6 +17,7 @@ import { useIssuedWarningsAndWatches } from '@/queries';
 import { store } from '@/store';
 import type { IssuedAlert } from '@/types/alert';
 import { sortAlerts } from '@/utils';
+import { createServerFn } from '@tanstack/react-start';
 import { useStore } from '@tanstack/react-store';
 import { RefreshCcw } from 'lucide-react';
 import { DateTime } from 'luxon';
@@ -47,13 +48,17 @@ export default function IssuedWarningsAndWatches() {
     switch (message.name) {
       case EVENT.ISSUED_ALERTS_UPDATING: {
         setIsUpdating(true);
-        toast.info(message.data);
+        toast.info(message.data.message);
         break;
       }
       case EVENT.ISSUED_ALERTS_UPDATED: {
+        if (message.data.stale) {
+          toast.success(message.data.message);
+          refetch();
+        } else {
+          toast.info(message.data.message);
+        }
         setIsUpdating(false);
-        toast.info(message.data);
-        refetch();
         break;
       }
       default:
@@ -79,9 +84,15 @@ export default function IssuedWarningsAndWatches() {
               </a>
             </span>
             <RefreshCcw
-              className={cn('cursor-pointer hover:scale-110', {
+              className={cn({
                 'animate-spin': isUpdating,
+                'cursor-pointer hover:scale-110': !isUpdating,
               })}
+              onClick={() => {
+                if (!isUpdating) {
+                  fetchLatestIssuedAlerts();
+                }
+              }}
               size={16}
             />
           </div>
@@ -239,3 +250,7 @@ function AlertCard({ issuedAlert }: { issuedAlert: IssuedAlert }) {
 function AllgoodIcon() {
   return <img src="allgood.png" alt="All good icon" className="w-12 h-12" />;
 }
+
+const fetchLatestIssuedAlerts = createServerFn().handler(() => {
+  fetch(`https://update-alerts-production.up.railway.app`);
+});

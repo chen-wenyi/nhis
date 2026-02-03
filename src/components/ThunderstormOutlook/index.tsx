@@ -11,6 +11,7 @@ import { EVENT } from '@/lib/ably';
 import { cn } from '@/lib/utils';
 import { useThunderstormOutlook } from '@/queries';
 import { setActiveOutlookTab, store } from '@/store';
+import { createServerFn } from '@tanstack/react-start';
 import { useStore } from '@tanstack/react-store';
 import { RefreshCcw } from 'lucide-react';
 import { DateTime } from 'luxon';
@@ -39,13 +40,17 @@ export default function ThunderstormOutlook() {
     switch (message.name) {
       case EVENT.THUNDERSTORM_OUTLOOK_UPDATING: {
         setIsUpdating(true);
-        toast.info(message.data);
+        toast.info(message.data.message);
         break;
       }
       case EVENT.THUNDERSTORM_OUTLOOK_UPDATED: {
-        refetch();
+        if (message.data.stale) {
+          toast.success(message.data.message);
+          refetch();
+        } else {
+          toast.info(message.data.message);
+        }
         setIsUpdating(false);
-        toast.info(message.data);
         break;
       }
       default:
@@ -86,10 +91,16 @@ export default function ThunderstormOutlook() {
               </a>
             </span>
             <RefreshCcw
-              className={cn('cursor-pointer hover:scale-110', {
+              className={cn({
                 'animate-spin': isUpdating,
+                'cursor-pointer hover:scale-110': !isUpdating,
               })}
               size={16}
+              onClick={() => {
+                if (!isUpdating) {
+                  fetchLatestThunderstormOutlook();
+                }
+              }}
             />
           </div>
           <RevisionHistory />
@@ -182,3 +193,7 @@ function LoadingSkeleton() {
     </div>
   );
 }
+
+const fetchLatestThunderstormOutlook = createServerFn().handler(() => {
+  fetch(`https://update-thunderstorm-outlook-production.up.railway.app`);
+});
