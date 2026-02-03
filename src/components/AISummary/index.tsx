@@ -20,6 +20,7 @@ import { DateTime, Interval } from 'luxon';
 import { useEffect, useRef, useState } from 'react';
 import { AiFillThunderbolt } from 'react-icons/ai';
 import { IoRainy } from 'react-icons/io5';
+import { useIdleTimer } from 'react-idle-timer';
 import { toast } from 'sonner';
 import { Button } from '../ui/button';
 import { ButtonGroup } from '../ui/button-group';
@@ -63,6 +64,7 @@ export function AISummary() {
   const {
     data: severeWeatherOutlook,
     isLoading: isSevereWeatherOutlookLoading,
+    refetch: refetchSevereWeatherOutlook,
   } = useSevereWeatherOutlook();
   const {
     data: thunderstormOutlook,
@@ -298,6 +300,22 @@ ${thunderstormOutlook.id}
       `\n*** AI Summary Generation Time Details ***\nissuedWarningsAndWatches: ${issuedWarningsAndWatches?.id}\ninsertedAt: ${issuedWarningsAndWatches?.insertedAt}\n\nsevereWeatherOutlook: ${severeWeatherOutlook?.id}\n\nthunderstormOutlook: ${thunderstormOutlook?.id}\n\nsevereWeatherOutlookAISummary: ${severeWeatherOutlookAISummary?.id}\ngeneratedAt: ${severeWeatherOutlookAISummary?.generatedAt}\n\nthunderstormOutlookAISummary: ${thunderstormOutlookAISummary?.id}\ngeneratedAt: ${thunderstormOutlookAISummary?.generatedAt}\n*******************************\n`,
     );
   };
+
+  useIdleTimer({
+    onIdle: () => {
+      console.log('User is idle');
+    },
+    onActive: async () => {
+      console.log('User is active');
+      await refetchIssuedWarningsAndWatches();
+      await refetchSevereWeatherOutlook();
+      await refetchThunderstormOutlook();
+      await refetchSevereWeatherOutlookAISummary();
+      await refetchThunderstormOutlookAISummary();
+    },
+    timeout: 1000 * 60 * 30,
+    throttle: 500,
+  });
 
   return (
     <div className="flex flex-col gap-4 p-4 h-full overflow-y-auto">
