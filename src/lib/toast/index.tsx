@@ -6,7 +6,7 @@ export function toastInfo(title: string, description: string) {
     description,
     icon: <BadgeInfo className="text-blue-500 animate-scale-pulse" size={16} />,
     closeButton: true,
-    duration: 6000,
+    duration: 5000,
   });
 }
 
@@ -17,7 +17,7 @@ export function toastUpdateToDate(title: string, description: string) {
       <BadgeCheck className="text-green-600 animate-scale-pulse" size={16} />
     ),
     closeButton: true,
-    duration: 10000,
+    duration: 5000,
   });
 }
 

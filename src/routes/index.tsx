@@ -6,7 +6,6 @@ import IssuedWarningsAndWatches from '@/components/IssuedWarningsAndWatches';
 import SevereWeatherOutlook from '@/components/SevereWeatherOutlook';
 import ThunderstormOutlook from '@/components/ThunderstormOutlook';
 import { Toaster } from '@/components/ui/sonner';
-import { toastInfo, toastSuccess, toastUpdateToDate } from '@/lib/toast';
 import { store } from '@/store';
 import { useStore } from '@tanstack/react-store';
 
@@ -18,7 +17,7 @@ function App() {
     <div className="flex flex-col h-dvh w-full overscroll-none">
       <Header />
       <main className="flex flex-1 m-2 gap-3 min-h-0">
-        <Toaster position="top-center" duration={10000} />
+        <Toaster position="top-center" offset={6} />
         <div className="flex-1">
           <AISummary />
         </div>
@@ -33,7 +32,7 @@ function App() {
           )}
         </div>
       </main>
-      <button
+      {/* <button
         onClick={() => {
           toastSuccess('Test Success', 'This is a success message!');
           toastInfo('Test Success', 'This is a success message!');
@@ -41,7 +40,7 @@ function App() {
         }}
       >
         123
-      </button>
+      </button> */}
     </div>
   );
 }
