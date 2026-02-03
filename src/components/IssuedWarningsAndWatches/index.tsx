@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/hover-card';
 import { useNHISChannel } from '@/hooks';
 import { EVENT } from '@/lib/ably';
-import { toastInfo, toastUpdateToDate } from '@/lib/toast';
+import { toastInfo, toastSuccess, toastUpdateToDate } from '@/lib/toast';
 import { cn, formatUTCToNZDate } from '@/lib/utils';
 import { useIssuedWarningsAndWatches } from '@/queries';
 import { store } from '@/store';
@@ -23,7 +23,6 @@ import { useStore } from '@tanstack/react-store';
 import { RefreshCcw } from 'lucide-react';
 import { DateTime } from 'luxon';
 import { useEffect, useRef, useState } from 'react';
-import { toast } from 'sonner';
 import { Badge } from '../ui/badge';
 import { Skeleton } from '../ui/skeleton';
 import { AlertHistory } from './AlertHistory';
@@ -54,9 +53,7 @@ export default function IssuedWarningsAndWatches() {
       }
       case EVENT.ISSUED_ALERTS_UPDATED: {
         if (message.data.stale) {
-          toast.success('Issued Warnings and Watches', {
-            description: message.data.message,
-          });
+          toastSuccess('Issued Warnings and Watches', message.data.message);
           refetch();
         } else {
           toastUpdateToDate(
