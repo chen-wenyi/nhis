@@ -6,7 +6,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { formatUTCToNZDate } from '@/lib/utils';
 import { useSevereWeatherOutlook } from '@/queries';
 import { setActiveOutlookTab, store } from '@/store';
 import { useStore } from '@tanstack/react-store';
@@ -55,12 +54,7 @@ export default function SevereWeatherOutlook() {
                   MetService
                 </a>
               </div>
-              <div>
-                Issued:{' '}
-                {severeWeatherOutlook?.issuedDate
-                  ? formatUTCToNZDate(severeWeatherOutlook.issuedDate)
-                  : ''}
-              </div>
+              <div>Issued: {severeWeatherOutlook?.issuedDate}</div>
             </div>
             <RevisionHistory />
           </div>

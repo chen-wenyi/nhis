@@ -1,10 +1,10 @@
 import { Button } from '@/components/ui/button';
 import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import { getThunderstormOutlookCollection } from '@/lib/mongodb';
 import { getSevereWeatherOutlookAISummary } from '@/serverFuncs/AISummary/severeWeatherOutlook';
 import { getThunderstormOutlookAISummary } from '@/serverFuncs/AISummary/thunderstormOutlook';
 import { getSevereWeatherOutlookById } from '@/serverFuncs/fetchSevereWeatherOutlook';
-import { getThunderstormOutlookById } from '@/serverFuncs/fetchThunderstormOutlook';
 import { getIssuedWarningsAndWatchesById } from '@/serverFuncs/issuedWarningsAndWatches';
 import type {
   AISevereWeatherOutlookSummaryResp,
@@ -14,6 +14,8 @@ import type {
   ThunderstormOutlook,
 } from '@/types';
 import { createFileRoute } from '@tanstack/react-router';
+import { createServerFn } from '@tanstack/react-start';
+import { ObjectId } from 'mongodb';
 import { useState } from 'react';
 import ReactJson from 'react-json-view';
 
@@ -234,3 +236,26 @@ function SearchThunderstormAISummary() {
     </Field>
   );
 }
+
+const getThunderstormOutlookById = createServerFn()
+  .inputValidator((data: { id: string }) => data)
+  .handler(
+    async ({
+      data,
+    }): Promise<(ThunderstormOutlook & { insertedAt: Date })[]> => {
+      const collection = await getThunderstormOutlookCollection();
+      const outlooks = await collection
+        .find({ _id: ObjectId.createFromHexString(data.id) })
+        .toArray();
+      console.log(
+        `Fetched ${outlooks.length} Thunderstorm Outlook(s) for ID: ${data.id}`,
+      );
+
+      return outlooks.map((outlook) => ({
+        insertedAt: outlook.insertedAt,
+        id: outlook._id.toString(),
+        items: outlook.items,
+        refIssuedDates: outlook.refIssuedDates,
+      }));
+    },
+  );

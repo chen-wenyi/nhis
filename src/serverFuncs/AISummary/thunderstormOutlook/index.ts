@@ -11,6 +11,7 @@ import type {
 } from '@/types';
 import { createServerFn } from '@tanstack/react-start';
 import * as Ably from 'ably';
+import axios from 'axios';
 import { DateTime } from 'luxon';
 import { ObjectId } from 'mongodb';
 import OpenAI from 'openai';
@@ -55,6 +56,26 @@ export const getThunderstormOutlookAISummary = createServerFn()
       }
     },
   );
+
+export const triggerThunderstormOutlookAISummaryGeneration = createServerFn()
+  .inputValidator((data: { reason: string; outlookRefId: string }) => data)
+  .handler(async ({ data }) => {
+    try {
+      const resp = await axios.get<string>(
+        'https://update-services-production.up.railway.app/thunderstorm-summary',
+        {
+          params: data,
+        },
+      );
+      return { message: resp.data };
+    } catch (error) {
+      console.error(
+        'Error triggering thunderstorm outlook AI summary generation:',
+        error,
+      );
+      return { error: `${error}` };
+    }
+  });
 
 export const generateThunderstormOutlookAISummary = createServerFn()
   .inputValidator((data: { reason: string; outlookRefId: string }) => data)

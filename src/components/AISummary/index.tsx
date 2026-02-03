@@ -10,16 +10,16 @@ import {
   generateSevereWeatherOutlookAISummary,
   getSevereWeatherOutlookAISummary,
 } from '@/serverFuncs/AISummary/severeWeatherOutlook';
-import {
-  generateThunderstormOutlookAISummary,
-  getThunderstormOutlookAISummary,
-} from '@/serverFuncs/AISummary/thunderstormOutlook';
+import { getThunderstormOutlookAISummary } from '@/serverFuncs/AISummary/thunderstormOutlook';
 import { useQuery } from '@tanstack/react-query';
+import { createServerFn } from '@tanstack/react-start';
+import axios from 'axios';
 import { MoreHorizontalIcon, RefreshCw } from 'lucide-react';
 import { DateTime, Interval } from 'luxon';
 import { useEffect, useRef, useState } from 'react';
 import { AiFillThunderbolt } from 'react-icons/ai';
 import { IoRainy } from 'react-icons/io5';
+import { toast } from 'sonner';
 import { Button } from '../ui/button';
 import { ButtonGroup } from '../ui/button-group';
 import {
@@ -236,7 +236,7 @@ ${thunderstormOutlook.id}
     isThunderstormOutlookLoading,
   ]);
 
-  const regenerateAll = () => {
+  const regenerateAll = async () => {
     if (severeWeatherOutlook?.id) {
       generateSevereWeatherOutlookAISummary({
         data: {
@@ -246,7 +246,13 @@ ${thunderstormOutlook.id}
       });
     }
     if (thunderstormOutlook?.id) {
-      generateThunderstormOutlookAISummary({
+      // generateThunderstormOutlookAISummary({
+      //   data: {
+      //     reason: 'Triggered by user regeneration',
+      //     outlookRefId: thunderstormOutlook.id,
+      //   },
+      // });
+      triggerThunderstormOutlookAISummaryGeneration({
         data: {
           reason: 'Triggered by user regeneration',
           outlookRefId: thunderstormOutlook.id,
@@ -255,25 +261,45 @@ ${thunderstormOutlook.id}
     }
   };
 
-  const regenerateSevereWether = () => {
+  const regenerateSevereWether = async () => {
     if (severeWeatherOutlook?.id) {
-      generateSevereWeatherOutlookAISummary({
+      // generateSevereWeatherOutlookAISummary({
+      //   data: {
+      //     reason: 'Triggered by user regeneration',
+      //     outlookRefId: severeWeatherOutlook.id,
+      //   },
+      // });
+      const resp = await triggerSevereWeatherOutlookAISummaryGeneration({
         data: {
           reason: 'Triggered by user regeneration',
           outlookRefId: severeWeatherOutlook.id,
         },
       });
+      if (resp.error) {
+        toast.error(
+          `Failed to regenerate thunderstorm outlook AI summary: ${resp.error}`,
+        );
+      } else if (resp.message) {
+        toast.success(resp.message);
+      }
     }
   };
 
-  const regenerateThunderstorm = () => {
+  const regenerateThunderstorm = async () => {
     if (thunderstormOutlook?.id) {
-      generateThunderstormOutlookAISummary({
+      const resp = await triggerThunderstormOutlookAISummaryGeneration({
         data: {
           reason: 'Triggered by user regeneration',
           outlookRefId: thunderstormOutlook.id,
         },
       });
+      if (resp.error) {
+        toast.error(
+          `Failed to regenerate thunderstorm outlook AI summary: ${resp.error}`,
+        );
+      } else if (resp.message) {
+        toast.success(resp.message);
+      }
     }
   };
 
@@ -415,4 +441,44 @@ export const useThunderstormOutlookAISummary = (outlookRefId: string) =>
     queryKey: ['aiThunderstormOutlookSummary', outlookRefId],
     queryFn: () => getThunderstormOutlookAISummary({ data: { outlookRefId } }),
     refetchOnWindowFocus: false,
+  });
+
+const triggerThunderstormOutlookAISummaryGeneration = createServerFn()
+  .inputValidator((data: { reason: string; outlookRefId: string }) => data)
+  .handler(async ({ data }) => {
+    try {
+      const resp = await axios.get<string>(
+        'https://update-services-production.up.railway.app/thunderstorm-summary',
+        {
+          params: data,
+        },
+      );
+      return { message: resp.data };
+    } catch (error) {
+      console.error(
+        'Error triggering thunderstorm outlook AI summary generation:',
+        error,
+      );
+      return { error: `${error}` };
+    }
+  });
+
+const triggerSevereWeatherOutlookAISummaryGeneration = createServerFn()
+  .inputValidator((data: { reason: string; outlookRefId: string }) => data)
+  .handler(async ({ data }) => {
+    try {
+      const resp = await axios.get<string>(
+        'https://update-services-production.up.railway.app/severe-weather-summary',
+        {
+          params: data,
+        },
+      );
+      return { message: resp.data };
+    } catch (error) {
+      console.error(
+        'Error triggering severe weather outlook AI summary generation:',
+        error,
+      );
+      return { error: `${error}` };
+    }
   });

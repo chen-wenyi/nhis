@@ -93,7 +93,7 @@ export type IssuedWarningsAndWatches = {
 // Severe Weather Outlook Types
 export type SevereWeatherOutlook = {
   id: string;
-  issuedDate: Date | null;
+  issuedDate: string;
   outlookItems: SevereWeatherOutlookItem[];
 };
 

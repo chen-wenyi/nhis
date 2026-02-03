@@ -1,8 +1,8 @@
-import { formatUTCToNZDate } from '@/lib/utils';
+import { getSevereWeatherOutlookCollection } from '@/lib/mongodb';
 import { useSevereWeatherOutlook } from '@/queries';
-import { getSevereWeatherOutlookHistory } from '@/serverFuncs/fetchSevereWeatherOutlook';
 import type { SevereWeatherOutlook } from '@/types';
 import { useQuery } from '@tanstack/react-query';
+import { createServerFn } from '@tanstack/react-start';
 import { useState } from 'react';
 import ReactDiffViewer, { DiffMethod } from 'react-diff-viewer';
 import { Button } from '../ui/button';
@@ -12,14 +12,14 @@ import { Dialog, DialogContent, DialogTrigger } from '../ui/dialog';
 export function RevisionHistory() {
   const { data: outlook } = useSevereWeatherOutlook();
 
+  const ddmmm = outlook?.issuedDate.split(', ')[1].trim();
+
   const { data: revisionHistory } = useQuery({
-    enabled: !!outlook?.issuedDate,
+    enabled: !!ddmmm,
     queryKey: ['severeWeatherOutlookRevisionHistory', outlook?.id],
     queryFn: async () => {
-      return outlook?.issuedDate
-        ? getSevereWeatherOutlookHistory({
-            data: { issuedDate: outlook.issuedDate },
-          })
+      return ddmmm
+        ? getSevereWeatherOutlookHistory({ data: { dateStr: ddmmm } })
         : undefined;
     },
     staleTime: Infinity,
@@ -45,7 +45,7 @@ export function RevisionHistory() {
 
 export function DiffViewer({ items }: { items: SevereWeatherOutlook[] }) {
   const outlookStrs = items.map(({ outlookItems, issuedDate }) => {
-    const header = `{issued}Issued: ${issuedDate ? `${formatUTCToNZDate(issuedDate)}\n` : '\n'}`;
+    const header = `{issued}Issued: ${issuedDate}\n}`;
     const result = `${header}\n ${outlookItems
       .map(({ date, outlook }) => {
         return `\n{title}${date}\n${outlook.replaceAll('\n', ' \n\n')}`;
@@ -119,3 +119,34 @@ export function DiffViewer({ items }: { items: SevereWeatherOutlook[] }) {
     </div>
   );
 }
+
+type DDMMM = string; // 29 Jan or 9 Jan
+const getSevereWeatherOutlookHistory = createServerFn()
+  .inputValidator((data: { dateStr: DDMMM }) => data) // DD MMM format
+  .handler(
+    async ({
+      data,
+    }): Promise<(SevereWeatherOutlook & { insertedAt: Date })[]> => {
+      const collection = await getSevereWeatherOutlookCollection(); // same day as issuedDate in NZ timezone
+      const query = {
+        items: {
+          $ne: [],
+          $not: {
+            $elemMatch: {
+              issuedDate: { $not: { $regex: data.dateStr } },
+            },
+          },
+        },
+      };
+      const outlooks = await collection
+        .find(query, { sort: { insertedAt: 1 } })
+        .toArray();
+
+      return outlooks.map((outlook) => ({
+        id: outlook._id.toString(),
+        issuedDate: outlook.issuedDate,
+        outlookItems: outlook.outlookItems,
+        insertedAt: outlook.insertedAt,
+      }));
+    },
+  );

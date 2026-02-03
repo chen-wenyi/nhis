@@ -1,8 +1,10 @@
 import { useThunderstormOutlook } from '@/queries';
-import { getThunderstormOutlookHistory } from '@/serverFuncs/fetchThunderstormOutlook';
-import type { ThunderstormOutlookResp } from '@/types';
+
+import { getThunderstormOutlookCollection } from '@/lib/mongodb';
+import type { ThunderstormOutlook, ThunderstormOutlookResp } from '@/types';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { useQuery } from '@tanstack/react-query';
+import { createServerFn } from '@tanstack/react-start';
 import { useState } from 'react';
 import ReactDiffViewer, { DiffMethod } from 'react-diff-viewer';
 import { Button } from '../ui/button';
@@ -135,3 +137,36 @@ export function DiffViewer({ items }: { items: ThunderstormOutlookResp[] }) {
     </div>
   );
 }
+
+type DDMMM = string; // 29 Jan or 9 Jan
+const getThunderstormOutlookHistory = createServerFn()
+  .inputValidator((data: { dateStr: DDMMM }) => data) // DD MMM format
+  .handler(
+    async ({
+      data,
+    }): Promise<(ThunderstormOutlook & { insertedAt: Date })[]> => {
+      const collection = await getThunderstormOutlookCollection();
+
+      const query = {
+        items: {
+          $ne: [],
+          $not: {
+            $elemMatch: {
+              issuedDate: { $not: { $regex: data.dateStr } },
+            },
+          },
+        },
+      };
+
+      const outlooks = await collection
+        .find(query, { sort: { insertedAt: 1 } })
+        .toArray();
+
+      return outlooks.map((outlook) => ({
+        insertedAt: outlook.insertedAt,
+        id: outlook._id.toString(),
+        items: outlook.items,
+        refIssuedDates: outlook.refIssuedDates,
+      }));
+    },
+  );
