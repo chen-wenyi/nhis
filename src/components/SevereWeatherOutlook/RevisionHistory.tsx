@@ -45,7 +45,7 @@ export function RevisionHistory() {
 
 export function DiffViewer({ items }: { items: SevereWeatherOutlook[] }) {
   const outlookStrs = items.map(({ outlookItems, issuedDate }) => {
-    const header = `{issued}Issued: ${issuedDate}\n}`;
+    const header = `{issued}Issued: ${issuedDate}\n`;
     const result = `${header}\n ${outlookItems
       .map(({ date, outlook }) => {
         return `\n{title}${date}\n${outlook.replaceAll('\n', ' \n\n')}`;

@@ -6,10 +6,7 @@ import {
   useSevereWeatherOutlook,
   useThunderstormOutlook,
 } from '@/queries';
-import {
-  generateSevereWeatherOutlookAISummary,
-  getSevereWeatherOutlookAISummary,
-} from '@/serverFuncs/AISummary/severeWeatherOutlook';
+import { getSevereWeatherOutlookAISummary } from '@/serverFuncs/AISummary/severeWeatherOutlook';
 import { getThunderstormOutlookAISummary } from '@/serverFuncs/AISummary/thunderstormOutlook';
 import { useQuery } from '@tanstack/react-query';
 import { createServerFn } from '@tanstack/react-start';
@@ -236,39 +233,13 @@ ${thunderstormOutlook.id}
     isThunderstormOutlookLoading,
   ]);
 
-  const regenerateAll = async () => {
-    if (severeWeatherOutlook?.id) {
-      generateSevereWeatherOutlookAISummary({
-        data: {
-          reason: 'Triggered by user regeneration',
-          outlookRefId: severeWeatherOutlook.id,
-        },
-      });
-    }
-    if (thunderstormOutlook?.id) {
-      // generateThunderstormOutlookAISummary({
-      //   data: {
-      //     reason: 'Triggered by user regeneration',
-      //     outlookRefId: thunderstormOutlook.id,
-      //   },
-      // });
-      triggerThunderstormOutlookAISummaryGeneration({
-        data: {
-          reason: 'Triggered by user regeneration',
-          outlookRefId: thunderstormOutlook.id,
-        },
-      });
-    }
+  const regenerateAll = () => {
+    regenerateSevereWether();
+    regenerateThunderstorm();
   };
 
   const regenerateSevereWether = async () => {
     if (severeWeatherOutlook?.id) {
-      // generateSevereWeatherOutlookAISummary({
-      //   data: {
-      //     reason: 'Triggered by user regeneration',
-      //     outlookRefId: severeWeatherOutlook.id,
-      //   },
-      // });
       const resp = await triggerSevereWeatherOutlookAISummaryGeneration({
         data: {
           reason: 'Triggered by user regeneration',
@@ -277,7 +248,7 @@ ${thunderstormOutlook.id}
       });
       if (resp.error) {
         toast.error(
-          `Failed to regenerate thunderstorm outlook AI summary: ${resp.error}`,
+          `Failed to regenerate severe weather outlook AI summary: ${resp.error}`,
         );
       } else if (resp.message) {
         toast.success(resp.message);
