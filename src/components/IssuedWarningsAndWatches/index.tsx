@@ -20,9 +20,10 @@ import type { IssuedAlert } from '@/types/alert';
 import { sortAlerts } from '@/utils';
 import { createServerFn } from '@tanstack/react-start';
 import { useStore } from '@tanstack/react-store';
+import { throttle } from 'lodash';
 import { RefreshCcw } from 'lucide-react';
 import { DateTime } from 'luxon';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Badge } from '../ui/badge';
 import { Skeleton } from '../ui/skeleton';
 import { AlertHistory } from './AlertHistory';
@@ -69,6 +70,15 @@ export default function IssuedWarningsAndWatches() {
     }
   });
 
+  const updateIssuedAlerts = useCallback(
+    throttle(async () => {
+      if (!isUpdating) {
+        await fetchLatestIssuedAlerts();
+      }
+    }, 10000),
+    [],
+  );
+
   return (
     <Card>
       <CardHeader>
@@ -91,11 +101,7 @@ export default function IssuedWarningsAndWatches() {
                 'animate-spin': isUpdating,
                 'cursor-pointer hover:scale-110': !isUpdating,
               })}
-              onClick={async () => {
-                if (!isUpdating) {
-                  await fetchLatestIssuedAlerts();
-                }
-              }}
+              onClick={updateIssuedAlerts}
               size={16}
             />
           </div>

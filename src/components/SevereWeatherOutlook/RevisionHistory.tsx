@@ -129,14 +129,7 @@ const getSevereWeatherOutlookHistory = createServerFn()
     }): Promise<(SevereWeatherOutlook & { insertedAt: Date })[]> => {
       const collection = await getSevereWeatherOutlookCollection(); // same day as issuedDate in NZ timezone
       const query = {
-        items: {
-          $ne: [],
-          $not: {
-            $elemMatch: {
-              issuedDate: { $not: { $regex: data.dateStr } },
-            },
-          },
-        },
+        issuedDate: { $regex: data.dateStr },
       };
       const outlooks = await collection
         .find(query, { sort: { insertedAt: 1 } })

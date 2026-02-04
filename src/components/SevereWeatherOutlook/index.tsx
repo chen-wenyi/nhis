@@ -14,9 +14,10 @@ import { useSevereWeatherOutlook } from '@/queries';
 import { setActiveOutlookTab, store } from '@/store';
 import { createServerFn } from '@tanstack/react-start';
 import { useStore } from '@tanstack/react-store';
+import { throttle } from 'lodash';
 import { RefreshCcw } from 'lucide-react';
 import { DateTime } from 'luxon';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '../ui/button';
 import { ButtonGroup } from '../ui/button-group';
 import { Skeleton } from '../ui/skeleton';
@@ -58,6 +59,15 @@ export default function SevereWeatherOutlook() {
         break;
     }
   });
+
+  const updateSevereWeatherOutlook = useCallback(
+    throttle(async () => {
+      if (!isUpdating) {
+        await fetchLatestSevereWeatherOutlook();
+      }
+    }, 10000),
+    [],
+  );
 
   return (
     <Card
@@ -103,11 +113,7 @@ export default function SevereWeatherOutlook() {
                     'animate-spin': isUpdating,
                     'cursor-pointer hover:scale-110': !isUpdating,
                   })}
-                  onClick={async () => {
-                    if (!isUpdating) {
-                      await fetchLatestSevereWeatherOutlook();
-                    }
-                  }}
+                  onClick={updateSevereWeatherOutlook}
                   size={16}
                 />
               </div>

@@ -14,9 +14,10 @@ import { useThunderstormOutlook } from '@/queries';
 import { setActiveOutlookTab, store } from '@/store';
 import { createServerFn } from '@tanstack/react-start';
 import { useStore } from '@tanstack/react-store';
+import { throttle } from 'lodash';
 import { RefreshCcw } from 'lucide-react';
 import { DateTime } from 'luxon';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '../ui/button';
 import { ButtonGroup } from '../ui/button-group';
 import { Skeleton } from '../ui/skeleton';
@@ -59,6 +60,16 @@ export default function ThunderstormOutlook() {
         break;
     }
   });
+
+  const updateThunderstormOutlook = useCallback(
+    throttle(async () => {
+      if (!isUpdating) {
+        await fetchLatestThunderstormOutlook();
+      }
+    }, 10000),
+    [],
+  );
+
   return (
     <Card
       className={activeOutlookTab === 'thunderstormOutlook' ? 'flex' : 'hidden'}
@@ -100,11 +111,7 @@ export default function ThunderstormOutlook() {
                 'cursor-pointer hover:scale-110': !isUpdating,
               })}
               size={16}
-              onClick={async () => {
-                if (!isUpdating) {
-                  await fetchLatestThunderstormOutlook();
-                }
-              }}
+              onClick={updateThunderstormOutlook}
             />
           </div>
           <RevisionHistory />
