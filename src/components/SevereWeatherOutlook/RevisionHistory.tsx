@@ -67,30 +67,34 @@ export function DiffViewer({ items }: { items: SevereWeatherOutlook[] }) {
       <div className="flex pb-2">
         <div className="flex-1 flex items-center justify-center">
           <ButtonGroup>
+            <Button disabled size="sm" variant="outline">
+              Revision
+            </Button>
             {Array.from({ length }).map((_, idx) => (
               <Button
                 size="sm"
                 variant={idx === oldIndex ? 'default' : 'outline'}
                 key={idx}
                 onClick={() => setOldIndex(idx)}
-                disabled={idx === newIndex}
               >
-                Revision {idx + 1}
+                {idx + 1}
               </Button>
             ))}
           </ButtonGroup>
         </div>
         <div className="flex-1 flex items-center justify-center">
           <ButtonGroup>
+            <Button disabled size="sm" variant="outline">
+              Revision
+            </Button>
             {Array.from({ length }).map((_, idx) => (
               <Button
                 size="sm"
                 variant={idx === newIndex ? 'default' : 'outline'}
                 key={idx}
                 onClick={() => setNewIndex(idx)}
-                disabled={idx === oldIndex}
               >
-                Revision {idx + 1}
+                {idx + 1}
               </Button>
             ))}
           </ButtonGroup>
