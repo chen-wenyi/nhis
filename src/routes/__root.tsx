@@ -35,6 +35,11 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
         rel: 'stylesheet',
         href: appCss,
       },
+      {
+        rel: 'icon',
+        // Add a version query string (?v=2) to force the browser to reload it
+        href: '/favicon.ico?v=2',
+      },
     ],
   }),
 
