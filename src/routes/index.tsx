@@ -7,7 +7,7 @@ import SevereWeatherOutlook from '@/components/SevereWeatherOutlook';
 import ThunderstormOutlook from '@/components/ThunderstormOutlook';
 import { Toaster } from '@/components/ui/sonner';
 
-export const Route = createFileRoute('/')({ component: App, ssr: false });
+export const Route = createFileRoute('/')({ component: App });
 
 function App() {
   return (
