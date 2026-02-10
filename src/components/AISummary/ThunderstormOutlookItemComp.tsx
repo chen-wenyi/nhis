@@ -1,10 +1,10 @@
 import { cn } from '@/lib/utils';
-import type { ThunderstormAISummary } from '@/serverFuncs/AISummary/thunderstormOutlook/schema';
 import {
-  removeactiveThunderstormOutlookReference,
+  removeActiveThunderstormOutlookReference,
   setActiveThunderstormOutlookReference,
   store,
 } from '@/store';
+import type { AIThunderstormOutlookSummaryDocument } from '@/types';
 import { useStore } from '@tanstack/react-store';
 import type { DateTime } from 'luxon';
 import { AiOutlineFileSearch } from 'react-icons/ai';
@@ -16,7 +16,7 @@ export function ThunderstormOutlookItemComp({
   outlook,
 }: {
   date: DateTime;
-  outlook: NonNullable<ThunderstormAISummary['outlooks']>[number];
+  outlook: AIThunderstormOutlookSummaryDocument['content'][number]['summary'][number];
 }) {
   const formattedDuration = formatDuration(outlook.when);
   const textContent = `${formattedDuration ? `During ${formattedDuration}, ` : ''}there is ${outlook.risk} risk of thunderstorms${
@@ -73,7 +73,7 @@ function OutlookRefIcon({
         date: date.toISODate()!,
       });
     } else {
-      removeactiveThunderstormOutlookReference();
+      removeActiveThunderstormOutlookReference();
     }
   };
 

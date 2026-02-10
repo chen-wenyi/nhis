@@ -1,10 +1,10 @@
 import { cn } from '@/lib/utils';
-import type { SevereWeatherOutlookAISummary } from '@/serverFuncs/AISummary/severeWeatherOutlook/schema';
 import {
   removeactiveSevereWeatherOutlookReference,
   setActiveSevereWeatherOutlookReference,
   store,
 } from '@/store';
+import type { AISevereWeatherOutlookSummaryDocument } from '@/types';
 import { useStore } from '@tanstack/react-store';
 import type { DateTime } from 'luxon';
 import { AiOutlineFileSearch } from 'react-icons/ai';
@@ -16,7 +16,7 @@ export function SevereWeatherOutlookItemComp({
   outlook,
 }: {
   date: DateTime;
-  outlook: SevereWeatherOutlookAISummary[number];
+  outlook: AISevereWeatherOutlookSummaryDocument['content'][number]['summary'][number];
 }) {
   const name = outlook.upgradeTo.toLowerCase();
   const event = name.includes('rain')

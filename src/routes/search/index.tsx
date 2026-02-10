@@ -14,7 +14,7 @@ import {
 import type {
   AISevereWeatherOutlookSummaryResp,
   AIThunderstormOutlookSummaryResp,
-  IssuedWarningsAndWatches,
+  IssuedAlertEntries,
   SevereWeatherOutlook,
   ThunderstormOutlook,
 } from '@/types';
@@ -129,7 +129,7 @@ function SearchThunderstormOutlook() {
 
 function SearchIssuedWarningsAndWatches() {
   const [value, setValue] = useState('');
-  const [outlooks, setOutlooks] = useState<IssuedWarningsAndWatches[]>([]);
+  const [outlooks, setOutlooks] = useState<IssuedAlertEntries[]>([]);
 
   const onSearch = async () => {
     const _outlooks = await getIssuedWarningsAndWatchesById({
@@ -267,7 +267,7 @@ const getThunderstormOutlookById = createServerFn()
 
 const getIssuedWarningsAndWatchesById = createServerFn()
   .inputValidator((data: { id: string }) => data)
-  .handler(async ({ data }): Promise<IssuedWarningsAndWatches[]> => {
+  .handler(async ({ data }): Promise<IssuedAlertEntries[]> => {
     const collection = await getIssuedAlertCollection();
     const issuedWarningsAndWatches = await collection
       .find({ _id: ObjectId.createFromHexString(data.id) })

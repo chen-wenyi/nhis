@@ -1,4 +1,4 @@
-import type { Alert, IssuedWarningOrWatche } from '@/types';
+import type { IssuedAlert } from '@/types/alert';
 import type { DateTime } from 'luxon';
 import type { SevereThunderstormLevel } from '../warnings-and-watches-indicators/severe-thunderstorm';
 
@@ -19,10 +19,8 @@ export function formatAreasList(areas: string[]): string {
   return `${beforeLast} and ${last}`;
 }
 
-export function groupAlerts(
-  alerts: IssuedWarningOrWatche[],
-): IssuedWarningOrWatche[][] {
-  const grouped: IssuedWarningOrWatche[][] = [];
+export function groupAlerts(alerts: IssuedAlert[]): IssuedAlert[][] {
+  const grouped: IssuedAlert[][] = [];
 
   for (const alert of alerts) {
     const lastGroup = grouped[grouped.length - 1];
@@ -64,10 +62,6 @@ export const COLOR_CODE_MAP: { [key: string]: SevereThunderstormLevel } = {
   orange: 'warning',
   red: 'red warning',
 };
-
-export function getColourCode(alert: Alert): string | undefined {
-  return alert.info.parameter.find((p) => p.valueName === 'ColourCode')?.value;
-}
 
 const getProgressDesc = (openAICalls: number) => [
   'Get reference data (1/2)...',

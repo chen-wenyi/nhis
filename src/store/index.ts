@@ -92,7 +92,7 @@ export const removeactiveSevereWeatherOutlookReference = () => {
   });
 };
 
-export const removeactiveThunderstormOutlookReference = () => {
+export const removeActiveThunderstormOutlookReference = () => {
   store.setState((state) => {
     return {
       ...state,

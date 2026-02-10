@@ -20,7 +20,7 @@ import type { IssuedAlert } from '@/types/alert';
 import { sortAlerts } from '@/utils';
 import { createServerFn } from '@tanstack/react-start';
 import { useStore } from '@tanstack/react-store';
-import { throttle } from 'lodash';
+import lodash from 'lodash';
 import { RefreshCcw } from 'lucide-react';
 import { DateTime } from 'luxon';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -71,7 +71,7 @@ export default function IssuedWarningsAndWatches() {
   });
 
   const updateIssuedAlerts = useCallback(
-    throttle(async () => {
+    lodash.throttle(async () => {
       if (!isUpdating) {
         await fetchLatestIssuedAlerts();
       }

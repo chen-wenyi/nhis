@@ -159,3 +159,28 @@ export type AISevereWeatherOutlookSummaryResp =
 
 export type AIThunderstormOutlookSummaryResp =
   AIThunderstormOutlookSummaryDocument & { id: string };
+
+// export type ThunderstormOutlookAISummary = {
+//   outlooks: {
+//     risk: 'Minimal' | 'Low' | 'Moderate' | 'High';
+//     areas: string[];
+//     when: string[];
+//     quotes: string[];
+//     keywords: string[];
+//   }[];
+// };
+
+// export type SevereWeatherOutlookAISummary = {
+//   upgradeTo:
+//     | 'Heavy Rain Watch'
+//     | 'Strong Wind Watch'
+//     | 'Heavy Snow Watch'
+//     | 'Heavy Rain Warning'
+//     | 'Strong Wind Warning'
+//     | 'Heavy Snow Warning'
+//     | 'Red Warning';
+//   chance: 'Minimal' | 'Low' | 'Moderate' | 'High';
+//   areas: string[];
+//   quotes: string[];
+//   keywords: string[];
+// }[];

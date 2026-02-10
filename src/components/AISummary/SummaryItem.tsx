@@ -1,12 +1,14 @@
 import { cn } from '@/lib/utils';
-import type { SevereWeatherAISummary } from '@/serverFuncs/AISummary/severeWeatherOutlook/schema';
-import type { ThunderstormOutlookAISummary } from '@/serverFuncs/AISummary/thunderstormOutlook/schema';
 import {
   removeActiveAlertReference,
   setActiveAlertReference,
   store,
 } from '@/store';
-import type { IssuedWarningOrWatche } from '@/types';
+import type {
+  AISevereWeatherOutlookSummaryDocument,
+  AIThunderstormOutlookSummaryDocument,
+} from '@/types';
+import type { IssuedAlert } from '@/types/alert';
 import { formatAlertName, sortAlerts } from '@/utils';
 import { useStore } from '@tanstack/react-store';
 import { DateTime } from 'luxon';
@@ -21,9 +23,9 @@ import { formatAlertDuration, formatAreasList, groupAlerts } from './utils';
 
 export type Summary = {
   date: DateTime<true>;
-  issuedWarningsAndWatches: IssuedWarningOrWatche[];
-  severeWeatherOutlookAISummary: SevereWeatherAISummary;
-  thunderstormOutlookAISummary: ThunderstormOutlookAISummary[];
+  issuedWarningsAndWatches: IssuedAlert[];
+  severeWeatherOutlookAISummary: AISevereWeatherOutlookSummaryDocument['content'][number]['summary'];
+  thunderstormOutlookAISummary: AIThunderstormOutlookSummaryDocument['content'][number]['summary'];
   isSevereWeatherOutlookAISummaryFetching: boolean;
   isThunderstormOutlookAISummaryFetching: boolean;
 };
@@ -154,7 +156,7 @@ function IssuedAlerts({
   issuedWarningsAndWatches,
   date,
 }: {
-  issuedWarningsAndWatches: IssuedWarningOrWatche[];
+  issuedWarningsAndWatches: IssuedAlert[];
   date: DateTime;
 }) {
   const issuedWarningOrAlert = issuedWarningsAndWatches[0];
@@ -257,7 +259,7 @@ function IssuedAlertsRemaining({
   issuedWarningsAndWatches,
   date,
 }: {
-  issuedWarningsAndWatches: IssuedWarningOrWatche[];
+  issuedWarningsAndWatches: IssuedAlert[];
   date: DateTime;
 }) {
   const issuedWarningOrAlert = issuedWarningsAndWatches[0];
@@ -293,7 +295,7 @@ function IssuedAlertsEnd({
   issuedWarningsAndWatches,
   date,
 }: {
-  issuedWarningsAndWatches: IssuedWarningOrWatche[];
+  issuedWarningsAndWatches: IssuedAlert[];
   date: DateTime;
 }) {
   const issuedWarningOrAlert = issuedWarningsAndWatches[0];

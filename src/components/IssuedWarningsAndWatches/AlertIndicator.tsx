@@ -1,11 +1,11 @@
-import type { IssuedWarningOrWatche } from '@/types';
+import type { IssuedAlert } from '@/types/alert';
 import { formatAlertName } from '@/utils';
 import { HeavyRain } from '../warnings-and-watches-indicators/heavy-rain';
 import { SevereThunderstorm } from '../warnings-and-watches-indicators/severe-thunderstorm';
 import { StrongWind } from '../warnings-and-watches-indicators/strong-wind';
 import { COLOR_CODE_MAP } from './utils';
 
-export function AlertIndicator({ data }: { data: IssuedWarningOrWatche }) {
+export function AlertIndicator({ data }: { data: IssuedAlert }) {
   const event = data.event.toLowerCase();
   const colorCode = data.ColourCode;
   const level = colorCode?.toLowerCase()

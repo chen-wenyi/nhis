@@ -14,7 +14,7 @@ import { useThunderstormOutlook } from '@/queries';
 import { setActiveOutlookTab, store } from '@/store';
 import { createServerFn } from '@tanstack/react-start';
 import { useStore } from '@tanstack/react-store';
-import { throttle } from 'lodash';
+import lodash from 'lodash';
 import { RefreshCcw } from 'lucide-react';
 import { DateTime } from 'luxon';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -62,7 +62,7 @@ export default function ThunderstormOutlook() {
   });
 
   const updateThunderstormOutlook = useCallback(
-    throttle(async () => {
+    lodash.throttle(async () => {
       if (!isUpdating) {
         await fetchLatestThunderstormOutlook();
       }
