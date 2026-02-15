@@ -8,7 +8,12 @@ import {
 } from '@/components/ui/card';
 import { useNHISChannel } from '@/hooks';
 import { EVENT } from '@/lib/ably';
-import { toastInfo, toastSuccess, toastUpdateToDate } from '@/lib/toast';
+import {
+  toastError,
+  toastInfo,
+  toastSuccess,
+  toastUpdateToDate,
+} from '@/lib/toast';
 import { cn } from '@/lib/utils';
 import { useSevereWeatherOutlook } from '@/queries';
 import { setActiveOutlookTab, store } from '@/store';
@@ -24,6 +29,8 @@ import { Skeleton } from '../ui/skeleton';
 import { ReactMarkdownWithHighlight } from './ReactMarkdownWithHighlight';
 import { RevisionHistory } from './RevisionHistory';
 
+const MESSAGE_HEADER = 'Severe Weather Outlook';
+
 export default function SevereWeatherOutlook() {
   const activeOutlookTab = useStore(store, (state) => state.activeOutlookTab);
 
@@ -35,23 +42,24 @@ export default function SevereWeatherOutlook() {
   const [isUpdating, setIsUpdating] = useState(false);
 
   useNHISChannel((message) => {
-    console.log(
-      `Received ${message.name} message: ${message.data} at ${DateTime.now().setZone('Pacific/Auckland').toISO()}`,
-    );
-
     switch (message.name) {
       case EVENT.SEVERE_WEATHER_OUTLOOK_UPDATING: {
         setIsUpdating(true);
-        toastInfo('Severe Weather Outlook', message.data.message);
+        toastInfo(MESSAGE_HEADER, message.data.message);
         break;
       }
       case EVENT.SEVERE_WEATHER_OUTLOOK_UPDATED: {
-        if (message.data.stale) {
-          toastSuccess('Severe Weather Outlook', message.data.message);
-          refetch();
+        if (message.data.failed) {
+          toastError(MESSAGE_HEADER, message.data.message);
         } else {
-          toastUpdateToDate('Severe Weather Outlook', message.data.message);
+          if (message.data.stale) {
+            toastSuccess(MESSAGE_HEADER, message.data.message);
+            refetch();
+          } else {
+            toastUpdateToDate(MESSAGE_HEADER, message.data.message);
+          }
         }
+
         setIsUpdating(false);
         break;
       }

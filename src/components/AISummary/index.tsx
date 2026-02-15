@@ -1,4 +1,4 @@
-import { useNHISChannel, useNHISChannelStateListener } from '@/hooks';
+import { useNHISChannel } from '@/hooks';
 import { EVENT } from '@/lib/ably';
 import { cn } from '@/lib/utils';
 import {
@@ -186,10 +186,6 @@ ${thunderstormOutlook.id}
   ]);
 
   useNHISChannel((message) => {
-    console.log(
-      `Received ${message.name} message: ${message.data} at ${DateTime.now().setZone('Pacific/Auckland').toISO()}`,
-    );
-
     switch (message.name) {
       case EVENT.AI_SEVERE_WEATHER_OUTLOOK_SUMMARY_GENERATED: {
         refetchSevereWeatherOutlookAISummary();
@@ -212,8 +208,6 @@ ${thunderstormOutlook.id}
         break;
     }
   });
-
-  useNHISChannelStateListener();
 
   const isRefDataLoading =
     isIssuedWarningsAndWatchesLoading ||

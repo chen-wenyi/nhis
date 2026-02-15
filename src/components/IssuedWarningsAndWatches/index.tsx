@@ -12,7 +12,12 @@ import {
 } from '@/components/ui/hover-card';
 import { useNHISChannel } from '@/hooks';
 import { EVENT } from '@/lib/ably';
-import { toastInfo, toastSuccess, toastUpdateToDate } from '@/lib/toast';
+import {
+  toastError,
+  toastInfo,
+  toastSuccess,
+  toastUpdateToDate,
+} from '@/lib/toast';
 import { cn, formatUTCToNZDate } from '@/lib/utils';
 import { useIssuedWarningsAndWatches } from '@/queries';
 import { store } from '@/store';
@@ -31,6 +36,8 @@ import { AlertIndicator } from './AlertIndicator';
 import { DetailsToggle } from './DetailsToggle';
 import { getPeriodDescription } from './utils';
 
+const MESSAGE_HEADER = 'Issued Warnings and Watches';
+
 export default function IssuedWarningsAndWatches() {
   const {
     data: issuedWarningsAndWatches,
@@ -43,24 +50,25 @@ export default function IssuedWarningsAndWatches() {
 
   useNHISChannel((message) => {
     console.log(
-      `Received ${message.name} message: ${message.data} at ${DateTime.now().setZone('Pacific/Auckland').toISO()}`,
+      `Received ${message.name} message: ${JSON.stringify(message.data)} at ${DateTime.now().setZone('Pacific/Auckland').toISO()}`,
     );
 
     switch (message.name) {
       case EVENT.ISSUED_ALERTS_UPDATING: {
         setIsUpdating(true);
-        toastInfo('Issued Warnings and Watches', message.data.message);
+        toastInfo(MESSAGE_HEADER, message.data.message);
         break;
       }
       case EVENT.ISSUED_ALERTS_UPDATED: {
-        if (message.data.stale) {
-          toastSuccess('Issued Warnings and Watches', message.data.message);
-          refetch();
+        if (message.data.failed) {
+          toastError(MESSAGE_HEADER, message.data.message);
         } else {
-          toastUpdateToDate(
-            'Issued Warnings and Watches',
-            message.data.message,
-          );
+          if (message.data.stale) {
+            toastSuccess(MESSAGE_HEADER, message.data.message);
+            refetch();
+          } else {
+            toastUpdateToDate(MESSAGE_HEADER, message.data.message);
+          }
         }
         setIsUpdating(false);
         break;

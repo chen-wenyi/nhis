@@ -29,9 +29,10 @@ function App() {
       </main>
       {/* <button
         onClick={() => {
-          toastSuccess('Test Success', 'This is a success message!');
-          toastInfo('Test Success', 'This is a success message!');
-          toastUpdateToDate('Test Update', 'This is an update message!');
+          // toastSuccess('Test Success', 'This is a success message!');
+          // toastInfo('Test Success', 'This is a success message!');
+          // toastUpdateToDate('Test Update', 'This is an update message!');
+          // toastError('Test Error', 'This is an error message!');
         }}
       >
         123
