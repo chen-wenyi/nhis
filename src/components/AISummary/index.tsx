@@ -161,7 +161,7 @@ export function AISummary() {
         });
       });
 
-      console.log('Generated summaries:', _summaries);
+      console.log('Generated summaries: ', _summaries);
       setSummaries(_summaries);
       setIsThunderstormOutlookAISummaryFetching(false);
       setIsSevereWeatherOutlookAISummaryFetching(false);
