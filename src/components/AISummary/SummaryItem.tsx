@@ -15,6 +15,12 @@ import { DateTime } from 'luxon';
 import { useMemo } from 'react';
 import { LuFileSearch2 } from 'react-icons/lu';
 import { CopyIcon } from '../CopyIcon';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '../ui/accordion';
 import { Skeleton } from '../ui/skeleton';
 import { AlertIndicator } from './AlertIndicator';
 import { SevereWeatherOutlookItemComp } from './SevereWeatherOutlookItemComp';
@@ -115,30 +121,87 @@ export function SummaryItem({
         <Skeleton className="h-6 w-full my-1" />
       ) : (
         severeWeatherOutlookAISummary.length > 0 && (
-          <div>
-            <ul className="text-sm list-disc pl-6 space-y-1">
-              {severeWeatherOutlookAISummary.map((outlook, index) => (
-                <li className="py-2" key={index}>
-                  <SevereWeatherOutlookItemComp date={date} outlook={outlook} />
-                </li>
-              ))}
-            </ul>
-          </div>
+          <>
+            <div>
+              <ul className="text-sm list-disc pl-6 space-y-1">
+                {severeWeatherOutlookAISummary
+                  .filter(({ chance }) => chance !== 'Low')
+                  .map((outlook, index) => (
+                    <li className="py-2" key={index}>
+                      <SevereWeatherOutlookItemComp
+                        date={date}
+                        outlook={outlook}
+                      />
+                    </li>
+                  ))}
+              </ul>
+            </div>
+            <Accordion type="single" collapsible>
+              <AccordionItem value="item-1">
+                <AccordionTrigger>
+                  <span className="underline cursor-pointer text-xs text-gray-500">
+                    Low Confidence Severe Weather Outlook
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <ul className="text-sm list-disc pl-6 space-y-1">
+                    {severeWeatherOutlookAISummary
+                      .filter(({ chance }) => chance === 'Low')
+                      .map((outlook, index) => (
+                        <li className="py-2" key={index}>
+                          <SevereWeatherOutlookItemComp
+                            date={date}
+                            outlook={outlook}
+                          />
+                        </li>
+                      ))}
+                  </ul>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </>
         )
       )}
       {isThunderstormOutlookAISummaryFetching ? (
         <Skeleton className="h-6 w-full my-1" />
       ) : (
         thunderstormOutlookAISummary.length > 0 && (
-          <div>
-            <ul className="text-sm list-disc pl-6 space-y-1">
-              {thunderstormOutlookAISummary.map((outlook, index) => (
-                <li className="py-2" key={index}>
-                  <ThunderstormOutlookItemComp date={date} outlook={outlook} />
-                </li>
-              ))}
-            </ul>
-          </div>
+          <>
+            <div>
+              <ul className="text-sm list-disc pl-6 space-y-1">
+                {thunderstormOutlookAISummary.map((outlook, index) => (
+                  <li className="py-2" key={index}>
+                    <ThunderstormOutlookItemComp
+                      date={date}
+                      outlook={outlook}
+                    />
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <Accordion type="single" collapsible>
+              <AccordionItem value="item-1">
+                <AccordionTrigger>
+                  <span className="underline cursor-pointer text-xs text-gray-500">
+                    Low Confidence Thunderstorm Outlook
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <ul className="text-sm list-disc pl-6 space-y-1">
+                    {thunderstormOutlookAISummary.map((outlook, index) => (
+                      <li className="py-2" key={index}>
+                        <ThunderstormOutlookItemComp
+                          date={date}
+                          outlook={outlook}
+                        />
+                      </li>
+                    ))}
+                  </ul>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </>
         )
       )}
       {!isSevereWeatherOutlookAISummaryFetching &&
