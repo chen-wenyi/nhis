@@ -12,7 +12,17 @@ export function useCopyToClipboard(
   const [isCopied, setIsCopied] = useState(false);
 
   function copy(text: string) {
-    navigator.clipboard.writeText(text).then(() => {
+    const html = text.replace(
+      /\b(minimal|low|moderate|high)\b(?=\s+confiden)/gi,
+      '<span style="text-decoration: underline;">$1</span>',
+    );
+
+    const clipboardItem = new ClipboardItem({
+      'text/html': new Blob([html], { type: 'text/html' }),
+      'text/plain': new Blob([text], { type: 'text/plain' }),
+    });
+
+    navigator.clipboard.write([clipboardItem]).then(() => {
       setIsCopied(true);
       setTimeout(() => setIsCopied(false), timeout);
     });

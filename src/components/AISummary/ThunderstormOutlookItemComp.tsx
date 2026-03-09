@@ -19,14 +19,14 @@ export function ThunderstormOutlookItemComp({
   outlook: AIThunderstormOutlookSummaryDocument['content'][number]['summary'][number];
 }) {
   const formattedDuration = formatDuration(outlook.when);
-  const textContent = `${formattedDuration ? `During ${formattedDuration}, ` : ''}there is ${outlook.risk} risk of thunderstorms${
+  const textContent = `${formattedDuration ? `During ${formattedDuration}, ` : ''}there is ${outlook.risk.toLowerCase()} risk of thunderstorms${
     outlook.areas.length > 0 ? ` for ${formatAreasList(outlook.areas)}` : ''
   }.`;
 
   return (
     <span>
       {formattedDuration
-        ? `During ${formattedDuration}, there is `
+        ? `During the ${formattedDuration}, there is `
         : 'There is '}
       <span className="underline lowercase">{outlook.risk}</span> risk of
       thunderstorms
