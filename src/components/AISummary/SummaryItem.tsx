@@ -19,7 +19,7 @@ import { Skeleton } from '../ui/skeleton';
 import { AlertIndicator } from './AlertIndicator';
 import { SevereWeatherOutlookItemComp } from './SevereWeatherOutlookItemComp';
 import { ThunderstormOutlookItemComp } from './ThunderstormOutlookItemComp';
-import { formatAlertDuration, formatAreasList, groupAlerts } from './utils';
+import { formatAreasList, groupAlerts } from './utils';
 
 export type Summary = {
   date: DateTime<true>;
@@ -194,15 +194,11 @@ function IssuedAlerts({
             </div>
             <ul className="list-disc pl-6 space-y-1">
               {issuedWarningsAndWatches.map(
-                ({ id, areaDesc, ChanceOfUpgrade, onset, expires }, idx) => {
-                  const content = `${areaDesc.length > 0 ? areaDesc : 'Multiple areas'}${formatAlertDuration(DateTime.fromISO(onset), DateTime.fromISO(expires))}. ${ChanceOfUpgrade && upgradeTo ? `There is a ${ChanceOfUpgrade.toLowerCase()} confidence of upgrading to a ${upgradeTo}` : ''}.`;
+                ({ id, areaDesc, ChanceOfUpgrade }, idx) => {
+                  const content = `${areaDesc.length > 0 ? areaDesc : 'Multiple areas'}. ${ChanceOfUpgrade && upgradeTo ? `There is a ${ChanceOfUpgrade.toLowerCase()} confidence of upgrading to a ${upgradeTo}` : ''}.`;
                   return (
                     <li key={idx}>
                       {areaDesc.length > 0 ? areaDesc : 'Multiple areas'}
-                      {formatAlertDuration(
-                        DateTime.fromISO(onset),
-                        DateTime.fromISO(expires),
-                      )}
                       {ChanceOfUpgrade && upgradeTo && (
                         <span>
                           . There is a{' '}
@@ -230,10 +226,6 @@ function IssuedAlerts({
             {issuedWarningOrAlert.areaDesc.length > 0 && (
               <>for {issuedWarningOrAlert.areaDesc}</>
             )}
-            {formatAlertDuration(
-              DateTime.fromISO(issuedWarningOrAlert.onset),
-              DateTime.fromISO(issuedWarningOrAlert.expires),
-            )}
             {chance && upgradeTo && (
               <span>
                 . There is a{' '}
@@ -245,7 +237,7 @@ function IssuedAlerts({
             <div className="inline-flex justify-center items-baseline gap-1 relative top-0.5">
               <AlertRef date={date} alertIds={[issuedWarningOrAlert.id]} />
               <CopyIcon
-                content={`A ${formatAlertName(issuedWarningOrAlert.headline, isMultipleAreas)} has been issued ${issuedWarningOrAlert.areaDesc.length > 0 ? `for ${issuedWarningOrAlert.areaDesc}` : ''}${formatAlertDuration(DateTime.fromISO(issuedWarningOrAlert.onset), DateTime.fromISO(issuedWarningOrAlert.expires))}${chance && upgradeTo ? `. There is a ${chance.toLowerCase()} confidence of upgrading to a ${upgradeTo}` : ''}.`}
+                content={`A ${formatAlertName(issuedWarningOrAlert.headline, isMultipleAreas)} has been issued ${issuedWarningOrAlert.areaDesc.length > 0 ? `for ${issuedWarningOrAlert.areaDesc}` : ''}${chance && upgradeTo ? `. There is a ${chance.toLowerCase()} confidence of upgrading to a ${upgradeTo}` : ''}.`}
               />
             </div>
           </>
