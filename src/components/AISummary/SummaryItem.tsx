@@ -169,34 +169,38 @@ export function SummaryItem({
           <>
             <div>
               <ul className="text-sm list-disc pl-6 space-y-1">
-                {thunderstormOutlookAISummary.map((outlook, index) => (
-                  <li className="py-2" key={index}>
-                    <ThunderstormOutlookItemComp
-                      date={date}
-                      outlook={outlook}
-                    />
-                  </li>
-                ))}
+                {thunderstormOutlookAISummary
+                  .filter(({ risk }) => risk !== 'Low')
+                  .map((outlook, index) => (
+                    <li className="py-2" key={index}>
+                      <ThunderstormOutlookItemComp
+                        date={date}
+                        outlook={outlook}
+                      />
+                    </li>
+                  ))}
               </ul>
             </div>
 
             <Accordion type="single" collapsible>
               <AccordionItem value="Low_Confidence_Thunderstorm_Outlook">
                 <AccordionTrigger>
-                  <span className="underline cursor-pointer text-xs text-gray-500">
+                  <span className="underline cursor-pointer text-xs text-gray-400">
                     Low Confidence Thunderstorm Outlook
                   </span>
                 </AccordionTrigger>
                 <AccordionContent>
                   <ul className="text-sm list-disc pl-6 space-y-1">
-                    {thunderstormOutlookAISummary.map((outlook, index) => (
-                      <li className="py-2" key={index}>
-                        <ThunderstormOutlookItemComp
-                          date={date}
-                          outlook={outlook}
-                        />
-                      </li>
-                    ))}
+                    {thunderstormOutlookAISummary
+                      .filter(({ risk }) => risk === 'Low')
+                      .map((outlook, index) => (
+                        <li className="py-2" key={index}>
+                          <ThunderstormOutlookItemComp
+                            date={date}
+                            outlook={outlook}
+                          />
+                        </li>
+                      ))}
                   </ul>
                 </AccordionContent>
               </AccordionItem>
