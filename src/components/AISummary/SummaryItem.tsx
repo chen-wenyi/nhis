@@ -137,9 +137,9 @@ export function SummaryItem({
               </ul>
             </div>
             <Accordion type="single" collapsible>
-              <AccordionItem value="item-1">
+              <AccordionItem value="Low_Confidence_Severe_Weather_Outlook">
                 <AccordionTrigger>
-                  <span className="underline cursor-pointer text-xs text-gray-500">
+                  <span className="underline cursor-pointer text-xs text-gray-400">
                     Low Confidence Severe Weather Outlook
                   </span>
                 </AccordionTrigger>
@@ -181,7 +181,7 @@ export function SummaryItem({
             </div>
 
             <Accordion type="single" collapsible>
-              <AccordionItem value="item-1">
+              <AccordionItem value="Low_Confidence_Thunderstorm_Outlook">
                 <AccordionTrigger>
                   <span className="underline cursor-pointer text-xs text-gray-500">
                     Low Confidence Thunderstorm Outlook
