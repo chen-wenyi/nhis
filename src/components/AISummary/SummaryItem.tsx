@@ -12,7 +12,7 @@ import type { IssuedAlert } from '@/types/alert';
 import { formatAlertName, sortAlerts } from '@/utils';
 import { useStore } from '@tanstack/react-store';
 import { DateTime } from 'luxon';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { LuFileSearch2 } from 'react-icons/lu';
 import { CopyIcon } from '../CopyIcon';
 import {
@@ -181,51 +181,14 @@ export function SummaryItem({
       ) : (
         thunderstormOutlookAISummary.length > 0 && (
           <>
-            {highRiskThunderstormOutlookAISummary.length > 0 && (
-              <div>
-                <ThunderstormOutLookBrief
-                  risk="High"
-                  areas={highRiskThunderstormOutlookAISummary.flatMap(
-                    (o) => o.areas,
-                  )}
-                />
-                <ul className="text-sm list-disc pl-6 space-y-1">
-                  {highRiskThunderstormOutlookAISummary.map(
-                    (outlook, index) => (
-                      <li className="py-2" key={index}>
-                        <ThunderstormOutlookItemComp
-                          date={date}
-                          outlook={outlook}
-                        />
-                      </li>
-                    ),
-                  )}
-                </ul>
-              </div>
-            )}
-
-            {moderateRiskThunderstormOutlookAISummary.length > 0 && (
-              <div>
-                <ThunderstormOutLookBrief
-                  risk="Moderate"
-                  areas={moderateRiskThunderstormOutlookAISummary.flatMap(
-                    (o) => o.areas,
-                  )}
-                />
-                <ul className="text-sm list-disc pl-6 space-y-1">
-                  {moderateRiskThunderstormOutlookAISummary.map(
-                    (outlook, index) => (
-                      <li className="py-2" key={index}>
-                        <ThunderstormOutlookItemComp
-                          date={date}
-                          outlook={outlook}
-                        />
-                      </li>
-                    ),
-                  )}
-                </ul>
-              </div>
-            )}
+            <ThunderstormOutLookBrief
+              summary={highRiskThunderstormOutlookAISummary}
+              date={date}
+            />
+            <ThunderstormOutLookBrief
+              summary={moderateRiskThunderstormOutlookAISummary}
+              date={date}
+            />
 
             <Accordion type="single" collapsible>
               <AccordionItem value="Low_Confidence_Thunderstorm_Outlook">
@@ -235,18 +198,10 @@ export function SummaryItem({
                   </span>
                 </AccordionTrigger>
                 <AccordionContent>
-                  <ul className="text-sm list-disc pl-6 space-y-1">
-                    {lowRiskThunderstormOutlookAISummary.map(
-                      (outlook, index) => (
-                        <li className="py-2" key={index}>
-                          <ThunderstormOutlookItemComp
-                            date={date}
-                            outlook={outlook}
-                          />
-                        </li>
-                      ),
-                    )}
-                  </ul>
+                  <ThunderstormOutLookBrief
+                    summary={lowRiskThunderstormOutlookAISummary}
+                    date={date}
+                  />
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
@@ -265,22 +220,45 @@ export function SummaryItem({
 }
 
 function ThunderstormOutLookBrief({
-  risk,
-  areas,
+  summary,
+  date,
 }: {
-  risk: AIThunderstormOutlookSummaryDocument['content'][number]['summary'][number]['risk'];
-  areas: string[];
+  summary: Summary['thunderstormOutlookAISummary'];
+  date: DateTime<boolean>;
 }) {
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const areas = summary.flatMap((o) => o.areas);
+
+  if (summary.length === 0) {
+    return null;
+  }
+
+  const risk = summary[0].risk;
   const textContent = `There is a ${risk.toLowerCase()} risk of thunderstorms for ${formatAreasList(areas)}.`;
   return (
-    <div className="flex pl-6">
+    <div className="inline-flex flex-col pl-6">
       <li className="text-sm py-2">
         There is a <span className="underline lowercase">{risk}</span> risk of
-        thunderstorms for {formatAreasList(areas)}.
-        <span className="inline-flex relative top-0.6 left-1">
+        thunderstorms for {formatAreasList(areas)}.{' '}
+        <button
+          onClick={() => setIsDetailsOpen((s) => !s)}
+          className="text-sm text-blue-600 hover:underline inline-block w-28"
+        >
+          {isDetailsOpen ? 'Hide details ▲' : 'Show details ▼'}
+        </button>
+        <span className="inline-flex relative top-0.5 left-1">
           <CopyIcon content={textContent} />
         </span>
       </li>
+      {isDetailsOpen && (
+        <ul className="text-sm pl-6 space-y-1 list-[square]">
+          {summary.map((outlook, index) => (
+            <li className="py-2 marker:text-gray-400" key={index}>
+              <ThunderstormOutlookItemComp date={date} outlook={outlook} />
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

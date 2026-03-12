@@ -3,16 +3,17 @@ import type { DateTime } from 'luxon';
 import type { SevereThunderstormLevel } from '../warnings-and-watches-indicators/severe-thunderstorm';
 
 export function formatAreasList(areas: string[]): string {
-  const filtered = areas.filter(Boolean);
+  const filtered = areas.filter(Boolean).map((area) => {
+    if (/^From/i.test(area)) {
+      area = `areas ${area.replace(/^From\s+/, 'from')}`;
+    }
+    return area.trim();
+  });
   if (filtered.length === 0) return '';
   if (filtered.length === 1) return filtered[0];
 
   const last = filtered[filtered.length - 1];
   let beforeLast = filtered.slice(0, -1).join(', ');
-
-  if (/^From/i.test(beforeLast)) {
-    beforeLast = `areas ${beforeLast.replace(/^From\s+/, 'from')}`;
-  }
 
   // If the last area already contains 'and', just use comma
   if (last.toLowerCase().startsWith('and')) {
