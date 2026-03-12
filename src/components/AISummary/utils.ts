@@ -8,7 +8,11 @@ export function formatAreasList(areas: string[]): string {
   if (filtered.length === 1) return filtered[0];
 
   const last = filtered[filtered.length - 1];
-  const beforeLast = filtered.slice(0, -1).join(', ');
+  let beforeLast = filtered.slice(0, -1).join(', ');
+
+  if (/^From/i.test(beforeLast)) {
+    beforeLast = `areas ${beforeLast.replace(/^From\s+/, 'from')}`;
+  }
 
   // If the last area already contains 'and', just use comma
   if (last.toLowerCase().includes('and')) {
