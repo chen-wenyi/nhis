@@ -15,7 +15,7 @@ export function formatAreasList(areas: string[]): string {
   }
 
   // If the last area already contains 'and', just use comma
-  if (last.toLowerCase().includes('and')) {
+  if (last.toLowerCase().startsWith('and')) {
     return `${beforeLast}, ${last}`;
   }
 

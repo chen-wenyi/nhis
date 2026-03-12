@@ -13,7 +13,7 @@ export function useCopyToClipboard(
 
   function copy(text: string) {
     const html = text.replace(
-      /\b(minimal|low|moderate|high)\b(?=\s+confiden)/gi,
+      /\b(minimal|low|moderate|high)\b(?=\s+(?:confiden|risk))/gi,
       '<span style="text-decoration: underline;">$1</span>',
     );
 

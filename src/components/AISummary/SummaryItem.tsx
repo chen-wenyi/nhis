@@ -81,6 +81,20 @@ export function SummaryItem({
     );
   }, [issuedWarningsAndWatches, date]);
 
+  const highRiskThunderstormOutlookAISummary = useMemo(() => {
+    return thunderstormOutlookAISummary.filter(({ risk }) => risk === 'High');
+  }, [thunderstormOutlookAISummary]);
+
+  const moderateRiskThunderstormOutlookAISummary = useMemo(() => {
+    return thunderstormOutlookAISummary.filter(
+      ({ risk }) => risk === 'Moderate',
+    );
+  }, [thunderstormOutlookAISummary]);
+
+  const lowRiskThunderstormOutlookAISummary = useMemo(() => {
+    return thunderstormOutlookAISummary.filter(({ risk }) => risk === 'Low');
+  }, [thunderstormOutlookAISummary]);
+
   return (
     <div className="flex flex-col" key={date.toISODate()}>
       <span className="font-semibold">{date.toFormat('cccc dd LLLL')}</span>
@@ -167,20 +181,51 @@ export function SummaryItem({
       ) : (
         thunderstormOutlookAISummary.length > 0 && (
           <>
-            <div>
-              <ul className="text-sm list-disc pl-6 space-y-1">
-                {thunderstormOutlookAISummary
-                  .filter(({ risk }) => risk !== 'Low')
-                  .map((outlook, index) => (
-                    <li className="py-2" key={index}>
-                      <ThunderstormOutlookItemComp
-                        date={date}
-                        outlook={outlook}
-                      />
-                    </li>
-                  ))}
-              </ul>
-            </div>
+            {highRiskThunderstormOutlookAISummary.length > 0 && (
+              <div>
+                <ThunderstormOutLookBrief
+                  risk="High"
+                  areas={highRiskThunderstormOutlookAISummary.flatMap(
+                    (o) => o.areas,
+                  )}
+                />
+                <ul className="text-sm list-disc pl-6 space-y-1">
+                  {highRiskThunderstormOutlookAISummary.map(
+                    (outlook, index) => (
+                      <li className="py-2" key={index}>
+                        <ThunderstormOutlookItemComp
+                          date={date}
+                          outlook={outlook}
+                        />
+                      </li>
+                    ),
+                  )}
+                </ul>
+              </div>
+            )}
+
+            {moderateRiskThunderstormOutlookAISummary.length > 0 && (
+              <div>
+                <ThunderstormOutLookBrief
+                  risk="Moderate"
+                  areas={moderateRiskThunderstormOutlookAISummary.flatMap(
+                    (o) => o.areas,
+                  )}
+                />
+                <ul className="text-sm list-disc pl-6 space-y-1">
+                  {moderateRiskThunderstormOutlookAISummary.map(
+                    (outlook, index) => (
+                      <li className="py-2" key={index}>
+                        <ThunderstormOutlookItemComp
+                          date={date}
+                          outlook={outlook}
+                        />
+                      </li>
+                    ),
+                  )}
+                </ul>
+              </div>
+            )}
 
             <Accordion type="single" collapsible>
               <AccordionItem value="Low_Confidence_Thunderstorm_Outlook">
@@ -191,16 +236,16 @@ export function SummaryItem({
                 </AccordionTrigger>
                 <AccordionContent>
                   <ul className="text-sm list-disc pl-6 space-y-1">
-                    {thunderstormOutlookAISummary
-                      .filter(({ risk }) => risk === 'Low')
-                      .map((outlook, index) => (
+                    {lowRiskThunderstormOutlookAISummary.map(
+                      (outlook, index) => (
                         <li className="py-2" key={index}>
                           <ThunderstormOutlookItemComp
                             date={date}
                             outlook={outlook}
                           />
                         </li>
-                      ))}
+                      ),
+                    )}
                   </ul>
                 </AccordionContent>
               </AccordionItem>
@@ -215,6 +260,27 @@ export function SummaryItem({
         thunderstormOutlookAISummary.length === 0 && (
           <MinimalRiskSevereWeatherOutlook />
         )}
+    </div>
+  );
+}
+
+function ThunderstormOutLookBrief({
+  risk,
+  areas,
+}: {
+  risk: AIThunderstormOutlookSummaryDocument['content'][number]['summary'][number]['risk'];
+  areas: string[];
+}) {
+  const textContent = `There is a ${risk.toLowerCase()} risk of thunderstorms for ${formatAreasList(areas)}.`;
+  return (
+    <div className="flex pl-6">
+      <li className="text-sm py-2">
+        There is a <span className="underline lowercase">{risk}</span> risk of
+        thunderstorms for {formatAreasList(areas)}.
+        <span className="inline-flex relative top-0.6 left-1">
+          <CopyIcon content={textContent} />
+        </span>
+      </li>
     </div>
   );
 }
