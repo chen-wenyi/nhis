@@ -14,3 +14,6 @@ Designed for mission-critical use, the system improves situational awareness, re
 - Improves speed and clarity of emergency response planning
 - Supports cross-agency coordination with a shared operational picture
 - Enables proactive risk management through timely AI-driven insights
+
+## Natural Hazard Intelligence Dashboard
+<img width="3688" height="2016" alt="image" src="https://github.com/user-attachments/assets/64788cbc-bb04-4f72-b0e4-d364f353c91f" />
